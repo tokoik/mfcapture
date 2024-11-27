@@ -143,8 +143,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CamMsmf.cpp" />
     <ClCompile Include="gg.cpp" />
     <ClCompile Include="msmf.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CamMsmf.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
