@@ -256,7 +256,7 @@ Config::~Config()
 //
 // 構成データを初期化する
 //
-void Config::initialize()
+void Config::　()
 {
   // 構成リストのすべて構成についてシェーダをビルドする
   for (auto& preference : preferenceList) preference.buildShader();
