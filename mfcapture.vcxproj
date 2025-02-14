@@ -143,10 +143,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="CamMf.cpp" />
     <ClCompile Include="Capture.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="Expand.cpp" />
+    <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="gg.cpp" />
     <ClCompile Include="GgApp.cpp" />
     <ClCompile Include="Intrinsics.cpp" />
@@ -154,18 +156,23 @@
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="mfcapture.cpp" />
     <ClCompile Include="Preference.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Buffer.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CamMf.h" />
     <ClInclude Include="Capture.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="Expand.h" />
+    <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="gg.h" />
     <ClInclude Include="GgApp.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="parseconfig.h" />
     <ClInclude Include="Preference.h" />
+    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="normal.frag" />

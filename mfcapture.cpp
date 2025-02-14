@@ -42,7 +42,7 @@ int GgApp::main(int argc, const char* const* argv)
   Capture capture;
 
   // メニューを作る
-  Menu menu{ config, capture, calibration };
+  Menu menu{ config, capture };
 
   // キャプチャデバイスで初期画像を開く
   capture.openImage(config.getInitialImage());
@@ -76,37 +76,6 @@ int GgApp::main(int argc, const char* const* argv)
 
     // フレームバッファオブジェクトにフレームを展開する
     framebuffer.update(size, frame);
-
-    // ArUco Marker を検出するなら
-    if (menu.detectMarker || menu.detectBoard)
-    {
-      // フレームバッファオブジェクトの内容をピクセルバッファオブジェクトに転送する
-      framebuffer.readPixels();
-
-      // 入力画像のサイズを調べる
-      const auto size{ cv::Size{ framebuffer.getWidth(), framebuffer.getHeight() } };
-
-      // ピクセルバッファオブジェクトを CPU のメモリ空間にマップする
-      cv::Mat image{ size, CV_8UC(framebuffer.getChannels()), framebuffer.map() };
-
-      // ChArUco Board を認識するなら
-      if (menu.detectBoard)
-      {
-        // ChArUco Board を検出する
-        calibration.detectBoard(image);
-      }
-      else
-      {
-        // ArUco Marker を検出する
-        calibration.detectMarkers(image, menu.getMarkerLength());
-      }
-
-      // ピクセルバッファオブジェクトのマップを解除する
-      framebuffer.unmap();
-
-      // ピクセルバッファオブジェクトの内容をフレームバッファオブジェクトに書き戻す
-      framebuffer.drawPixels();
-    }
 
     // 表示するウィンドウのビューポートを再設定する
     window.setMenubarHeight(menu.getMenubarHeight());

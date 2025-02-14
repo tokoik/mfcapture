@@ -14,9 +14,6 @@
 // キャプチャデバイス
 #include "Capture.h"
 
-// 較正オブジェクト
-#include "Calibration.h"
-
 ///
 /// メニューの描画
 ///
@@ -33,9 +30,6 @@ class Menu
 
   /// キャプチャデバイス
   Capture& capture;
-
-  /// 較正オブジェクト
-  Calibration& calibration;
 
   /// 選択しているキャプチャデバイスの番号
   int deviceNumber;
@@ -143,9 +137,8 @@ public:
   ///
   /// @param config 構成データ
   /// @param capture 入力フレームを取得するキャプチャデバイス
-  /// @param calibration 較正オブジェクト
   ///
-  Menu(const Config& config, Capture& capture, Calibration& calibration);
+  Menu(const Config& config, Capture& capture);
 
   ///
   /// コピーコンストラクタは使用しない
