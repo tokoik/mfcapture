@@ -11,9 +11,6 @@
 // キャプチャデバイスの構成
 #include "Preference.h"
 
-// OpenCV
-#include <opencv2/opencv.hpp>
-
 ///
 /// 表示関連の設定データ
 ///
@@ -98,14 +95,11 @@ class Config
   /// メニューフォントサイズ
   float menuFontSize;
 
-  /// バックエンドのリスト
-  static const std::map<cv::VideoCaptureAPIs, const char*> backendList;
-
   /// コーデックのリスト
   static const std::vector<const char*> codecList;
 
   /// キャプチャデバイスのリスト
-  static std::map <cv::VideoCaptureAPIs, std::vector<std::string>> deviceList;
+  static std::vector<std::string> deviceList;
 
   /// 初期表示の画像ファイル名
   static std::string initialImage;
@@ -223,36 +217,31 @@ public:
   ///
   /// キャプチャデバイスのリストを取り出す
   ///
-  /// @param api 使用しているバックエンドの API 名
   /// @return キャプチャデバイスのリスト
   ///
-  const auto& getDeviceList(cv::VideoCaptureAPIs api) const
+  const auto& getDeviceList() const
   {
-    return deviceList.at(api);
+    return deviceList;
   }
 
   ///
   /// キャプチャデバイスの数を調べる
   ///
-  /// @param api 使用しているバックエンドの API 名
   /// @return キャプチャデバイスの数
   ///
-  auto getDeviceCount(cv::VideoCaptureAPIs api) const
+  auto getDeviceCount() const
   {
-    return static_cast<int>(deviceList.at(api).size());
+    return static_cast<int>(deviceList.size());
   }
 
   ///
   /// キャプチャデバイスの名前を調べる
   ///
-  /// @param api 使用しているバックエンドの API 名
   /// @param number キャプチャデバイスの番号
   /// @return キャプチャデバイスの名前
   ///
-  const auto& getDeviceName(cv::VideoCaptureAPIs api, int number) const
+  const auto& getDeviceName(int number) const
   {
-    static const std::string empty{};
-    const auto& list{ deviceList.at(api) };
-    return list.empty() ? empty : list[number];
+    return deviceList.empty() ? "" : deviceList[number];
   }
 };

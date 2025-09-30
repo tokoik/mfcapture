@@ -71,19 +71,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(Projectdir)libs\win\include;$(ProjectDir)libs\include;$(ProjectDir)libs\ImGui;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)libs\win\$(Platform)\include;$(ProjectDir)libs\win\include;$(ProjectDir)libs\include;$(ProjectDir)libs\ImGui;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)libs\win\$(Platform)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(Projectdir)libs\win\include;$(ProjectDir)libs\include;$(ProjectDir)libs\ImGui;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)libs\win\$(Platform)\include;$(ProjectDir)libs\win\include;$(ProjectDir)libs\include;$(ProjectDir)libs\ImGui;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)libs\win\$(Platform)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(Projectdir)libs\win\include;$(ProjectDir)libs\include;$(ProjectDir)libs\ImGui;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)libs\win\$(Platform)\include;$(ProjectDir)libs\win\include;$(ProjectDir)libs\include;$(ProjectDir)libs\ImGui;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)libs\win\$(Platform)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(Projectdir)libs\win\include;$(ProjectDir)libs\include;$(ProjectDir)libs\ImGui;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)libs\win\$(Platform)\include;$(ProjectDir)libs\win\include;$(ProjectDir)libs\include;$(ProjectDir)libs\ImGui;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)libs\win\$(Platform)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

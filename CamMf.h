@@ -11,6 +11,11 @@
 // カメラ関連の処理
 #include "Camera.h"
 
+// Microsoft Media Foundation
+#include <MFapi.h>
+#include <MFidl.h>
+#include <MFreadwrite.h>
+
 ///
 /// Microsoft Media Foundation を使ってビデオをキャプチャするクラス
 ///

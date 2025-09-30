@@ -14,12 +14,67 @@
 #include <iostream>
 
 // Microsoft Media Foundation
-#include <MFapi.h>
-#include <MFidl.h>
-#include <MFreadwrite.h>
 #pragma comment(lib, "MF.lib")
 #pragma comment(lib, "MFplat.lib")
 #pragma comment(lib, "MFreadwrite.lib")
+
+//
+// Media Foundation のビデオデバイスの一覧を作る
+//
+//   https://docs.microsoft.com/ja-jp/windows/win32/medfound/audio-video-capture-in-media-foundation
+//
+#include <Mfidl.h>
+#include <Mfapi.h>
+#include <Mferror.h>
+#pragma comment(lib, "mf.lib")
+#pragma comment(lib, "mfplat.lib")
+
+void getMediaFoundationList(std::vector<std::string>& list)
+{
+  // Create an attribute store to hold the search criteria.
+  IMFAttributes* pConfig{ NULL };
+  HRESULT hr{ MFCreateAttributes(&pConfig, 1) };
+
+  // Request video capture devices.
+  if (SUCCEEDED(hr))
+  {
+    hr = pConfig->SetGUID(
+      MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
+      MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID
+    );
+  }
+
+  // Enumerate the devices,
+  IMFActivate** ppDevices{ NULL };
+  UINT32 count{ 0 };
+  if (SUCCEEDED(hr))
+  {
+    hr = MFEnumDeviceSources(pConfig, &ppDevices, &count);
+  }
+
+  for (DWORD i = 0; i < count; i++)
+  {
+    // Try to get the display name.
+    WCHAR* szFriendlyName{ NULL };
+    UINT32 cchName{ 0 };
+    HRESULT hr{
+      ppDevices[i]->GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
+      &szFriendlyName, &cchName)
+    };
+
+    if (SUCCEEDED(hr))
+    {
+      list.emplace_back(TCharToUtf8(szFriendlyName));
+    }
+    CoTaskMemFree(szFriendlyName);
+  }
+
+  for (DWORD i = 0; i < count; i++)
+  {
+    ppDevices[i]->Release();
+  }
+  CoTaskMemFree(ppDevices);
+}
 
 //
 // 初期化
