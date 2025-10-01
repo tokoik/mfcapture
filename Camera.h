@@ -137,7 +137,8 @@ public:
   ///
   /// 代入演算子は使用しない
   ///
-  /// @param camera 代入元
+  /// @param camera 代入元のカメラ
+  /// @return 代入後のこのカメラの参照
   ///
   Camera& operator=(const Camera& camera) = delete;
 

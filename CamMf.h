@@ -17,6 +17,45 @@
 #include <MFreadwrite.h>
 
 ///
+/// COM ライブラリの初期化と終了を行うクラス
+///
+class ComInitializer
+{
+public:
+
+  ///
+  /// コンストラクタ
+  ///
+  ComInitializer()
+  {
+    const HRESULT hr{ CoInitializeEx(NULL, COINIT_APARTMENTTHREADED) };
+    if (FAILED(hr)) throw std::runtime_error("Failed to initialize COM library.");
+  }
+
+  ///
+  /// コピーコンストラクタは使用しない
+  ///
+  /// @param com コピー元
+  ///
+  ComInitializer(const ComInitializer& com) = delete;
+
+  ///
+  /// デストラクタ
+  ///
+  ~ComInitializer()
+  {
+    CoUninitialize();
+  }
+
+  ///
+  /// 代入演算子は使用しない
+  ///
+  /// @param com 代入元のオブジェクト
+  /// @return 代入後のこのオブジェクトの参照
+  ///
+  ComInitializer& operator=(const ComInitializer& com) = delete;
+};
+///
 /// Microsoft Media Foundation を使ってビデオをキャプチャするクラス
 ///
 class CamMf : public Camera
