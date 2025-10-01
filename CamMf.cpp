@@ -7,12 +7,6 @@
 ///
 #include "CamMf.h"
 
-// 補助プログラム
-#include "gg.h"
-
-// 標準ライブラリ
-#include <iostream>
-
 // Microsoft Media Foundation
 #pragma comment(lib, "MF.lib")
 #pragma comment(lib, "MFplat.lib")
@@ -21,14 +15,6 @@
 //
 // Media Foundation のビデオデバイスの一覧を作る
 //
-//   https://docs.microsoft.com/ja-jp/windows/win32/medfound/audio-video-capture-in-media-foundation
-//
-#include <Mfidl.h>
-#include <Mfapi.h>
-#include <Mferror.h>
-#pragma comment(lib, "mf.lib")
-#pragma comment(lib, "mfplat.lib")
-
 void getMediaFoundationList(std::vector<std::string>& list)
 {
   // Create an attribute store to hold the search criteria.
@@ -124,8 +110,10 @@ bool CamMf::init()
       }
     }
   }
+}
 
-  hr = ppDevices[0]->ActivateObject(IID_PPV_ARGS(&pMediaSource));
+
+  HRESULT hr{ ppDevices[0]->ActivateObject(IID_PPV_ARGS(&pMediaSource)) };
   for (UINT32 i = 0; i < count; i++)
   {
     ppDevices[i]->Release();

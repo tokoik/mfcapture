@@ -52,8 +52,8 @@ public:
   /// キャプチャデバイスの構成データのコンストラクタ
   ///
   /// @param description このキャプチャデバイスの説明の文字列
-  /// @param vert 平面展開用のバーテックスシェーダのソースファイル名
-  /// @param frag 平面展開用のフラグメントシェーダのソースファイル名
+  /// @param vert 展開用のバーテックスシェーダのソースファイル名
+  /// @param frag 展開用のフラグメントシェーダのソースファイル名
   /// @param intrinsics キャプチャデバイス固有のパラメータ
   ///
   Preference(const std::string& description,
@@ -72,7 +72,7 @@ public:
   virtual ~Preference();
 
   ///
-  /// 平面展開用のシェーダをビルドする
+  /// 展開用のシェーダをビルドする
   ///
   void buildShader();
 
