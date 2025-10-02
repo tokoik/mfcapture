@@ -1566,7 +1566,7 @@ namespace gg
   }
 
   ///
-  /// 4 要素の単精度実数の配列.
+  /// 単精度実数の 4 要素のベクトル.
   ///
   class GgVector : public std::array<GLfloat, 4>
   {
@@ -1613,10 +1613,14 @@ namespace gg
     ///
     /// コピーコンストラクタ.
     ///
+    /// @param v コピー元のベクトル.
+    ///
     GgVector(const GgVector& v) = default;
 
     ///
     /// ムーブコンストラクタ.
+    ///
+    /// @param v ムーブ元のベクトル.
     ///
     GgVector(GgVector&& v) = default;
 
@@ -2187,10 +2191,14 @@ namespace gg
     ///
     /// コピーコンストラクタ.
     ///
+    /// @param m コピー元の変換行列.
+    ///
     GgMatrix(const GgMatrix& m) = default;
 
     ///
     /// ムーブコンストラクタ.
+    ///
+    /// @param m ムーブ元の変換行列.
     ///
     GgMatrix(GgMatrix&& m) = default;
 
@@ -4262,6 +4270,20 @@ namespace gg
     }
 
     ///
+    /// 四元数をオイラー角 (e[0], e[1], e[2]) で回転した四元数を返す.
+    ///
+    /// @param e オイラー角を表す GgVector 型の変数 (heading, pitch, roll) の参照.
+    /// @return 回転した四元数.
+    ///
+    /// @note
+    /// 第 4 要素は無視する.
+    ///
+    GgQuaternion euler(const GgVector& e) const
+    {
+      return euler(e[0], e[1], e[2]);
+    }
+
+    ///
     /// 球面線形補間の結果を格納する.
     ///
     /// @param a 四元数を格納した GLfloat 型の 4 要素の配列変数.
@@ -4635,6 +4657,17 @@ namespace gg
   /// @return 回転を表す四元数.
   ///
   inline GgQuaternion ggEulerQuaternion(const GLfloat* e)
+  {
+    return ggEulerQuaternion(e[0], e[1], e[2]);
+  }
+
+  ///
+  /// オイラー角 (e[0], e[1], e[2]) で与えられた回転を表す四元数を返す.
+  ///
+  /// @param e オイラー角を表す GgVector 型の変数 (heading, pitch, roll) の参照.
+  /// @return 回転を表す四元数.
+  ///
+  inline GgQuaternion ggEulerQuaternion(const GgVector& e)
   {
     return ggEulerQuaternion(e[0], e[1], e[2]);
   }
@@ -5020,7 +5053,7 @@ namespace gg
   /// @param name 読み込むファイル名.
   /// @param pWidth 読みだした画像ファイルの横の画素数の格納先のポインタ (nullptr なら格納しない).
   /// @param pHeight 読みだした画像ファイルの縦の画素数の格納先のポインタ (nullptr なら格納しない).
-  /// @param internal glTexImage2D() に指定するテクスチャの内部フォーマット, 0 なら外部フォーマットに合わせる.
+  /// @param internal テクスチャの内部フォーマット, デフォルトは GL_RGBA. 0 なら外部フォーマットに合わせる.
   /// @param wrap テクスチャのラッピングモード, デフォルトは GL_CLAMP_TO_EDGE.
   /// @return テクスチャの作成に成功すればテクスチャ名, 失敗すれば 0.
   ///
@@ -5028,7 +5061,7 @@ namespace gg
     const std::string& name,
     GLsizei* pWidth = nullptr,
     GLsizei* pHeight = nullptr,
-    GLenum internal = 0,
+    GLenum internal = GL_RGBA,
     GLenum wrap = GL_CLAMP_TO_EDGE
   );
 
@@ -5202,7 +5235,7 @@ namespace gg
     GgTexture(const GgTexture& texture) = delete;
 
     ///
-    /// ムーブコンストラクタはデフォルトのものを使用する.
+    /// ムーブコンストラクタ.
     ///
     /// @param texture ムーブ元のテクスチャ.
     ///
@@ -5226,7 +5259,7 @@ namespace gg
     GgTexture& operator=(const GgTexture& texture) = delete;
 
     ///
-    /// ムーブ代入演算子はデフォルトのものを使用する.
+    /// ムーブ代入演算子.
     ///
     /// @param texture ムーブ代入元のテクスチャ.
     /// @return ムーブ代入後のこのテクスチャの参照.
@@ -5585,7 +5618,7 @@ namespace gg
     GgBuffer<T>(const GgBuffer<T>& buffer) = delete;
 
     ///
-    /// ムーブコンストラクタはデフォルトのものを使用する.
+    /// ムーブコンストラクタ.
     ///
     /// @param buffer ムーブ元のバッファ.
     ///
@@ -5610,7 +5643,7 @@ namespace gg
     GgBuffer<T>& operator=(const GgBuffer<T>& buffer) = delete;
 
     ///
-    /// ムーブ代入演算子はデフォルトのものを使用する.
+    /// ムーブ代入演算子.
     ///
     /// @param buffer ムーブ代入元のバッファ.
     /// @return ムーブ代入後のこのバッファの参照.
@@ -6147,7 +6180,7 @@ namespace gg
     GgVertexArray(const GgVertexArray& array) = delete;
 
     ///
-    /// ムーブコンストラクタはデフォルトのものを使用する.
+    /// ムーブコンストラクタ.
     ///
     /// @param array ムーブ元の頂点配列オブジェクト.
     ///
@@ -6171,7 +6204,7 @@ namespace gg
     GgVertexArray& operator=(const GgVertexArray& array) = delete;
 
     ///
-    /// ムーブ代入演算子はデフォルトのものを使用する.
+    /// ムーブ代入演算子.
     ///
     /// @param array ムーブ代入元の頂点配列オブジェクト.
     /// @return ムーブ代入後のこの頂点配列オブジェクトの参照.
@@ -6879,7 +6912,7 @@ namespace gg
     GgShader(const GgShader& shader) = delete;
 
     ///
-    /// ムーブコンストラクタはデフォルトのものを使用する.
+    /// ムーブコンストラクタ.
     ///
     /// @param shader ムーブ元のシェーダ.
     ///
@@ -6904,7 +6937,7 @@ namespace gg
     GgShader& operator=(const GgShader& shader) = delete;
 
     ///
-    /// ムーブ代入演算子はデフォルトのものを使用する.
+    /// ムーブ代入演算子.
     ///
     /// @param shader ムーブ代入元のシェーダ.
     /// @return ムーブ代入後のこのシェーダの参照.
@@ -7199,12 +7232,6 @@ namespace gg
   class GgSimpleShader
     : public GgPointShader
   {
-    // 材質データの uniform block のインデックス
-    GLint materialIndex;
-
-    // 光源データの uniform block のインデックス
-    GLint lightIndex;
-
     // モデルビュー変換の法線変換行列の uniform 変数の場所
     GLint mnLoc;
 
@@ -7215,8 +7242,6 @@ namespace gg
     ///
     GgSimpleShader() :
       GgPointShader(),
-      materialIndex{ -1 },
-      lightIndex{ -1 },
       mnLoc{ -1 }
     {
     }
@@ -7262,8 +7287,6 @@ namespace gg
     ///
     GgSimpleShader(const GgSimpleShader& o) :
       GgPointShader(o),
-      materialIndex{ o.materialIndex },
-      lightIndex{ o.lightIndex },
       mnLoc{ o.mnLoc }
     {
     }
@@ -7286,8 +7309,6 @@ namespace gg
       if (&o != this)
       {
         GgPointShader::operator=(o);
-        materialIndex = o.materialIndex;
-        lightIndex = o.lightIndex;
         mnLoc = o.mnLoc;
       }
 

@@ -233,14 +233,6 @@ public:
   ///
   ~WebCamCapture()
   {
-    // Source Reader を解放する
-    if (pSourceReader) pSourceReader->Release();
-
-    // Media Source 解放する
-    if (pMediaSource) pMediaSource->Release();
-
-    // Media Foundation をシャットダウンする
-    MFShutdown();
   }
 
   ///
@@ -251,72 +243,6 @@ public:
   /// 
   bool Initialize(HWND hwnd)
   {
-    HRESULT hr = MFStartup(MF_VERSION);
-    if (FAILED(hr))
-    {
-      std::cerr << "MFStartup failed\n";
-      return false;
-    }
-
-    IMFAttributes* pAttributes{ nullptr };
-    hr = MFCreateAttributes(&pAttributes, 1);
-    if (FAILED(hr))
-    {
-      std::cerr << "MFCreateAttributes failed\n";
-      return false;
-    }
-
-    hr = pAttributes->SetGUID(
-      MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
-      MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID
-      - );
-    if (FAILED(hr))
-    {
-      std::cerr << "SetGUID failed\n";
-      pAttributes->Release();
-      return false;
-    }
-
-    IMFActivate** ppDevices{ nullptr };
-    UINT32 count{ 0 };
-    hr = MFEnumDeviceSources(pAttributes, &ppDevices, &count);
-    if (FAILED(hr) || count == 0)
-    {
-      std::cerr << "No webcam found\n";
-      pAttributes->Release();
-      return false;
-    }
-
-    hr = ppDevices[0]->ActivateObject(IID_PPV_ARGS(&pMediaSource));
-    for (UINT32 i = 0; i < count; i++)
-    {
-      ppDevices[i]->Release();
-    }
-    CoTaskMemFree(ppDevices);
-    if (FAILED(hr))
-    {
-      std::cerr << "ActivateObject failed\n";
-      pAttributes->Release();
-      return false;
-    }
-
-    hr = MFCreateSourceReaderFromMediaSource(pMediaSource, pAttributes, &pSourceReader);
-    pAttributes->Release();
-    if (FAILED(hr))
-    {
-      std::cerr << "MFCreateSourceReaderFromMediaSource failed\n";
-      return false;
-    }
-
-    hr = pAttributes->SetUINT32(MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING, TRUE);
-    if (FAILED(hr))
-    {
-      std::cerr << "Failed to set video processing attribute\n";
-      return false;
-    }
-
-    hwndVideo = hwnd;
-    return true;
   }
 
   void CaptureFrame()
