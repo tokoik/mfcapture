@@ -10,6 +10,9 @@
 // 標準ライブラリ
 #include <fstream>
 
+// Microsoft Media Foundation によるキャプチャ
+#include "CamMf.h"
+
 // appData のパスを得るときに使う
 #include <shlobj_core.h>
 

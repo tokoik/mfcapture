@@ -13,286 +13,298 @@
 #pragma comment(lib, "MFreadwrite.lib")
 
 //
-// Media Foundation のビデオデバイスの一覧を作る
+// メモリの開放
 //
-void getMediaFoundationList(std::vector<std::string>& list)
+template <class T> void SafeRelease(T** ppT)
 {
-  // Create an attribute store to hold the search criteria.
-  IMFAttributes* pConfig{ NULL };
-  HRESULT hr{ MFCreateAttributes(&pConfig, 1) };
-
-  // Request video capture devices.
-  if (SUCCEEDED(hr))
+  if (*ppT)
   {
-    hr = pConfig->SetGUID(
-      MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
-      MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID
-    );
+    (*ppT)->Release();
+    *ppT = nullptr;
   }
+}
 
-  // Enumerate the devices,
-  IMFActivate** ppDevices{ NULL };
-  UINT32 count{ 0 };
-  if (SUCCEEDED(hr))
-  {
-    hr = MFEnumDeviceSources(pConfig, &ppDevices, &count);
-  }
+// COM ライブラリの初期化と終了を行うオブジェクト
+std::shared_ptr<CamMf::ComInitializer> CamMf::comInit{ nullptr };
 
-  for (DWORD i = 0; i < count; i++)
-  {
-    // Try to get the display name.
-    WCHAR* szFriendlyName{ NULL };
-    UINT32 cchName{ 0 };
-    HRESULT hr{
-      ppDevices[i]->GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
-      &szFriendlyName, &cchName)
-    };
+//
+// COM ライブラリの初期化と終了を行うクラスのコンストラクタ
+//
+CamMf::ComInitializer::ComInitializer()
+{
+  // 初期化
+  auto message{ initialize() };
 
-    if (SUCCEEDED(hr))
-    {
-      list.emplace_back(TCharToUtf8(szFriendlyName));
-    }
-    CoTaskMemFree(szFriendlyName);
-  }
+  // 初期化に失敗したら例外を投げる
+  if (message) throw std::runtime_error(message);
+}
 
-  for (DWORD i = 0; i < count; i++)
-  {
-    ppDevices[i]->Release();
-  }
-  CoTaskMemFree(ppDevices);
+//
+// COM ライブラリの初期化と終了を行うクラスのデストラクタ
+//
+CamMf::ComInitializer::~ComInitializer()
+{
+  // 後始末
+  cleanup();
 }
 
 //
 // 初期化
 //
-bool CamMf::init()
+const char* CamMf::ComInitializer::initialize()
 {
-  // Media Foundation を初期化する
-  if (SUCCEEDED(MFStartup(MF_VERSION)))
+  // エラーメッセージ
+  char* message{ nullptr };
+
+  // COM ライブラリを初期化する
+  if (FAILED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)))
   {
-    // 検索条件を保持する属性ストア
-    IMFAttributes* pAttributes{ NULL };
+    // COM ライブラリの初期化に失敗したら戻る
+    return "Failed to initialize COM library.";
+  }
 
-    // 検索条件を保持する属性ストアを作成する
-    if (SUCCEEDED(MFCreateAttributes(&pAttributes, 1)))
+  // Media Foundation を起動する
+  if (FAILED(MFStartup(MF_VERSION)))
+  {
+    // Media Foundation の起動に失敗したら COM ライブラリを終了して
+    CoUninitialize();
+
+    // 戻る
+    return "Failed to start Media Foundation.";
+  }
+
+  // 検索条件を保持する属性ストア
+  IMFAttributes* pAttributes{ nullptr };
+
+  // 検索条件を保持する属性ストアを作成する
+  if (FAILED(MFCreateAttributes(&pAttributes, 1)))
+  {
+    // 属性ストアの作成失敗したら Media Foundation を終了して
+    MFShutdown();
+
+    // COM ライブラリを終了して
+    CoUninitialize();
+
+    // 戻る
+    return "Failed to create attribute store.";
+  }
+
+  // 属性ストアにビデオキャプチャデバイスの属性を設定する
+  if (FAILED(pAttributes->SetGUID(
+    MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
+    MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID)))
+  {
+    // ビデオキャプチャデバイスの属性の設定に失敗したら属性ストアを解放して
+    SafeRelease(&pAttributes);
+
+    // Media Foundation を終了して
+    MFShutdown();
+
+    // COM ライブラリを終了して
+    CoUninitialize();
+
+    // 戻る
+    return "Failed to set attribute for video capture device.";
+  }
+
+  // メディアソースを列挙する
+  if (FAILED(MFEnumDeviceSources(
+    pAttributes, &ppSourceActivate, &cSourceActivate)))
+  {
+    // メディアソースの列挙に失敗したら属性ストアを解放して
+    SafeRelease(&pAttributes);
+
+    // Media Foundation を終了して
+    MFShutdown();
+
+    // COM ライブラリを終了して
+    CoUninitialize();
+
+    // 戻る
+    return "Failed to enumerate media sources.";
+  }
+
+  // すべてのメディアソースについて
+  for (DWORD i = 0; i < cSourceActivate; ++i)
+  {
+    // メディアソースの表示名のリスト
+    WCHAR* szFriendlyName{ nullptr };
+
+    // メディアソースの表示名の数
+    UINT32 cFriendlyName{ 0 };
+
+    // メディアソースの表示名を取得する
+    if (SUCCEEDED(ppSourceActivate[i]->GetAllocatedString(
+      MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME, &szFriendlyName, &cFriendlyName)))
     {
-      // ビデオキャプチャデバイスを要求する
-      if (SUCCEEDED(pAttributes->SetGUID(
-        MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
-        MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID)))
-      {
-        // メディアソースを列挙する
-        if (SUCCEEDED(MFEnumDeviceSources(
-          pAttributes, &ppSourceActivate, &cSourceActivate)))
-        {
-          // すべてのメディアソースについて
-          for (DWORD i = 0; i < cSourceActivate; ++i)
-          {
-            // メディアソースの表示名のリスト
-            WCHAR* szFriendlyName{ NULL };
-
-            // メディアソースの表示名の数
-            UINT32 cFriendlyName{ 0 };
-
-            // メディアソースの表示名を取得する
-            if (SUCCEEDED(ppSourceActivate[i]->GetAllocatedString(
-              MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
-              &szFriendlyName, &cFriendlyName)))
-            {
-              // ビデオキャプチャデバイス名をリストに追加する
-              deviceList.emplace_back(TCharToUtf8(szFriendlyName));
-            }
-
-            // 表示名のリストに使ったメモリを解放する
-            CoTaskMemFree(szFriendlyName);
-          }
-        }
-      }
+      // ビデオキャプチャデバイス名をリストに追加する
+      deviceList.emplace_back(TCharToUtf8(szFriendlyName));
     }
+
+    // 表示名のリストに使ったメモリを解放する
+    CoTaskMemFree(szFriendlyName);
+  }
+
+  // 属性ストアを解放する
+  SafeRelease(&pAttributes);
+
+  // ビデオキャプチャデバイスが見つからなかったら
+  if (deviceList.empty())
+  {
+    // 後始末をして
+    cleanup();
+
+    // 戻る
+    return "No video capture devices found.";
   }
 }
-
-
-  HRESULT hr{ ppDevices[0]->ActivateObject(IID_PPV_ARGS(&pMediaSource)) };
-  for (UINT32 i = 0; i < count; i++)
-  {
-    ppDevices[i]->Release();
-  }
-  CoTaskMemFree(ppDevices);
-  if (FAILED(hr))
-  {
-    std::cerr << "ActivateObject failed\n";
-    pAttributes->Release();
-    return false;
-  }
-  hr = MFCreateSourceReaderFromMediaSource(pMediaSource, pAttributes, &pSourceReader);
-  pAttributes->Release();
-  if (FAILED(hr))
-  {
-    std::cerr << "MFCreateSourceReaderFromMediaSource failed\n";
-    return false;
-  }
-  hr = pAttributes->SetUINT32(MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING, TRUE);
-  if (FAILED(hr))
-  {
-    std::cerr << "Failed to set video processing attribute\n";
-    return false;
-  }
-  hwndVideo = hwnd;
-  return true;
-}  //
 
 //
 // 後始末
 //
-void CamMf::cleanup()
+void CamMf::ComInitializer::cleanup()
 {
-  // メディアソースのリストに使ったメモリを解放する
+  // メディアソースのリストを解放して
+  for (DWORD i = 0; i < cSourceActivate; ++i) SafeRelease(&ppSourceActivate[i]);
 
-  // すべての表示名について
-  for (DWORD i = 0; i < cFriendlyName; ++i)
-  {
-    // 表示名に使ったメモリを解放する
-    ppSourceActivate[i]->Release();
-  }
-  // キャプチャデバイスのリストに使ったメモリを解放する
+  // メディアソースのリストに使ったメモリを解放して
   CoTaskMemFree(ppSourceActivate);
+  ppSourceActivate = nullptr;
 
   // Media Foundation をシャットダウンする
   MFShutdown();
+
+  // COM ライブラリを終了する
+  CoUninitialize();
 }
 
 //
-// 初期化
+// カメラを開く
 //
 bool CamMf::open(int device)
 {
-  // 結果
-  HRESULT hr;
+  // デバイス番号が不正なら false を返す
+  if (device < 0 || static_cast<UINT32>(device) >= cSourceActivate) return false;
 
-  // Media Foundation の初期化
-  hr = MFStartup(MF_VERSION);
-  if (FAILED(hr))
+  // メディアソースを作成する
+  if (FAILED(ppSourceActivate[device]->ActivateObject(IID_PPV_ARGS(&pMediaSource))))
   {
-    std::cerr << "MFStartup failed\n";
+    // メディアソースの作成に失敗したら false を返す
     return false;
   }
 
-  hr = ppDevices[0]->ActivateObject(IID_PPV_ARGS(&pMediaSource));
-  for (UINT32 i = 0; i < count; i++)
+  // Source Reader の属性ストア
+  IMFAttributes* pAttributes{ nullptr };
+
+  // Source Reader の属性ストアを作成する
+  if (FAILED(MFCreateAttributes(&pAttributes, 1)))
   {
-    ppDevices[i]->Release();
-  }
-  CoTaskMemFree(ppDevices);
-  if (FAILED(hr))
-  {
-    std::cerr << "ActivateObject failed\n";
-    pAttributes->Release();
+    // 属性ストアの作成に失敗したらメディアソースを解放して false を返す
+    SafeRelease(&pMediaSource);
     return false;
   }
-  hr = MFCreateSourceReaderFromMediaSource(pMediaSource, pAttributes, &pSourceReader);
-  pAttributes->Release();
-  if (FAILED(hr))
+
+  // Source Reader の属性ストアにデコード能力を設定する
+  if (FAILED(pAttributes->SetUINT32(
+    MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS, TRUE)))
   {
-    std::cerr << "MFCreateSourceReaderFromMediaSource failed\n";
+    // デコード能力の設定に失敗したら属性ストアを解放して
+    SafeRelease(&pAttributes);
+
+    // メディアソースを解放して false を返す
+    SafeRelease(&pMediaSource);
     return false;
   }
-  hr = pAttributes->SetUINT32(MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING, TRUE);
-  if (FAILED(hr))
+
+  // Source Reader を作成する
+  if (FAILED(MFCreateSourceReaderFromMediaSource(
+    pMediaSource, pAttributes, &pSourceReader)))
   {
-    std::cerr << "Failed to set video processing attribute\n";
+    // Source Reader の作成に失敗したら属性ストアを解放して
+    SafeRelease(&pAttributes);
+
+    // メディアソースを解放して false を返す
+    SafeRelease(&pMediaSource);
     return false;
   }
-  hwndVideo = hwnd;
+
+  // 属性ストアはもう必要ないので解放する
+  SafeRelease(&pAttributes);
+
+  // ビデオキャプチャデバイスが開けたので true を返す
   return true;
-}  //
-
-///
-/// Microsoft Media Foundation による Web カメラ
-///
-class WebCamCapture
-{
-  IMFSourceReader* pSourceReader;
-  IMFMediaSource* pMediaSource;
-  HWND hwndVideo;
-
-public:
-
-  ///
-  /// コンストラクタ
-  ///
-  WebCamCapture()
-    : pSourceReader{ nullptr }
-    , pMediaSource{ nullptr }
-    , hwndVideo{ nullptr }
-  {
-  }
-
-  ///
-  /// デストラクタ
-  ///
-  ~WebCamCapture()
-  {
-  }
-
-  ///
-  /// Media Foundation の初期化
-  /// 
-  /// @param hwnd ウィンドウのハンドル
-  /// @return 初期化に成功したら true
-  /// 
-  bool Initialize(HWND hwnd)
-  {
-  }
-
-  void CaptureFrame()
-  {
-    IMFSample* pSample{ nullptr };
-    DWORD streamIndex, flags;
-    LONGLONG llTimestamp;
-
-    HRESULT hr = pSourceReader->ReadSample(
-      (DWORD)MF_SOURCE_READER_FIRST_VIDEO_STREAM,
-      0, &streamIndex, &flags, &llTimestamp, &pSample);
-
-    if (SUCCEEDED(hr))
-    {
-      if (pSample)
-      {
-        IMFMediaBuffer* pBuffer{ nullptr };
-        hr = pSample->ConvertToContiguousBuffer(&pBuffer);
-        if (SUCCEEDED(hr))
-        {
-          BYTE* pData{ nullptr };
-          DWORD maxLength = 0, currentLength = 0;
-          hr = pBuffer->Lock(&pData, &maxLength, &currentLength);
-          if (SUCCEEDED(hr))
-          {
-            // Process frame data (pData)
-            std::cout << "max = " << maxLength << ", current = " << currentLength << '\n';
-            pBuffer->Unlock();
-          }
-          pBuffer->Release();
-        }
-        pSample->Release();
-      }
-    }
-  }
-};
-
-#if 0
-int main() {
-  WebCamCapture capture;
-  HWND hwnd = GetConsoleWindow();
-  if (capture.Initialize(hwnd)) {
-    while (true) {
-      capture.CaptureFrame();
-      Sleep(30); // 30 ms delay for approx 30 FPS
-    }
-  }
-  else {
-    std::cerr << "Failed to initialize webcam capture\n";
-  }
-  return 0;
 }
-#endif
+
+//
+// フレームをキャプチャする
+//
+void CamMf::capture()
+{
+  // キャプチャデバイスのロックを試みる
+  if (mtx.try_lock())
+  {
+    // フレームを取得する
+    DWORD dwStreamIndex{ 0 };
+    DWORD dwStreamFlags{ 0 };
+    LONGLONG llTimestamp{ 0 };
+    IMFSample* pSample{ nullptr };
+    if (SUCCEEDED(pSourceReader->ReadSample(
+      MF_SOURCE_READER_FIRST_VIDEO_STREAM,
+      0,
+      &dwStreamIndex,
+      &dwStreamFlags,
+      &llTimestamp,
+      &pSample)) && pSample)
+    {
+      // サンプルからメディアバッファを取得する
+      IMFMediaBuffer* pBuffer{ nullptr };
+      if (SUCCEEDED(pSample->ConvertToContiguousBuffer(&pBuffer)) && pBuffer)
+      {
+        // メディアバッファからフレームの情報を取得する
+        BYTE* pData{ nullptr };
+        DWORD cbDataLength{ 0 };
+        if (SUCCEEDED(pBuffer->Lock(&pData, nullptr, &cbDataLength)) && pData)
+        {
+          // フレームの大きさを求める
+          const auto length{ frame.cols * frame.rows * frame.channels() };
+
+          // 転送用に必要なメモリサイズが以前と違ったらメモリを確保しなおす
+          if (static_cast<int>(pixels.size()) != length) pixels.resize(length);
+
+          // データをコピーする
+          std::copy(pData, pData + std::min(cbDataLength, static_cast<DWORD>(length)), pixels.data());
+
+          // メディアバッファのロックを解除する
+          pBuffer->Unlock();
+
+          // 新しいフレームが取得されたことを記録しておく
+          captured = true;
+        }
+
+        // メディアバッファを解放する
+        pBuffer->Release();
+      }
+
+      // サンプルを解放する
+      pSample->Release();
+    }
+
+    // キャプチャデバイスのロックを解除する
+    mtx.unlock();
+  }
+
+  // キャプチャスレッドが実行中なら少し休む
+  if (running) std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(interval)));
+}
+
+//
+// カメラを閉じる
+//
+void CamMf::close()
+{
+  // Source Reader を解放する
+  SafeRelease(&pSourceReader);
+
+  // Media Source 解放する
+  SafeRelease(&pMediaSource);
+}
