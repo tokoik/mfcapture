@@ -30,13 +30,11 @@ std::shared_ptr<CamMf::ComInitializer> CamMf::comInit{ nullptr };
 //
 // COM ライブラリの初期化と終了を行うクラスのコンストラクタ
 //
-CamMf::ComInitializer::ComInitializer()
+CamMf::ComInitializer::ComInitializer() :
+  deviceList{},
+  ppSourceActivate{ nullptr },
+  cSourceActivate{ 0 }
 {
-  // 初期化
-  auto message{ initialize() };
-
-  // 初期化に失敗したら例外を投げる
-  if (message) throw std::runtime_error(message);
 }
 
 //
