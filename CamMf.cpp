@@ -25,7 +25,7 @@ template <class T> void SafeRelease(T** ppT)
 }
 
 // COM ライブラリの初期化と終了を行うオブジェクト
-std::shared_ptr<CamMf::ComInitializer> CamMf::comInit{ nullptr };
+CamMf::ComInitializer* CamMf::ComInitializer::instance{ nullptr };
 
 //
 // COM ライブラリの初期化と終了を行うクラスのコンストラクタ
@@ -44,6 +44,10 @@ CamMf::ComInitializer::~ComInitializer()
 {
   // 後始末
   cleanup();
+
+  // インスタンスを解放する
+  delete instance;
+  instance = nullptr;
 }
 
 //
@@ -51,9 +55,6 @@ CamMf::ComInitializer::~ComInitializer()
 //
 const char* CamMf::ComInitializer::initialize()
 {
-  // エラーメッセージ
-  char* message{ nullptr };
-
   // COM ライブラリを初期化する
   if (FAILED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)))
   {
@@ -155,6 +156,21 @@ const char* CamMf::ComInitializer::initialize()
     // 戻る
     return "No video capture devices found.";
   }
+
+  // 初期化が成功したので nullptr を返す
+  return nullptr;
+}
+
+//
+// 有効化
+//
+bool CamMf::ComInitializer::activate(int device, IMFMediaSource** pMediaSource)
+{
+  // メディアソースを作成して結果を返す
+  return instance
+    && device >= 0 && static_cast<UINT32>(device) < instance->cSourceActivate
+    && SUCCEEDED(instance->ppSourceActivate[device]->ActivateObject(IID_PPV_ARGS(pMediaSource)))
+    && pMediaSource;
 }
 
 //
@@ -177,24 +193,38 @@ void CamMf::ComInitializer::cleanup()
 }
 
 //
+// ビデオキャプチャデバイスの表示名のリストを返す
+//
+const std::vector<std::string>& CamMf::ComInitializer::getDeviceList()
+{
+  // COM ライブラリが初期化され Media Foundation が起動されていなければ
+  if (!instance)
+  {
+    // インスタンスを生成して
+    instance = new ComInitializer;
+
+    // COM ライブラリを初期化して Media Foundation を起動する
+    auto message{ instance->initialize() };
+
+    // COM ライブラリの初期化と Media Foundation の起動に失敗したら例外を投げる
+    if (message) throw std::runtime_error(message);
+  }
+
+  // ビデオキャプチャデバイスの表示名のリストを返す
+  return instance->deviceList;
+}
+
+
+//
 // カメラを開く
 //
 bool CamMf::open(int device)
 {
-  // デバイス番号が不正なら false を返す
-  if (device < 0 || static_cast<UINT32>(device) >= cSourceActivate) return false;
-
   // メディアソースを作成する
-  if (FAILED(ppSourceActivate[device]->ActivateObject(IID_PPV_ARGS(&pMediaSource))))
-  {
-    // メディアソースの作成に失敗したら false を返す
-    return false;
-  }
-
-  // Source Reader の属性ストア
-  IMFAttributes* pAttributes{ nullptr };
+  if (ComInitializer::activate(device, &pMediaSource)) return false;
 
   // Source Reader の属性ストアを作成する
+  IMFAttributes* pAttributes{ nullptr };
   if (FAILED(MFCreateAttributes(&pAttributes, 1)))
   {
     // 属性ストアの作成に失敗したらメディアソースを解放して false を返す

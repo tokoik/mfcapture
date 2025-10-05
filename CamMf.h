@@ -26,26 +26,8 @@ class CamMf : public Camera
   ///
   class ComInitializer
   {
-    //
-    // コンストラクタ
-    //
-    ComInitializer();
-
-    //
-    // デストラクタ
-    //
-    ~ComInitializer();
-
     // COM ライブラリの初期化と終了を行うオブジェクト
-    static std::shared_ptr<ComInitializer> instance;
-
-  public:
-
-    // シングルトンなのでコピーは作らせない
-    ComInitializer(const ComInitializer& com) = delete;
-    ComInitializer(ComInitializer&& com) = delete;
-    ComInitializer& operator=(const ComInitializer& com) = delete;
-    ComInitializer& operator=(ComInitializer&&) = delete;
+    static ComInitializer* instance;
 
     // ビデオキャプチャデバイスの表示名のリスト
     std::vector<std::string> deviceList;
@@ -57,36 +39,48 @@ class CamMf : public Camera
     UINT32 cSourceActivate;
 
     //
+    // コンストラクタ
+    //
+    ComInitializer();
+
+    //
+    // デストラクタ
+    //
+    ~ComInitializer();
+
+  public:
+
+    // シングルトンなのでコピーは作らせない
+    ComInitializer(const ComInitializer& com) = delete;
+    ComInitializer(ComInitializer&& com) = delete;
+    ComInitializer& operator=(const ComInitializer& com) = delete;
+    ComInitializer& operator=(ComInitializer&&) = delete;
+
+    //
     // 初期化
     //
-    static const char* initialize();  
+    const char* initialize();  
+
+    //
+    // 有効化
+    //
+    static bool activate(int device, IMFMediaSource** pMediaSource);
 
     //
     // 後始末
     //
-    static void cleanup();
+    void cleanup();
 
     //
     // ビデオキャプチャデバイスの表示名のリストを返す
     //
-    const std::vector<std::string>& getDeviceList()
-    {
-      if (!instance)
-      {
-        instance = std::make_shared<ComInitializer>();
-        auto message{ instance->initialize() };
-
-        // 初期化に失敗したら例外を投げる
-        if (message) throw std::runtime_error(message);
-      }
-      return deviceList;
-    }
+    static const std::vector<std::string>& getDeviceList();
   };
 
-  // COM ライブラリの初期化と終了を行うオブジェクト
-  static std::shared_ptr<ComInitializer> comInit;
-
+  // メディアソースの読み取り
   IMFSourceReader* pSourceReader;
+
+  // メディアソース
   IMFMediaSource* pMediaSource;
 
 public:
@@ -110,12 +104,13 @@ public:
   }
 
   ///
-  /// 初期化
+  /// Media Foundation のビデオデバイスの一覧を作る
   ///
-  static void initialize()
+  /// @return デバイス名のリスト
+  ///
+  const std::vector<std::string>& getDeviceList()
   {
-    // COM ライブラリが初期化されていなければ初期化する
-    if (!comInit) comInit = std::make_shared<ComInitializer>();
+    return ComInitializer::getDeviceList();
   }
 
   ///
@@ -134,14 +129,4 @@ public:
   /// カメラを閉じる
   ///
   void close();
-
-  ///
-  /// Media Foundation のビデオデバイスの一覧を作る
-  ///
-  /// @return デバイス名のリスト
-  ///
-  const std::vector<std::string>& getDeviceList()
-  {
-    return comInit->getDeviceList();
-  }
 };
