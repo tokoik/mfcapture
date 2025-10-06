@@ -95,11 +95,8 @@ class Config
   /// メニューフォントサイズ
   float menuFontSize;
 
-  /// コーデックのリスト
-  static const std::vector<const char*> codecList;
-
   /// キャプチャデバイスのリスト
-  static std::vector<std::string> deviceList;
+  const std::vector<std::string>& deviceList;
 
   /// 初期表示の画像ファイル名
   static std::string initialImage;

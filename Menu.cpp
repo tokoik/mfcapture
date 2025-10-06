@@ -34,50 +34,6 @@ constexpr nfdfilteritem_t movieFilter[]{ "Movies", "mp4,m4v,mpg,mov,avi,ogg,mkv"
 ///
 bool Menu::openDevice()
 {
-  // バックエンドが GStreamer なら
-  if (backend == cv::CAP_GSTREAMER)
-  {
-    // ファイルのリストを取り出し
-    const auto& pipeline{ config.deviceList.at(backend)[deviceNumber] };
-
-    // ダイアログで指定したパイプラインが開けなかったら
-    if (!capture.openMovie(pipeline, backend))
-    {
-      // 開けなかった
-      errorMessage = u8"パイプラインが開けません";
-      return false;
-    }
-
-    // GStreamer が使える
-    return true;
-  }
-
-  // コーデック
-  char codec[5]{};
-  if (codecNumber > 0) strncpy(codec, config.codecList[codecNumber], 5);
-
-  // ダイアログで指定したキャプチャデバイスが開けなかったら
-  if (!capture.openDevice(deviceNumber,
-    intrinsics.size, intrinsics.fps, backend, codec))
-  {
-    // 開けなかった
-    errorMessage = u8"デバイスが開けません";
-    return false;
-  }
-
-  // 使うことになったコーデックの番号を調べる
-  for (size_t i = 0; i < config.codecList.size(); ++i)
-  {
-    if (strncmp(codec, config.codecList[i], 4) == 0)
-    {
-      // コーデックが分かった
-      codecNumber = static_cast<int>(i);
-      return true;
-    }
-  }
-
-  // コーデックが分からない
-  codecNumber = 0;
   return true;
 }
 
@@ -120,28 +76,24 @@ void Menu::openMovie()
   // ファイルダイアログを開く
   if (NFD_OpenDialog(&filepath, movieFilter, 1, NULL) == NFD_OKAY)
   {
-    // 入力特性をファイルに切り替えて
-    backend = cv::CAP_FFMPEG;
-
-    // ファイルのリストを取り出し
-    auto& fileList{ config.deviceList.at(backend) };
-    const auto fileListLength{ static_cast<int>(fileList.size()) };
+    // ファイルのリストの要素数
+    const auto fileListLength{ static_cast<int>(inputFileList.size()) };
 
     // ファイルのリストの各ファイルについて
-    for (deviceNumber = 0; deviceNumber < fileListLength; ++deviceNumber)
+    for (inputFileNumber = 0; inputFileNumber < fileListLength; ++inputFileNumber)
     {
       // 選択したファイルと同じものがあればそれを選択する
-      if (fileList[deviceNumber] == filepath) break;
+      if (inputFileList[inputFileNumber] == filepath) break;
     }
 
     // 選択したファイルがファイルのリストの中になければ
-    if (deviceNumber == fileListLength)
+    if (inputFileNumber == fileListLength)
     {
       // その先頭にファイルパスを挿入して
-      fileList.insert(fileList.begin(), filepath);
+      inputFileList.insert(inputFileList.begin(), filepath);
 
       // そのエントリを選択する
-      deviceNumber = 0;
+      inputFileNumber = 0;
     }
 
     // ダイアログで指定した動画ファイルが開けたら
@@ -350,7 +302,7 @@ Menu::Menu(const Config& config, Capture& capture, Calibration& calibration)
   , capture{ capture }
   , calibration{ calibration }
   , deviceNumber{ 0 }
-  , codecNumber{ 0 }
+  , inputFileNumber{ 0 }
   , preferenceNumber{ 0 }
   , backend{ cv::CAP_ANY }
   , pose{ ggIdentity() }

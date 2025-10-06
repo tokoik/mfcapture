@@ -16,6 +16,24 @@
 #include <MFidl.h>
 #include <MFreadwrite.h>
 
+//
+// ビデオフォーマットの詳細を保持する構造体
+//
+struct VideoFormat
+{
+  UINT32 width;           // 幅
+  UINT32 height;          // 高さ
+  UINT32 fps_num;         // フレームレートの分子 (Numerator)
+  UINT32 fps_den;         // フレームレートの分母 (Denominator)
+  GUID subType;           // ピクセルフォーマット/コーデックの GUID
+  std::string formatName; // 人間が読める形式の文字列
+
+  //
+  // コンストラクタ
+  //
+  VideoFormat(UINT32 width, UINT32 height, UINT32 fps_num, UINT32 fps_den, GUID subType);
+};
+
 ///
 /// Microsoft Media Foundation を使ってビデオをキャプチャするクラス
 ///
@@ -48,6 +66,16 @@ class CamMf : public Camera
     //
     ~ComInitializer();
 
+    //
+    // 初期化
+    //
+    const char* initialize();
+
+    //
+    // 後始末
+    //
+    void cleanup();
+
   public:
 
     // シングルトンなのでコピーは作らせない
@@ -57,19 +85,9 @@ class CamMf : public Camera
     ComInitializer& operator=(ComInitializer&&) = delete;
 
     //
-    // 初期化
-    //
-    const char* initialize();  
-
-    //
     // 有効化
     //
     static bool activate(int device, IMFMediaSource** pMediaSource);
-
-    //
-    // 後始末
-    //
-    void cleanup();
 
     //
     // ビデオキャプチャデバイスの表示名のリストを返す
@@ -83,6 +101,22 @@ class CamMf : public Camera
   // メディアソース
   IMFMediaSource* pMediaSource;
 
+  // 使用可能なビデオフォーマットのリスト
+  std::vector<VideoFormat> availableFormats;
+
+  // 現在選択されているフォーマットのインデックス
+  int currentFormatIndex;
+
+  //
+  // 使用可能な解像度、フレームレート、コーデックのリストを作成する
+  //
+  bool enumerateFormats();
+
+  //
+  // Source Reader の出力フォーマットを設定し、基底クラスの frame を初期化する
+  //
+  bool setFormat(int index);
+
 public:
 
   ///
@@ -91,6 +125,7 @@ public:
   CamMf()
     : pSourceReader{ nullptr }
     , pMediaSource{ nullptr }
+    , currentFormatIndex{ -1 }
   {
   }
 
@@ -108,7 +143,7 @@ public:
   ///
   /// @return デバイス名のリスト
   ///
-  const std::vector<std::string>& getDeviceList()
+  static const std::vector<std::string>& getDeviceList()
   {
     return ComInitializer::getDeviceList();
   }
@@ -119,6 +154,22 @@ public:
   /// @param device デバイスの番号
   ///
   bool open(int device);
+
+  ///
+  /// 使用可能なビデオフォーマットのリストを返す
+  ///
+  const std::vector<VideoFormat>& getAvailableFormats() const
+  {
+    return availableFormats;
+  }
+
+  ///
+  /// フォーマットを選択して設定する
+  ///
+  /// @param index 選択するフォーマットのリストインデックス
+  /// @return 成功したら true
+  ///
+  bool select(int index);
 
   ///
   /// フレームをキャプチャする

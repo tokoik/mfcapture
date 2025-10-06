@@ -26,10 +26,8 @@ Config::Config(const std::string& filename)
   , settings{ "DICT_4X4_50" }
   , menuFont{ "Mplus1-Regular.ttf" }
   , menuFontSize{ 20.0f }
+  , deviceList{ CamMf::getDeviceList() }
 {
-  // キャプチャデバイスの一覧を作る
-  getMediaFoundationList(deviceList);
-
   // 構成ファイルの保存場所を決定する
 #if defined(_DEBUG)
   const auto path{ Utf8ToTChar(filename) };
@@ -209,9 +207,6 @@ bool Config::save(const pathString& filename) const
   // 構成データの書き込み成功
   return true;
 }
-
-// キャプチャデバイスのリスト
-std::vector<std::string> Config::deviceList;
 
 // 初期表示の画像ファイル名
 std::string Config::initialImage{ "initial.jpg" };
