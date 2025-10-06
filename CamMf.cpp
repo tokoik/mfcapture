@@ -12,6 +12,9 @@
 #pragma comment(lib, "MFplat.lib")
 #pragma comment(lib, "MFreadwrite.lib")
 
+// COM ライブラリの初期化と終了を行うオブジェクト
+CamMf::ComInitializer CamMf::ComInitializer::instance;
+
 //
 // メモリの開放
 //
@@ -44,33 +47,32 @@ std::string SubTypeToName(const GUID& subType)
 //
 // ビデオフォーマットの詳細を保持する構造体のコンストラクタ
 //
-VideoFormat::VideoFormat(UINT32 width, UINT32 height, UINT32 fps_num, UINT32 fps_den, GUID subType)
+VideoFormat::VideoFormat(UINT32 width, UINT32 height, UINT32 fpsNum, UINT32 fpsDenom, GUID subType)
   : width{ width }
   , height{ height }
-  , fps_num{ fps_num }
-  , fps_den{ fps_den }
+  , fpsNum{ fpsNum }
+  , fpsDenom{ fpsDenom }
   , subType{ subType }
 {
   // 表示名を作成する
   std::stringstream ss;
   ss << width << " x " << height << " @ "
-    << std::fixed << std::setprecision(2) << static_cast<double>(fps_num) / static_cast<double>(fps_den)
+    << std::fixed << std::setprecision(2) << static_cast<double>(fpsNum) / static_cast<double>(fpsDenom)
     << " fps (" << SubTypeToName(subType) << ")";
 
   // 表示名を保存する
   formatName = ss.str();
 }
 
-// COM ライブラリの初期化と終了を行うオブジェクト
-CamMf::ComInitializer* CamMf::ComInitializer::instance{ nullptr };
-
 //
 // COM ライブラリの初期化と終了を行うクラスのコンストラクタ
 //
-CamMf::ComInitializer::ComInitializer() :
-  deviceList{},
-  ppSourceActivate{ nullptr },
-  cSourceActivate{ 0 }
+CamMf::ComInitializer::ComInitializer()
+  : deviceList{}
+  , ppSourceActivate{ nullptr }
+  , cSourceActivate{ 0 }
+  , coInitialized{ false }
+  , mfStarted{ false }
 {
 }
 
@@ -79,20 +81,25 @@ CamMf::ComInitializer::ComInitializer() :
 //
 CamMf::ComInitializer::~ComInitializer()
 {
-  if (this == instance)
+  // メディアソースのリストを取得していれば
+  if (ppSourceActivate)
   {
-    // 後始末
-    cleanup();
+    // すべてのメディアソースを解放して
+    for (DWORD i = 0; i < cSourceActivate; ++i) SafeRelease(&ppSourceActivate[i]);
 
-    // Media Foundation をシャットダウンし
-    MFShutdown();
+    // メディアソースのリストに使ったメモリを解放して
+    CoTaskMemFree(ppSourceActivate);
+    ppSourceActivate = nullptr;
 
-    // COM ライブラリを終了してから
-    CoUninitialize();
-
-    // インスタンスを解放する
-    instance = nullptr;
+    // ビデオキャプチャデバイスの表示名のリストを空にする
+    deviceList.clear();
   }
+
+  // Media Foundation が起動していればシャットダウンする
+  if (mfStarted) MFShutdown();
+
+  // COM ライブラリが初期化されていれば終了する
+  if (coInitialized) CoUninitialize();
 }
 
 //
@@ -107,15 +114,18 @@ const char* CamMf::ComInitializer::initialize()
     return "Failed to initialize COM library.";
   }
 
+  // COM ライブラリの初期化に成功した
+  coInitialized = true;
+
   // Media Foundation を起動する
   if (FAILED(MFStartup(MF_VERSION)))
   {
-    // Media Foundation の起動に失敗したら COM ライブラリを終了して
-    CoUninitialize();
-
-    // 戻る
+    // Media Foundation の起動に失敗したら戻る
     return "Failed to start Media Foundation.";
   }
+
+  // Media Foundation の起動に成功した
+  mfStarted = true;
 
   // 検索条件を保持する属性ストア
   IMFAttributes* pAttributes{ nullptr };
@@ -123,13 +133,7 @@ const char* CamMf::ComInitializer::initialize()
   // 検索条件を保持する属性ストアを作成する
   if (FAILED(MFCreateAttributes(&pAttributes, 1)))
   {
-    // 属性ストアの作成失敗したら Media Foundation を終了して
-    MFShutdown();
-
-    // COM ライブラリを終了して
-    CoUninitialize();
-
-    // 戻る
+    // 属性ストアの作成失敗したら戻る
     return "Failed to create attribute store.";
   }
 
@@ -141,12 +145,6 @@ const char* CamMf::ComInitializer::initialize()
     // ビデオキャプチャデバイスの属性の設定に失敗したら属性ストアを解放して
     SafeRelease(&pAttributes);
 
-    // Media Foundation を終了して
-    MFShutdown();
-
-    // COM ライブラリを終了して
-    CoUninitialize();
-
     // 戻る
     return "Failed to set attribute for video capture device.";
   }
@@ -157,12 +155,6 @@ const char* CamMf::ComInitializer::initialize()
   {
     // メディアソースの列挙に失敗したら属性ストアを解放して
     SafeRelease(&pAttributes);
-
-    // Media Foundation を終了して
-    MFShutdown();
-
-    // COM ライブラリを終了して
-    CoUninitialize();
 
     // 戻る
     return "Failed to enumerate media sources.";
@@ -192,37 +184,8 @@ const char* CamMf::ComInitializer::initialize()
   // 属性ストアはもう使わないので解放する
   SafeRelease(&pAttributes);
 
-  // ビデオキャプチャデバイスが見つからなかったら
-  if (deviceList.empty())
-  {
-    // 後始末をして
-    cleanup();
-
-    // 戻る
-    return "No video capture devices found.";
-  }
-
   // 初期化が成功した
   return nullptr;
-}
-
-//
-// 後始末
-//
-void CamMf::ComInitializer::cleanup()
-{
-  // メディアソースのリストを解放して
-  for (DWORD i = 0; i < cSourceActivate; ++i) SafeRelease(&ppSourceActivate[i]);
-
-  // メディアソースのリストに使ったメモリを解放する
-  CoTaskMemFree(ppSourceActivate);
-  ppSourceActivate = nullptr;
-
-  // Media Foundation をシャットダウンする
-  MFShutdown();
-
-  // COM ライブラリを終了する
-  CoUninitialize();
 }
 
 //
@@ -231,9 +194,8 @@ void CamMf::ComInitializer::cleanup()
 bool CamMf::ComInitializer::activate(int device, IMFMediaSource** pMediaSource)
 {
   // メディアソースを作成して結果を返す
-  return instance
-    && device >= 0 && static_cast<UINT32>(device) < instance->cSourceActivate
-    && SUCCEEDED(instance->ppSourceActivate[device]->ActivateObject(IID_PPV_ARGS(pMediaSource)))
+  return device >= 0 && static_cast<UINT32>(device) < instance.cSourceActivate
+    && SUCCEEDED(instance.ppSourceActivate[device]->ActivateObject(IID_PPV_ARGS(pMediaSource)))
     && pMediaSource;
 }
 
@@ -243,20 +205,17 @@ bool CamMf::ComInitializer::activate(int device, IMFMediaSource** pMediaSource)
 const std::vector<std::string>& CamMf::ComInitializer::getDeviceList()
 {
   // COM ライブラリが初期化され Media Foundation が起動されていなければ
-  if (!instance)
+  if (instance.deviceList.empty())
   {
-    // インスタンスを生成して
-    instance = new ComInitializer;
-
     // COM ライブラリを初期化して Media Foundation を起動する
-    auto message{ instance->initialize() };
+    auto message{ instance.initialize() };
 
     // COM ライブラリの初期化と Media Foundation の起動に失敗したら例外を投げる
     if (message) throw std::runtime_error(message);
   }
 
   // ビデオキャプチャデバイスの表示名のリストを返す
-  return instance->deviceList;
+  return instance.deviceList;
 }
 
 //
@@ -335,7 +294,7 @@ bool CamMf::setFormat(int index)
 
     // フレームレートを設定する
     if (SUCCEEDED(hr))
-      hr = MFSetAttributeRatio(pMediaType, MF_MT_FRAME_RATE, selectedFormat.fps_num, selectedFormat.fps_den);
+      hr = MFSetAttributeRatio(pMediaType, MF_MT_FRAME_RATE, selectedFormat.fpsNum, selectedFormat.fpsDenom);
 
     // Source Reader の出力メディアタイプを設定する
     if (SUCCEEDED(hr))
@@ -372,8 +331,8 @@ bool CamMf::setFormat(int index)
   frame.create(selectedFormat.height, selectedFormat.width, type);
 
   // インターバルを設定する
-  interval = (selectedFormat.fps_den != 0)
-    ? (1000.0 * selectedFormat.fps_den / selectedFormat.fps_num)
+  interval = (selectedFormat.fpsDenom != 0)
+    ? (1000.0 * selectedFormat.fpsDenom / selectedFormat.fpsNum)
     : 10.0;
 
   // 現在選択されているフォーマットのインデックスを保存しておく

@@ -23,8 +23,8 @@ struct VideoFormat
 {
   UINT32 width;           // 幅
   UINT32 height;          // 高さ
-  UINT32 fps_num;         // フレームレートの分子 (Numerator)
-  UINT32 fps_den;         // フレームレートの分母 (Denominator)
+  UINT32 fpsNum;         // フレームレートの分子 (Numerator)
+  UINT32 fpsDenom;         // フレームレートの分母 (Denominator)
   GUID subType;           // ピクセルフォーマット/コーデックの GUID
   std::string formatName; // 人間が読める形式の文字列
 
@@ -45,7 +45,7 @@ class CamMf : public Camera
   class ComInitializer
   {
     // COM ライブラリの初期化と終了を行うオブジェクト
-    static ComInitializer* instance;
+    static ComInitializer instance;
 
     // ビデオキャプチャデバイスの表示名のリスト
     std::vector<std::string> deviceList;
@@ -55,6 +55,12 @@ class CamMf : public Camera
 
     // メディアソースの数
     UINT32 cSourceActivate;
+
+    // COM ライブラリが初期化されていれば true
+    bool coInitialized;
+
+    // Media Foundation が起動されていれば true
+    bool mfStarted;
 
     //
     // コンストラクタ
@@ -70,11 +76,6 @@ class CamMf : public Camera
     // 初期化
     //
     const char* initialize();
-
-    //
-    // 後始末
-    //
-    void cleanup();
 
   public:
 
