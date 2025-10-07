@@ -34,6 +34,14 @@ constexpr nfdfilteritem_t movieFilter[]{ "Movies", "mp4,m4v,mpg,mov,avi,ogg,mkv"
 ///
 bool Menu::openDevice()
 {
+  // ダイアログで指定したキャプチャデバイスが開けなかったら
+  if (!capture.openDevice(deviceNumber))
+  {
+    // 開けなかった
+    errorMessage = u8"デバイスが開けません";
+    return false;
+  }
+
   return true;
 }
 
@@ -370,9 +378,6 @@ std::array<GLsizei, 2> Menu::setup(GLfloat aspect) const
 //
 void Menu::draw()
 {
-  // ImGui のフレームを準備する
-  ImGui::NewFrame();
-
   // メインメニューバー
   if (ImGui::BeginMainMenuBar())
   {
@@ -524,29 +529,6 @@ void Menu::draw()
     {
       // 使えるキャプチャデバイスがない
       ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"デバイスが見つかりません");
-    }
-
-    // キャプチャするサイズとフレームレート
-    ImGui::InputInt2(u8"解像度", intrinsics.size.data());
-    ImGui::InputDouble(u8"周波数", &intrinsics.fps, 1.0f, 1.0f, "%.1f");
-
-    // コーデックを選択する
-    if (ImGui::BeginCombo(u8"符号化", config.codecList[codecNumber]))
-    {
-      // すべてのコーデックについて
-      for (int i = 0; i < static_cast<int>(config.codecList.size()); ++i)
-      {
-        // コーデックを（それを選択していればハイライトして）コンボボックスに表示する
-        if (ImGui::Selectable(config.codecList[i], i == codecNumber))
-        {
-          // 表示したキャプチャデバイスが選択されていたらそのキャプチャデバイスを選択する
-          codecNumber = i;
-
-          // この選択を次にコンボボックスを開いたときのデフォルトにしておく
-          ImGui::SetItemDefaultFocus();
-        }
-      }
-      ImGui::EndCombo();
     }
 
     // キャプチャの開始と停止
@@ -707,9 +689,6 @@ void Menu::draw()
     // 検出したコーナーを記録する
     calibration.recordCorners();
   }
-
-  // ImGui のフレームに描画する
-  ImGui::Render();
 }
 
 //

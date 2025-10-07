@@ -10,6 +10,7 @@
 // Microsoft Media Foundation
 #pragma comment(lib, "MF.lib")
 #pragma comment(lib, "MFplat.lib")
+#pragma comment(lib, "MFuuid.lib")
 #pragma comment(lib, "MFreadwrite.lib")
 
 // COM ライブラリの初期化と終了を行うオブジェクト

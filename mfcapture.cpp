@@ -41,8 +41,11 @@ int GgApp::main(int argc, const char* const* argv)
   // キャプチャデバイスを作る
   Capture capture;
 
+  // 較正オブジェクトを作成する
+  Calibration calibration{ config.getDictionaryName(), config.getCheckerLength() };
+
   // メニューを作る
-  Menu menu{ config, capture };
+  Menu menu{ config, capture, calibration };
 
   // キャプチャデバイスで初期画像を開く
   capture.openImage(config.getInitialImage());

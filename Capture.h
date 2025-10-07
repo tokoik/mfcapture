@@ -17,6 +17,9 @@
 // OpenCV による動画の入力
 #include "CamCv.h"
 
+// Microsoft Media Foundation による動画の入力
+#include "CamMf.h"
+
 ///
 /// キャプチャクラス
 ///
@@ -73,16 +76,9 @@ public:
   /// キャプチャデバイスを開く
   ///
   /// @param deviceNumber 開くデバイス番号
-  /// @param size キャプチャデバイスのフレームの解像度
-  /// @param fps キャプチャデバイスのフレームレート
-  /// @param backend バックエンドの種類
-  /// @param fourcc コーデックの 4 文字
   /// @return 開くことができたら true
   ///
-  bool openDevice(int deviceNumber,
-    std::array<int, 2>& size, double& fps,
-    cv::VideoCaptureAPIs backend,
-    char* fourcc);
+  bool openDevice(int deviceNumber);
 
   ///
   /// キャプチャ開始

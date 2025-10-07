@@ -157,6 +157,13 @@
     <ClCompile Include="gg.cpp" />
     <ClCompile Include="GgApp.cpp" />
     <ClCompile Include="Intrinsics.cpp" />
+    <ClCompile Include="libs\ImGui\imgui.cpp" />
+    <ClCompile Include="libs\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="libs\ImGui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="libs\ImGui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="libs\ImGui\imgui_tables.cpp" />
+    <ClCompile Include="libs\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="libs\ImGui\nfd_win.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="mfcapture.cpp" />
@@ -182,6 +189,8 @@
     <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="draw.frag" />
+    <None Include="draw.vert" />
     <None Include="normal.frag" />
     <None Include="orthographic.vert" />
   </ItemGroup>
