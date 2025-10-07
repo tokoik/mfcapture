@@ -16,65 +16,71 @@
 #include <MFidl.h>
 #include <MFreadwrite.h>
 
-//
-// ビデオフォーマットの詳細を保持する構造体
-//
-struct VideoFormat
-{
-  UINT32 width;           // 幅
-  UINT32 height;          // 高さ
-  UINT32 fpsNum;         // フレームレートの分子 (Numerator)
-  UINT32 fpsDenom;         // フレームレートの分母 (Denominator)
-  GUID subType;           // ピクセルフォーマット/コーデックの GUID
-  std::string formatName; // 人間が読める形式の文字列
-
-  //
-  // コンストラクタ
-  //
-  VideoFormat(UINT32 width, UINT32 height, UINT32 fps_num, UINT32 fps_den, GUID subType);
-};
-
 ///
 /// Microsoft Media Foundation を使ってビデオをキャプチャするクラス
 ///
 class CamMf : public Camera
 {
+  //
+  // ビデオフォーマットの詳細を保持する構造体
+  //
+  struct VideoFormat
+  {
+    UINT32 width;     // 幅
+    UINT32 height;    // 高さ
+    UINT32 fpsNum;    // フレームレートの分子 (Numerator)
+    UINT32 fpsDenom;  // フレームレートの分母 (Denominator)
+    GUID subType;     // ピクセルフォーマット/コーデックの GUID
+
+    //
+    // コンストラクタ
+    //
+    VideoFormat(UINT32 width, UINT32 height, UINT32 fps_num, UINT32 fps_den, GUID subType)
+      : width{ width }
+      , height{ height }
+      , fpsNum{ fpsNum }
+      , fpsDenom{ fpsDenom }
+      , subType{ subType }
+    {
+    }
+  };
+
   ///
   /// COM ライブラリの初期化と終了を行うクラス
   ///
   class ComInitializer
   {
-    // COM ライブラリの初期化と終了を行うオブジェクト
+    /// COM ライブラリの初期化と終了を行うオブジェクト
     static ComInitializer instance;
 
-    // ビデオキャプチャデバイスの表示名のリスト
-    std::vector<std::string> deviceList;
-
-    // メディアソースのリスト
+    /// メディアソースのリスト
     IMFActivate** ppSourceActivate;
 
-    // メディアソースの数
+    /// メディアソースの数
     UINT32 cSourceActivate;
 
-    // COM ライブラリが初期化されていれば true
+    /// ビデオキャプチャデバイスの表示名のリスト
+    std::vector<std::string> deviceList;
+
+    /// COM ライブラリが初期化されていれば true
     bool coInitialized;
 
-    // Media Foundation が起動されていれば true
+    /// Media Foundation が起動されていれば true
     bool mfStarted;
 
-    //
-    // コンストラクタ
-    //
+    ///
+    /// COM ライブラリの初期化と終了を行うクラスのコンストラクタ
+    ///
     ComInitializer();
 
-    //
-    // デストラクタ
-    //
+    ///
+    /// COM ライブラリの初期化と終了を行うクラスのデストラクタ
+    ///
     ~ComInitializer();
 
-    //
-    // 初期化
-    //
+    ///
+    /// COM ライブラリを初期化して Media Foundation を開始する
+    ///
     const char* initialize();
 
   public:
@@ -85,28 +91,41 @@ class CamMf : public Camera
     ComInitializer& operator=(const ComInitializer& com) = delete;
     ComInitializer& operator=(ComInitializer&&) = delete;
 
-    //
-    // 有効化
-    //
+    ///
+    /// COM ライブラリのシングルトンインスタンスを返す
+    ///
+    /// @return COM ライブラリのシングルトンインスタンスへの参照
+    ///
+    static const ComInitializer& getInstance();
+
+    ///
+    /// キャプチャデバイスを有効化してメディアソースを作成する
+    ///
+    /// @param device デバイスの番号
+    /// @param pMediaSource 作成したメディアソースを返すポインタへのポインタ
+    /// @return 成功したら true
+    ///
     static bool activate(int device, IMFMediaSource** pMediaSource);
 
-    //
-    // ビデオキャプチャデバイスの表示名のリストを返す
-    //
+    ///
+    /// ビデオキャプチャデバイスの表示名のリストを返す
+    ///
+    /// @return デバイス名のリスト
+    ///
     static const std::vector<std::string>& getDeviceList();
   };
 
-  // メディアソースの読み取り
+  /// メディアソースの読み取り
   IMFSourceReader* pSourceReader;
 
-  // メディアソース
+  /// メディアソース
   IMFMediaSource* pMediaSource;
 
-  // 使用可能なビデオフォーマットのリスト
+  /// 使用可能なビデオフォーマットのリスト
   std::vector<VideoFormat> availableFormats;
 
-  // 現在選択されているフォーマットのインデックス
-  int currentFormatIndex;
+  /// 使用可能なビデオフォーマットの表示名のリスト
+  std::vector<std::string> formatList;
 
   //
   // 使用可能な解像度、フレームレート、コーデックのリストを作成する
@@ -126,7 +145,6 @@ public:
   CamMf()
     : pSourceReader{ nullptr }
     , pMediaSource{ nullptr }
-    , currentFormatIndex{ -1 }
   {
   }
 
@@ -144,7 +162,7 @@ public:
   ///
   /// @return デバイス名のリスト
   ///
-  static const std::vector<std::string>& getDeviceList()
+  static const auto& getDeviceList()
   {
     return ComInitializer::getDeviceList();
   }
@@ -157,11 +175,11 @@ public:
   bool open(int device);
 
   ///
-  /// 使用可能なビデオフォーマットのリストを返す
+  /// 使用可能なビデオフォーマットの表示名のリストを返す
   ///
-  const std::vector<VideoFormat>& getAvailableFormats() const
+  const auto& getFormatList() const
   {
-    return availableFormats;
+    return formatList;
   }
 
   ///

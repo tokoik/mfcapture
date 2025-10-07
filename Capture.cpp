@@ -30,14 +30,13 @@ bool Capture::openImage(const std::string& filename)
 //
 // 動画ファイルを開く
 //
-bool Capture::openMovie(const std::string& filename,
-  cv::VideoCaptureAPIs backend)
+bool Capture::openMovie(const std::string& filename)
 {
   // 新しいキャプチャデバイスを作成したら
   auto camCv{ std::make_unique<CamCv>() };
 
   // キャプチャデバイスを開く
-  if (camCv->open(filename, 0, 0, 0.0, "", backend))
+  if (camCv->open(filename, 0, 0, 0.0, "", cv::CAP_ANY))
   {
     // このキャプチャデバイスを使うことにする
     camera = std::move(camCv);

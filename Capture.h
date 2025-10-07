@@ -67,8 +67,7 @@ public:
   /// @param backend バックエンドの種類
   /// @return 開くことができたら true
   ///
-  bool openMovie(const std::string& filename,
-    cv::VideoCaptureAPIs backend = cv::CAP_FFMPEG);
+  bool openMovie(const std::string& filename);
 
   ///
   /// キャプチャデバイスを開く

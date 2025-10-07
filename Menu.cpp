@@ -77,27 +77,27 @@ void Menu::openMovie()
   if (NFD_OpenDialog(&filepath, movieFilter, 1, NULL) == NFD_OKAY)
   {
     // ファイルのリストの要素数
-    const auto fileListLength{ static_cast<int>(inputFileList.size()) };
+    const auto fileListLength{ static_cast<int>(fileList.size()) };
 
     // ファイルのリストの各ファイルについて
-    for (inputFileNumber = 0; inputFileNumber < fileListLength; ++inputFileNumber)
+    for (fileNumber = 0; fileNumber < fileListLength; ++fileNumber)
     {
       // 選択したファイルと同じものがあればそれを選択する
-      if (inputFileList[inputFileNumber] == filepath) break;
+      if (fileList[fileNumber] == filepath) break;
     }
 
     // 選択したファイルがファイルのリストの中になければ
-    if (inputFileNumber == fileListLength)
+    if (fileNumber == fileListLength)
     {
       // その先頭にファイルパスを挿入して
-      inputFileList.insert(inputFileList.begin(), filepath);
+      fileList.insert(fileList.begin(), filepath);
 
       // そのエントリを選択する
-      inputFileNumber = 0;
+      fileNumber = 0;
     }
 
     // ダイアログで指定した動画ファイルが開けたら
-    if (capture.openMovie(filepath, backend))
+    if (capture.openMovie(filepath))
     {
       // 構成データの解像度と画角を開いた画像に合わせる
       setSize(capture.getSize());
@@ -302,9 +302,8 @@ Menu::Menu(const Config& config, Capture& capture, Calibration& calibration)
   , capture{ capture }
   , calibration{ calibration }
   , deviceNumber{ 0 }
-  , inputFileNumber{ 0 }
+  , fileNumber{ 0 }
   , preferenceNumber{ 0 }
-  , backend{ cv::CAP_ANY }
   , pose{ ggIdentity() }
   , menubarHeight{ 0 }
   , showInputPanel{ true }
@@ -499,46 +498,17 @@ void Menu::draw()
     // 装置関連項目
     ImGui::Text("%s", u8"以下の変更は [開始] で反映します");
 
-    // デバイスプリファレンスを選択する
-    if (ImGui::BeginCombo(u8"装置特性", config.backendList.at(backend)))
-    {
-      // すべての表示方式について
-      for (auto& [apiId, apiName] : config.backendList)
-      {
-        // その表示方式が選択されていれば真
-        const bool selected{ apiId == backend };
-
-        // 装置特性を（それが現在の装置特性ならハイライトして）コンボボックスに表示する
-        if (ImGui::Selectable(apiName, selected))
-        {
-          // 表示した装置特性が選択されていたらそれを現在の選択とする
-          backend = apiId;
-
-          // 切り替え前の装置特性のデバイスが存在しなければ最初のデバイスの番号を選択する
-          if (deviceNumber < 0) deviceNumber = 0;
-
-          // 選択されているデバイスの番号が接続されたキャプチャデバイスの数を超えないようにする
-          const int count{ config.getDeviceCount(backend) };
-          if (deviceNumber >= count) deviceNumber = count - 1;
-        }
-
-        // この選択を次にコンボボックスを開いたときのデフォルトにしておく
-        if (selected) ImGui::SetItemDefaultFocus();
-      }
-      ImGui::EndCombo();
-    }
-
     // キャプチャデバイスが存在すれば
     if (deviceNumber >= 0)
     {
       // キャプチャデバイスの選択コンボボックス
-      if (ImGui::BeginCombo(u8"入力源", config.getDeviceName(backend, deviceNumber).c_str()))
+      if (ImGui::BeginCombo(u8"入力源", config.getDeviceName(deviceNumber).c_str()))
       {
         // すべてのキャプチャデバイスについて
-        for (int i = 0; i < static_cast<int>(config.getDeviceList(backend).size()); ++i)
+        for (int i = 0; i < static_cast<int>(config.getDeviceList().size()); ++i)
         {
           // キャプチャデバイス名を（それを選択していればハイライトして）コンボボックスに表示する
-          if (ImGui::Selectable(config.getDeviceName(backend, i).c_str(), i == deviceNumber))
+          if (ImGui::Selectable(config.getDeviceName(i).c_str(), i == deviceNumber))
           {
             // 表示したキャプチャデバイスが選択されていたらそのキャプチャデバイスを選択する
             deviceNumber = i;
@@ -732,7 +702,7 @@ void Menu::draw()
   }
 
   // ChArUco Board の検出中にスペースバーをタイプしたなら
-  if (detectBoard && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Space)))
+  if (detectBoard && ImGui::IsKeyPressed(ImGuiKey_Space))
   {
     // 検出したコーナーを記録する
     calibration.recordCorners();

@@ -45,26 +45,6 @@ std::string SubTypeToName(const GUID& subType)
 }
 
 //
-// ビデオフォーマットの詳細を保持する構造体のコンストラクタ
-//
-VideoFormat::VideoFormat(UINT32 width, UINT32 height, UINT32 fpsNum, UINT32 fpsDenom, GUID subType)
-  : width{ width }
-  , height{ height }
-  , fpsNum{ fpsNum }
-  , fpsDenom{ fpsDenom }
-  , subType{ subType }
-{
-  // 表示名を作成する
-  std::stringstream ss;
-  ss << width << " x " << height << " @ "
-    << std::fixed << std::setprecision(2) << static_cast<double>(fpsNum) / static_cast<double>(fpsDenom)
-    << " fps (" << SubTypeToName(subType) << ")";
-
-  // 表示名を保存する
-  formatName = ss.str();
-}
-
-//
 // COM ライブラリの初期化と終了を行うクラスのコンストラクタ
 //
 CamMf::ComInitializer::ComInitializer()
@@ -107,11 +87,18 @@ CamMf::ComInitializer::~ComInitializer()
 //
 const char* CamMf::ComInitializer::initialize()
 {
+  // エラーメッセージ
+  const char* message{ nullptr };
+
+  // 検索条件を保持する属性ストア
+  IMFAttributes* pAttributes{ nullptr };
+
   // COM ライブラリを初期化する
   if (FAILED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)))
   {
-    // COM ライブラリの初期化に失敗したら戻る
-    return "Failed to initialize COM library.";
+    // COM ライブラリの初期化に失敗した
+    message = "Failed to initialize COM library.";
+    goto done;
   }
 
   // COM ライブラリの初期化に成功した
@@ -120,21 +107,20 @@ const char* CamMf::ComInitializer::initialize()
   // Media Foundation を起動する
   if (FAILED(MFStartup(MF_VERSION)))
   {
-    // Media Foundation の起動に失敗したら戻る
-    return "Failed to start Media Foundation.";
+    // Media Foundation の起動に失敗した
+    message = "Failed to start Media Foundation.";
+    goto done;
   }
 
   // Media Foundation の起動に成功した
   mfStarted = true;
 
-  // 検索条件を保持する属性ストア
-  IMFAttributes* pAttributes{ nullptr };
-
   // 検索条件を保持する属性ストアを作成する
   if (FAILED(MFCreateAttributes(&pAttributes, 1)))
   {
-    // 属性ストアの作成失敗したら戻る
-    return "Failed to create attribute store.";
+    // 属性ストアの作成失敗した
+    message = "Failed to create attribute store.";
+    goto done;
   }
 
   // 属性ストアにビデオキャプチャデバイスの属性を設定する
@@ -142,22 +128,18 @@ const char* CamMf::ComInitializer::initialize()
     MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
     MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID)))
   {
-    // ビデオキャプチャデバイスの属性の設定に失敗したら属性ストアを解放して
-    SafeRelease(&pAttributes);
-
-    // 戻る
-    return "Failed to set attribute for video capture device.";
+    // ビデオキャプチャデバイスの属性の設定に失敗した
+    message = "Failed to set attribute for video capture device.";
+    goto done;
   }
 
   // メディアソースを列挙する
   if (FAILED(MFEnumDeviceSources(
     pAttributes, &ppSourceActivate, &cSourceActivate)))
   {
-    // メディアソースの列挙に失敗したら属性ストアを解放して
-    SafeRelease(&pAttributes);
-
-    // 戻る
-    return "Failed to enumerate media sources.";
+    // メディアソースの列挙に失敗した
+    message = "Failed to enumerate media sources.";
+    goto done;
   }
 
   // すべてのメディアソースについて
@@ -181,11 +163,32 @@ const char* CamMf::ComInitializer::initialize()
     CoTaskMemFree(szFriendlyName);
   }
 
+done:
+
   // 属性ストアはもう使わないので解放する
   SafeRelease(&pAttributes);
 
-  // 初期化が成功した
-  return nullptr;
+  // エラーメッセージを返す
+  return message;
+}
+
+//
+// COM ライブラリのシングルトンインスタンスを返す
+//
+const CamMf::ComInitializer& CamMf::ComInitializer::getInstance()
+{
+  // COM ライブラリが初期化され Media Foundation が起動されていなければ
+  if (!instance.ppSourceActivate)
+  {
+    // COM ライブラリを初期化して Media Foundation を起動する
+    auto message{ instance.initialize() };
+
+    // COM ライブラリの初期化と Media Foundation の起動に失敗したら例外を投げる
+    if (message) throw std::runtime_error(message);
+  }
+
+  // COM ライブラリのシングルトンインスタンスへの参照を返す
+  return instance;
 }
 
 //
@@ -204,18 +207,8 @@ bool CamMf::ComInitializer::activate(int device, IMFMediaSource** pMediaSource)
 //
 const std::vector<std::string>& CamMf::ComInitializer::getDeviceList()
 {
-  // COM ライブラリが初期化され Media Foundation が起動されていなければ
-  if (instance.deviceList.empty())
-  {
-    // COM ライブラリを初期化して Media Foundation を起動する
-    auto message{ instance.initialize() };
-
-    // COM ライブラリの初期化と Media Foundation の起動に失敗したら例外を投げる
-    if (message) throw std::runtime_error(message);
-  }
-
   // ビデオキャプチャデバイスの表示名のリストを返す
-  return instance.deviceList;
+  return getInstance().deviceList;
 }
 
 //
@@ -228,6 +221,7 @@ bool CamMf::enumerateFormats()
 
   // 以前に作成したリストをクリアする
   availableFormats.clear();
+  formatList.clear();
 
   // ネイティブメディアタイプを一つずつ列挙する
   IMFMediaType* pMediaType{ nullptr };
@@ -250,8 +244,18 @@ bool CamMf::enumerateFormats()
         SUCCEEDED(MFGetAttributeSize(pMediaType, MF_MT_FRAME_SIZE, &width, &height)) &&
         SUCCEEDED(MFGetAttributeRatio(pMediaType, MF_MT_FRAME_RATE, &numerator, &denominator)))
       {
-        // 使用可能なフォーマットのリストに追加する
+        // 使用可能なビデオフォーマットのリストに追加する
         availableFormats.emplace_back(width, height, numerator, denominator, subType);
+
+        // 使用可能なビデオフォーマットの表示名を作成する
+        std::stringstream ss;
+        ss << width << " x " << height << " @ "
+          << std::fixed << std::setprecision(2)
+          << static_cast<double>(numerator) / static_cast<double>(denominator)
+          << " fps (" << SubTypeToName(subType) << ")";
+
+        // 使用可能なビデオフォーマットの表示名をリストに追加する
+        formatList.emplace_back(ss.str());
       }
     }
 
@@ -263,7 +267,7 @@ bool CamMf::enumerateFormats()
   }
 
   // リストが空でなければ成功
-  return !availableFormats.empty();
+  return !formatList.empty();
 }
 
 //
@@ -277,69 +281,43 @@ bool CamMf::setFormat(int index)
   // 新しいメディアタイプを作成する
   IMFMediaType* pMediaType{ nullptr };
   HRESULT hr{ MFCreateMediaType(&pMediaType) };
+  if (FAILED(hr)) goto done;
 
-  // 新しいメディアタイプが作成できたら
-  if (SUCCEEDED(hr) && pMediaType)
-  {
-    // メジャータイプにビデオを指定する
-    hr = pMediaType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
+  // メジャータイプにビデオを指定する
+  hr = pMediaType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
+  if (FAILED(hr)) goto done;
 
-    // サブタイプにピクセルフォーマット/コーデックを指定する
-    if (SUCCEEDED(hr))
-      hr = pMediaType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32);
+  // サブタイプにピクセルフォーマット/コーデックを指定する
+  hr = pMediaType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB24);
+  if (FAILED(hr)) goto done;
 
-    // 解像度を設定する
-    if (SUCCEEDED(hr))
-      hr = MFSetAttributeSize(pMediaType, MF_MT_FRAME_SIZE, selectedFormat.width, selectedFormat.height);
+  // 解像度を設定する
+  hr = MFSetAttributeSize(pMediaType, MF_MT_FRAME_SIZE, selectedFormat.width, selectedFormat.height);
+  if (FAILED(hr)) goto done;
 
-    // フレームレートを設定する
-    if (SUCCEEDED(hr))
-      hr = MFSetAttributeRatio(pMediaType, MF_MT_FRAME_RATE, selectedFormat.fpsNum, selectedFormat.fpsDenom);
+  // フレームレートを設定する
+  hr = MFSetAttributeRatio(pMediaType, MF_MT_FRAME_RATE, selectedFormat.fpsNum, selectedFormat.fpsDenom);
+  if (FAILED(hr)) goto done;
 
-    // Source Reader の出力メディアタイプを設定する
-    if (SUCCEEDED(hr))
-      hr = pSourceReader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM, nullptr, pMediaType);
-  }
+  // Source Reader の出力メディアタイプを設定する
+  hr = pSourceReader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM, nullptr, pMediaType);
+  if (FAILED(hr)) goto done;
 
-  // メディアタイプはもう使わないので解放する
-  SafeRelease(&pMediaType);
-
-  // フォーマットの設定に失敗してしたら戻る
-  if (FAILED(hr)) return false;
-
-  // 基底クラスの frame メンバーと currentFormatIndex を更新する
-  int type{ CV_8UC3 };  // デフォルトは RGB24
-
-  // ピクセルフォーマットに応じて OpenCV の型を設定する
-  if (selectedFormat.subType == MFVideoFormat_RGB32 || selectedFormat.subType == MFVideoFormat_ARGB32)
-  {
-    // アルファチャンネル付きなど 4 バイトのとき
-    type = CV_8UC4;
-  }
-  else if (selectedFormat.subType == MFVideoFormat_YUY2)
-  {
-    // YUY2は2バイト/ピクセルということにしておく
-    type = CV_8UC2;
-  }
-  else if (selectedFormat.subType == MFVideoFormat_NV12)
-  {
-    // NV12 は Y プレーンのみを取得してとりあえずグレースケールとして扱う
-    type = CV_8UC1;
-  }
-
-  // 基底クラスの frame メンバーを初期化する
-  frame.create(selectedFormat.height, selectedFormat.width, type);
+  // 基底クラスの frame メンバーを初期化する（サイズとタイプを記録するためにヘッダだけ作る）
+  frame.create(selectedFormat.height, selectedFormat.width, CV_8UC3);
 
   // インターバルを設定する
   interval = (selectedFormat.fpsDenom != 0)
     ? (1000.0 * selectedFormat.fpsDenom / selectedFormat.fpsNum)
     : 10.0;
 
-  // 現在選択されているフォーマットのインデックスを保存しておく
-  currentFormatIndex = index;
+done:
 
-  // フォーマットの設定に成功した
-  return true;
+  // メディアタイプはもう使わないので解放する
+  SafeRelease(&pMediaType);
+
+  // フォーマットの設定に成功していたら true を返す
+  return SUCCEEDED(hr);
 }
 
 //
@@ -352,59 +330,34 @@ bool CamMf::open(int device)
 
   // Source Reader の属性ストアを作成する
   IMFAttributes* pAttributes{ nullptr };
-  if (FAILED(MFCreateAttributes(&pAttributes, 1)))
-  {
-    // 属性ストアの作成に失敗したらメディアソースを解放して戻る
-    SafeRelease(&pMediaSource);
-    return false;
-  }
+  HRESULT hr{ MFCreateAttributes(&pAttributes, 1) };
+  if (FAILED(hr)) goto done;
 
   // Source Reader の属性ストアにデコード能力を設定する
-  if (FAILED(pAttributes->SetUINT32(
-    MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS, TRUE)))
-  {
-    // デコード能力の設定に失敗したら属性ストアとメディアソースを解放して戻る
-    SafeRelease(&pAttributes);
-    SafeRelease(&pMediaSource);
-    return false;
-  }
+  hr = pAttributes->SetUINT32(MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS, TRUE);
+  if (FAILED(hr)) goto done;
 
   // Source Reader を作成する
-  if (FAILED(MFCreateSourceReaderFromMediaSource(
-    pMediaSource, pAttributes, &pSourceReader)))
-  {
-    // Source Reader の作成に失敗したら属性ストアとメディアソースを解放して戻る
-    SafeRelease(&pAttributes);
-    SafeRelease(&pMediaSource);
-    return false;
-  }
-
-  // 使用可能なフォーマットを列挙する
-  if (!enumerateFormats() || availableFormats.empty())
-  {
-    // フォーマットの列挙に失敗したら全てを開放して戻る
-    SafeRelease(&pAttributes);
-    SafeRelease(&pSourceReader);
-    SafeRelease(&pMediaSource);
-    return false;
-  }
-
-  // 列挙されたフォーマットの最初のもの (インデックス 0) をデフォルトとして設定する
-  if (!setFormat(0))
-  {
-    // デフォルトフォーマットの設定に失敗したらリストをクリアし全てを解放して戻る
-    availableFormats.clear();
-    SafeRelease(&pAttributes);
-    SafeRelease(&pSourceReader);
-    SafeRelease(&pMediaSource);
-    return false;
-  }
+  SafeRelease(&pSourceReader);
+  hr = MFCreateSourceReaderFromMediaSource(pMediaSource, pAttributes, &pSourceReader);
+  if (FAILED(hr)) goto done;
 
   // 属性ストアはもう必要ないので解放する
   SafeRelease(&pAttributes);
 
+  // 使用可能なフォーマットを列挙して最初のフォーマットを選択する
+  if (enumerateFormats() && setFormat(0)) return true;
+
+done:
+
+  // フォーマットの設定に失敗したら全てを解放して戻る
+  SafeRelease(&pSourceReader);
+  SafeRelease(&pAttributes);
+  availableFormats.clear();
+  formatList.clear();
+
   // ビデオキャプチャデバイスが開けたので true を返す
-  return true;
+  return false;
 }
 
 //
@@ -497,9 +450,7 @@ void CamMf::close()
 
   // フォーマットリストをクリア
   availableFormats.clear();
-
-  // フォーマットを見指定に戻す
-  currentFormatIndex = -1;
+  formatList.clear();
 
   // 基底クラスの close を呼び出す
   Camera::close();

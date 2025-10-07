@@ -41,16 +41,13 @@ class Menu
   int deviceNumber;
 
   /// 入力ファイルリスト
-  std::vector<std::string> inputFileList;
+  std::vector<std::string> fileList;
 
   /// 入力ファイルリストの現在の番号
-  int inputFileNumber;
+  int fileNumber;
 
   /// 使用中の構成の番号
   int preferenceNumber;
-
-  /// デバイスプリファレンス
-  cv::VideoCaptureAPIs backend;
 
   /// キャプチャデバイスの姿勢
   GgMatrix pose;
