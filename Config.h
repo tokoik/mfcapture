@@ -239,6 +239,6 @@ public:
   ///
   const auto& getDeviceName(int number) const
   {
-    return deviceList.empty() ? "" : deviceList[number];
+    return deviceList[number];
   }
 };
