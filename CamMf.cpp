@@ -293,7 +293,7 @@ bool CamMf::setFormat(int index)
   if (FAILED(hr)) goto done;
 
   // サブタイプにピクセルフォーマット/コーデックを指定する
-  hr = pMediaType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB24);
+  hr = pMediaType->SetGUID(MF_MT_SUBTYPE, selectedFormat.subType);
   if (FAILED(hr)) goto done;
 
   // 解像度を設定する
