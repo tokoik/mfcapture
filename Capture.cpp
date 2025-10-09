@@ -71,6 +71,28 @@ bool Capture::openDevice(int deviceNumber)
 }
 
 //
+// 使用可能なビデオフォーマットの表示名のリストを得る
+//
+const std::vector<std::string>& Capture::getFormatList() const
+{
+  // エラーが発生したときに表示する空のリスト
+  static const std::vector<std::string> empty;
+
+  // camera が有効なら
+  if (camera)
+  {
+    // CamMf クラスにダウンキャストして
+    auto camMf{ dynamic_cast<CamMf*>(camera.get()) };
+
+    // CamMf クラスならそのフォーマットリストを返す
+    if (camMf) return camMf->getFormatList();
+  }
+
+  // 空のリストを返す
+  return empty;
+}
+
+//
 // キャプチャ開始
 //
 void Capture::start()

@@ -239,6 +239,7 @@ public:
   ///
   const auto& getDeviceName(int number) const
   {
-    return deviceList[number];
+    static const std::string empty{};
+    return deviceList.empty() ? empty : deviceList[number];
   }
 };

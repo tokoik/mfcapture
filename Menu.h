@@ -40,6 +40,9 @@ class Menu
   /// 選択しているキャプチャデバイスの番号
   int deviceNumber;
 
+  /// 選択しているビデオフォーマットの番号
+  int formatNumber;
+
   /// 入力ファイルリスト
   std::vector<std::string> fileList;
 

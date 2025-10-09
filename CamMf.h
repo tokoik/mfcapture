@@ -35,7 +35,7 @@ class CamMf : public Camera
     //
     // コンストラクタ
     //
-    VideoFormat(UINT32 width, UINT32 height, UINT32 fps_num, UINT32 fps_den, GUID subType)
+    VideoFormat(UINT32 width, UINT32 height, UINT32 fpsNum, UINT32 fpsDenom, GUID subType)
       : width{ width }
       , height{ height }
       , fpsNum{ fpsNum }

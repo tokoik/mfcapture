@@ -310,6 +310,7 @@ Menu::Menu(const Config& config, Capture& capture, Calibration& calibration)
   , capture{ capture }
   , calibration{ calibration }
   , deviceNumber{ 0 }
+  , formatNumber{ 0 }
   , fileNumber{ 0 }
   , preferenceNumber{ 0 }
   , pose{ ggIdentity() }
@@ -321,8 +322,12 @@ Menu::Menu(const Config& config, Capture& capture, Calibration& calibration)
   , detectMarker{ false }
   , detectBoard{ false }
 {
-  // ファイルダイアログ (Native File Dialog Extended) を初期化する
-  NFD_Init();
+  // デフォルトのキャプチャデバイスを開く
+  if (!capture.openDevice(deviceNumber))
+  {
+    // デフォルトのキャプチャデバイスが開けなかったらエラーにする
+    throw std::runtime_error("Cannot open any capture device.");
+  }
 
   // Dear ImGui の入力デバイス
   //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // キーボードコントロールを使う
@@ -337,8 +342,11 @@ Menu::Menu(const Config& config, Capture& capture, Calibration& calibration)
     nullptr, ImGui::GetIO().Fonts->GetGlyphRangesJapanese()))
   {
     // メニューフォントが読み込めなかったらエラーにする
-    throw std::runtime_error("Cannot find any menu fonts.");
+    throw std::runtime_error("Cannot find any menu font.");
   }
+
+  // ファイルダイアログ (Native File Dialog Extended) を初期化する
+  NFD_Init();
 }
 
 //
@@ -507,7 +515,7 @@ void Menu::draw()
     if (deviceNumber >= 0)
     {
       // キャプチャデバイスの選択コンボボックス
-      if (ImGui::BeginCombo(u8"入力源", config.getDeviceName(deviceNumber).c_str()))
+      if (ImGui::BeginCombo(u8"装置", config.getDeviceName(deviceNumber).c_str()))
       {
         // すべてのキャプチャデバイスについて
         for (int i = 0; i < static_cast<int>(config.getDeviceList().size()); ++i)
@@ -517,6 +525,26 @@ void Menu::draw()
           {
             // 表示したキャプチャデバイスが選択されていたらそのキャプチャデバイスを選択する
             deviceNumber = i;
+
+            // この選択を次にコンボボックスを開いたときのデフォルトにしておく
+            ImGui::SetItemDefaultFocus();
+          }
+        }
+        ImGui::EndCombo();
+      }
+
+      // ビデオフォーマットの選択コンボボックス
+      if (ImGui::BeginCombo(u8"形式", capture.getFormatList()[formatNumber].c_str()))
+      {
+        // すべてのビデオフォーマットについて
+        const auto& formatList{ capture.getFormatList() };
+        for (int i = 0; i < static_cast<int>(formatList.size()); ++i)
+        {
+          // ビデオフォーマットを（それを選択していればハイライトして）コンボボックスに表示する
+          if (ImGui::Selectable(formatList[i].c_str(), i == formatNumber))
+          {
+            // 表示したビデオフォーマットが選択されていたらそのビデオフォーマットを選択する
+            formatNumber = i;
 
             // この選択を次にコンボボックスを開いたときのデフォルトにしておく
             ImGui::SetItemDefaultFocus();

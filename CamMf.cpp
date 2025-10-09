@@ -156,8 +156,12 @@ const char* CamMf::ComInitializer::initialize()
     if (SUCCEEDED(ppSourceActivate[i]->GetAllocatedString(
       MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME, &szFriendlyName, &cFriendlyName)))
     {
+      // ビデオキャプチャデバイス名を作る
+      std::stringstream ss;
+      ss << TCharToUtf8(szFriendlyName) << "##" << i;
+
       // ビデオキャプチャデバイス名をリストに追加する
-      deviceList.emplace_back(TCharToUtf8(szFriendlyName));
+      deviceList.emplace_back(ss.str());
     }
 
     // 表示名のリストに使ったメモリを解放する

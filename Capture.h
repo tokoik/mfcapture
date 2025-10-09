@@ -81,6 +81,13 @@ public:
   bool openDevice(int deviceNumber);
 
   ///
+  /// 使用可能なビデオフォーマットの表示名のリストを得る
+  ///
+  /// @return 使用可能なビデオフォーマットの表示名のリスト
+  ///
+  const std::vector<std::string>& getFormatList() const;
+
+  ///
   /// キャプチャ開始
   ///
   void start();
