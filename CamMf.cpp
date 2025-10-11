@@ -16,6 +16,24 @@
 // COM ライブラリの初期化と終了を行うオブジェクト
 CamMf::ComInitializer CamMf::ComInitializer::instance;
 
+// H.264 MFT デコーダーの CLSID (Windows標準デコーダー)
+const CLSID CLSID_CMSH264DecoderMFT
+{
+  0x62CE7C78,
+  0xCEE9,
+  0x48CC,
+  {
+    0xA0,
+    0x63,
+    0x6F,
+    0x1E,
+    0x07,
+    0x9A,
+    0xAA,
+    0x08
+  }
+};
+
 //
 // メモリの開放
 //
@@ -42,7 +60,7 @@ std::string SubTypeToName(const GUID& subType)
 
   // TODO: 他に使用するフォーマットがあればここに追加
 
-  return "Unknown";
+  return "";
 }
 
 //
@@ -249,18 +267,31 @@ bool CamMf::enumerateFormats()
         SUCCEEDED(MFGetAttributeSize(pMediaType, MF_MT_FRAME_SIZE, &width, &height)) &&
         SUCCEEDED(MFGetAttributeRatio(pMediaType, MF_MT_FRAME_RATE, &numerator, &denominator)))
       {
-        // 使用可能なビデオフォーマットのリストに追加する
-        availableFormats.emplace_back(width, height, numerator, denominator, subType);
+        // コーデックの文字列を取り出す
+        const auto& codecName{ SubTypeToName(subType) };
 
-        // 使用可能なビデオフォーマットの表示名を作成する
-        std::stringstream ss;
-        ss << width << " x " << height << " @ "
-          << std::fixed << std::setprecision(2)
-          << static_cast<double>(numerator) / static_cast<double>(denominator)
-          << " fps (" << SubTypeToName(subType) << ")";
+        // コーデックか対応可能でフレームレートに問題が無ければ
+        if (codecName.size() > 0 && denominator > 0 && numerator > 0)
+        {
+          // フレームレートを求める
+          const double fps{ static_cast<double>(numerator) / static_cast<double>(denominator) };
 
-        // 使用可能なビデオフォーマットの表示名をリストに追加する
-        formatList.emplace_back(ss.str());
+          // フレームレートが 5 以上なら
+          if (fps >= 5.0)
+          {
+            // 使用可能なビデオフォーマットの表示名を作成する
+            std::stringstream ss;
+            ss << width << " x " << height << " @ "
+              << std::fixed << std::setprecision(2) << fps
+              << " fps (" << codecName << ")##" << dwMediaTypeIndex;
+
+            // 使用可能なビデオフォーマットの表示名をリストに追加する
+            formatList.emplace_back(ss.str());
+
+            // 使用可能なビデオフォーマットのリストに追加する
+            availableFormats.emplace_back(width, height, numerator, denominator, subType);
+          }
+        }
       }
     }
 
@@ -316,6 +347,14 @@ bool CamMf::setFormat(int index)
     ? (1000.0 * selectedFormat.fpsDenom / selectedFormat.fpsNum)
     : 10.0;
 
+  // 選択したフォーマットのコーデックが H.264 のとき MFT デコーダーパイプラインをセットアップする
+  if (selectedFormat.subType == MFVideoFormat_H264 && !setupDecoderPipeline(selectedFormat))
+  {
+    // MFT セットアップ失敗時のクリーンアップ
+    close();
+    return false;
+  }
+
 done:
 
   // メディアタイプはもう使わないので解放する
@@ -325,6 +364,56 @@ done:
   return SUCCEEDED(hr);
 }
 
+//
+// MFTデコーダーのセットアップと接続を行う
+//
+bool CamMf::setupDecoderPipeline(const VideoFormat& nativeH264Format)
+{
+  // 結果
+  HRESULT hr{ S_OK };
+
+  // H.264 デコーダー MFT をインスタンス化する
+  hr = CoCreateInstance(CLSID_CMSH264DecoderMFT, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pDecoderMFT));
+  if (FAILED(hr)) return false;
+
+  // MFT 入力タイプの設定 (Source Readerのネイティブ H.264 ストリームの形式)
+  IMFMediaType* pInputType{ nullptr };
+  hr = MFCreateMediaType(&pInputType);
+  if (SUCCEEDED(hr)) hr = pInputType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
+  if (SUCCEEDED(hr)) hr = pInputType->SetGUID(MF_MT_SUBTYPE, nativeH264Format.subType); // MFVideoFormat_H264
+  if (SUCCEEDED(hr)) hr = MFSetAttributeSize(pInputType, MF_MT_FRAME_SIZE, nativeH264Format.width, nativeH264Format.height);
+  if (SUCCEEDED(hr)) hr = MFSetAttributeRatio(pInputType, MF_MT_FRAME_RATE, nativeH264Format.fpsNum, nativeH264Format.fpsDenom);
+
+  // MFTに入力タイプを設定する
+  if (SUCCEEDED(hr)) hr = pDecoderMFT->SetInputType(0, pInputType, 0);
+  SafeRelease(&pInputType);
+  if (FAILED(hr)) return false;
+
+  // MFT 出力タイプの設定 (デコード後の形式: RGB32 を要求)
+  hr = MFCreateMediaType(&pOutputMediaType);
+  if (SUCCEEDED(hr)) hr = pOutputMediaType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
+  if (SUCCEEDED(hr)) hr = pOutputMediaType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32); // RGB32を要求
+  if (SUCCEEDED(hr)) hr = MFSetAttributeSize(pOutputMediaType, MF_MT_FRAME_SIZE, nativeH264Format.width, nativeH264Format.height);
+  if (SUCCEEDED(hr)) hr = MFSetAttributeRatio(pOutputMediaType, MF_MT_FRAME_RATE, nativeH264Format.fpsNum, nativeH264Format.fpsDenom);
+
+  // MFT に出力タイプを設定する
+  if (SUCCEEDED(hr)) hr = pDecoderMFT->SetOutputType(0, pOutputMediaType, 0);
+  if (FAILED(hr))
+  {
+    SafeRelease(&pOutputMediaType); // エラー時は pOutputMediaType も解放
+    return false;
+  }
+
+  // MFT をアクティブにする
+  hr = pDecoderMFT->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, NULL);
+  if (SUCCEEDED(hr)) hr = pDecoderMFT->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
+  if (SUCCEEDED(hr)) hr = pDecoderMFT->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
+
+  // 5. frame メンバーをデコード後の RGB32 サイズで初期化
+  frame.create(nativeH264Format.height, nativeH264Format.width, CV_8UC4);
+
+  return SUCCEEDED(hr);
+}
 //
 // カメラを開く
 //
@@ -447,6 +536,12 @@ void CamMf::capture()
 //
 void CamMf::close()
 {
+  // MFT デコーダーを解放する
+  SafeRelease(&pDecoderMFT);
+
+  // 出力メディアタイプを解放する
+  SafeRelease(&pOutputMediaType);
+
   // Source Reader を解放する
   SafeRelease(&pSourceReader);
 

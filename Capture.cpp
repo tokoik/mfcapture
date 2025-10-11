@@ -61,6 +61,9 @@ bool Capture::openDevice(int deviceNumber)
   // このデバイスをデバイス番号で開いて
   if (camMf->open(deviceNumber))
   {
+    // 使用可能なビデオフォーマットの表示名のリストを保存しておく
+    formatList = &camMf->getFormatList();
+
     // このキャプチャデバイスを使うことにする
     camera = std::move(camMf);
     return true;
@@ -68,28 +71,6 @@ bool Capture::openDevice(int deviceNumber)
 
   // 開けなかった
   return false;
-}
-
-//
-// 使用可能なビデオフォーマットの表示名のリストを得る
-//
-const std::vector<std::string>& Capture::getFormatList() const
-{
-  // エラーが発生したときに表示する空のリスト
-  static const std::vector<std::string> empty;
-
-  // camera が有効なら
-  if (camera)
-  {
-    // CamMf クラスにダウンキャストして
-    auto camMf{ dynamic_cast<CamMf*>(camera.get()) };
-
-    // CamMf クラスならそのフォーマットリストを返す
-    if (camMf) return camMf->getFormatList();
-  }
-
-  // 空のリストを返す
-  return empty;
 }
 
 //
@@ -118,6 +99,7 @@ void Capture::close()
   // キャプチャデバイスが有効ならキャプチャスレッドを停止する
   if (camera)
   {
+    formatList = nullptr;
     camera->close();
     camera.reset();
   }

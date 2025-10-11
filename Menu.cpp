@@ -310,7 +310,7 @@ Menu::Menu(const Config& config, Capture& capture, Calibration& calibration)
   , capture{ capture }
   , calibration{ calibration }
   , deviceNumber{ 0 }
-  , formatNumber{ 0 }
+  , formatNumber{ -1 }
   , fileNumber{ 0 }
   , preferenceNumber{ 0 }
   , pose{ ggIdentity() }
@@ -322,13 +322,6 @@ Menu::Menu(const Config& config, Capture& capture, Calibration& calibration)
   , detectMarker{ false }
   , detectBoard{ false }
 {
-  // デフォルトのキャプチャデバイスを開く
-  if (!capture.openDevice(deviceNumber))
-  {
-    // デフォルトのキャプチャデバイスが開けなかったらエラーにする
-    throw std::runtime_error("Cannot open any capture device.");
-  }
-
   // Dear ImGui の入力デバイス
   //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // キーボードコントロールを使う
   //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // ゲームパッドを使う
@@ -448,7 +441,7 @@ void Menu::draw()
   {
     // ウィンドウの位置とサイズ
     ImGui::SetNextWindowPos(ImVec2(2.0f, 2.0f + menubarHeight), ImGuiCond_Once);
-    ImGui::SetNextWindowSize(ImVec2(231, 516), ImGuiCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(231, 426), ImGuiCond_Once);
     ImGui::Begin(u8"入力", &showInputPanel);
 
     // 投影方式の選択
@@ -508,12 +501,12 @@ void Menu::draw()
 
     ImGui::Separator();
 
-    // 装置関連項目
-    ImGui::Text("%s", u8"以下の変更は [開始] で反映します");
-
     // キャプチャデバイスが存在すれば
-    if (deviceNumber >= 0)
+    if (config.getDeviceCount() > 0)
     {
+      // 装置関連項目
+      ImGui::Text("%s", u8"以下の変更は [開始] で反映します");
+
       // キャプチャデバイスの選択コンボボックス
       if (ImGui::BeginCombo(u8"装置", config.getDeviceName(deviceNumber).c_str()))
       {
@@ -526,6 +519,9 @@ void Menu::draw()
             // 表示したキャプチャデバイスが選択されていたらそのキャプチャデバイスを選択する
             deviceNumber = i;
 
+            // キャプチャデバイスのビデオフォーマットを未選択にする
+            formatNumber = -1;
+
             // この選択を次にコンボボックスを開いたときのデフォルトにしておく
             ImGui::SetItemDefaultFocus();
           }
@@ -533,24 +529,42 @@ void Menu::draw()
         ImGui::EndCombo();
       }
 
-      // ビデオフォーマットの選択コンボボックス
-      if (ImGui::BeginCombo(u8"形式", capture.getFormatList()[formatNumber].c_str()))
+      // キャプチャデバイスのビデオフォーマットが選択されていれば
+      if (formatNumber < 0)
       {
-        // すべてのビデオフォーマットについて
-        const auto& formatList{ capture.getFormatList() };
-        for (int i = 0; i < static_cast<int>(formatList.size()); ++i)
+        // キャプチャデバイスを開く
+        if (capture.openDevice(deviceNumber))
         {
-          // ビデオフォーマットを（それを選択していればハイライトして）コンボボックスに表示する
-          if (ImGui::Selectable(formatList[i].c_str(), i == formatNumber))
-          {
-            // 表示したビデオフォーマットが選択されていたらそのビデオフォーマットを選択する
-            formatNumber = i;
-
-            // この選択を次にコンボボックスを開いたときのデフォルトにしておく
-            ImGui::SetItemDefaultFocus();
-          }
+          // 最初のビデオフォーマットを選ぶ
+          formatNumber = 0;
         }
-        ImGui::EndCombo();
+        else
+        {
+          // キャプチャデバイスが開けなかったらエラー
+          errorMessage = u8"キャプチャデバイスが開けません";
+        }
+      }
+      else
+      {
+        // ビデオフォーマットの選択コンボボックス
+        if (ImGui::BeginCombo(u8"形式", capture.getFormatList()[formatNumber].c_str()))
+        {
+          // すべてのビデオフォーマットについて
+          const auto& formatList{ capture.getFormatList() };
+          for (int i = 0; i < static_cast<int>(formatList.size()); ++i)
+          {
+            // ビデオフォーマットを（それを選択していればハイライトして）コンボボックスに表示する
+            if (ImGui::Selectable(formatList[i].c_str(), i == formatNumber))
+            {
+              // 表示したビデオフォーマットが選択されていたらそのビデオフォーマットを選択する
+              formatNumber = i;
+
+              // この選択を次にコンボボックスを開いたときのデフォルトにしておく
+              ImGui::SetItemDefaultFocus();
+            }
+          }
+          ImGui::EndCombo();
+        }
       }
     }
     else
@@ -573,7 +587,7 @@ void Menu::draw()
       if (ImGui::Button(u8"開始") && deviceNumber >= 0)
       {
         // キャプチャデバイスが開けたらキャプチャスレッドを動かす
-        if (openDevice()) capture.start();
+        capture.start();
       }
       ImGui::SameLine();
       ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"停止中");

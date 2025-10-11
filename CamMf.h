@@ -121,11 +121,25 @@ class CamMf : public Camera
   /// メディアソース
   IMFMediaSource* pMediaSource;
 
+  // MFT H.264 デコーダー
+  IMFTransform* pDecoderMFT;
+
+  // 変換後のメディアタイプ (RGB32 または RGB24)
+  IMFMediaType* pOutputMediaType;
+
   /// 使用可能なビデオフォーマットのリスト
   std::vector<VideoFormat> availableFormats;
 
   /// 使用可能なビデオフォーマットの表示名のリスト
   std::vector<std::string> formatList;
+
+  ///
+  /// MFTデコーダーのセットアップと接続を行う
+  ///
+  /// @param nativeH264Format ネイティブの H.264 フォーマット
+  /// @return 成功したら true
+  ///
+  bool setupDecoderPipeline(const VideoFormat& nativeH264Format);
 
   //
   // 使用可能な解像度、フレームレート、コーデックのリストを作成する
@@ -138,13 +152,15 @@ class CamMf : public Camera
   bool setFormat(int index);
 
 public:
-
+    
   ///
   /// コンストラクタ
   ///
   CamMf()
     : pSourceReader{ nullptr }
     , pMediaSource{ nullptr }
+    , pDecoderMFT{ nullptr }
+    , pOutputMediaType{ nullptr }
   {
   }
 

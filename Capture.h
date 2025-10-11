@@ -28,23 +28,18 @@ class Capture
   /// 選択しているキャプチャデバイスのポインタ
   std::unique_ptr<Camera> camera;
 
+  /// 使用可能なビデオフォーマットの表示名のリスト
+  const std::vector<std::string>* formatList;
+
 public:
 
   ///
   /// キャプチャーオブジェクトのデフォルトコンストラクタ
   ///
   Capture()
+    : camera{ nullptr }
+    , formatList{ nullptr }
   {
-  }
-
-  ///
-  /// キャプチャするファイルを指定するコンストラクタ
-  ///
-  /// @param filename キャプチャするファイルのパス名
-  ///
-  Capture(const std::string& filename)
-  {
-    openImage(filename);
   }
 
   ///
@@ -85,7 +80,14 @@ public:
   ///
   /// @return 使用可能なビデオフォーマットの表示名のリスト
   ///
-  const std::vector<std::string>& getFormatList() const;
+  const std::vector<std::string>& getFormatList() const
+  {
+    // エラーが発生したときに表示する空のリスト
+    static const std::vector<std::string> empty;
+
+    // 使用可能なビデオフォーマットの表示名のリストを返す
+    return formatList ? *formatList : empty;
+  }
 
   ///
   /// キャプチャ開始
