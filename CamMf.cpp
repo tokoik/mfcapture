@@ -12,27 +12,10 @@
 #pragma comment(lib, "MFplat.lib")
 #pragma comment(lib, "MFuuid.lib")
 #pragma comment(lib, "MFreadwrite.lib")
+#pragma comment(lib, "wmcodecdspuuid.lib")
 
 // COM ライブラリの初期化と終了を行うオブジェクト
 CamMf::ComInitializer CamMf::ComInitializer::instance;
-
-// H.264 MFT デコーダーの CLSID (Windows標準デコーダー)
-const CLSID CLSID_CMSH264DecoderMFT
-{
-  0x62CE7C78,
-  0xCEE9,
-  0x48CC,
-  {
-    0xA0,
-    0x63,
-    0x6F,
-    0x1E,
-    0x07,
-    0x9A,
-    0xAA,
-    0x08
-  }
-};
 
 //
 // メモリの開放
@@ -325,6 +308,7 @@ bool CamMf::setFormat(int index)
 
   // サブタイプにピクセルフォーマット/コーデックを指定する
   hr = pMediaType->SetGUID(MF_MT_SUBTYPE, selectedFormat.subType);
+  //hr = pMediaType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32);
   if (FAILED(hr)) goto done;
 
   // 解像度を設定する
@@ -340,15 +324,18 @@ bool CamMf::setFormat(int index)
   if (FAILED(hr)) goto done;
 
   // 基底クラスの frame メンバーを初期化する（サイズとタイプを記録するためにヘッダだけ作る）
-  frame.create(selectedFormat.height, selectedFormat.width, CV_8UC3);
+  frame.create(selectedFormat.height, selectedFormat.width, CV_8UC4);
 
   // インターバルを設定する
   interval = (selectedFormat.fpsDenom != 0)
     ? (1000.0 * selectedFormat.fpsDenom / selectedFormat.fpsNum)
     : 10.0;
 
+  // 選択されたフォーマットのコーデックを記録しておく
+  selectedSubType = selectedFormat.subType;
+
   // 選択したフォーマットのコーデックが H.264 のとき MFT デコーダーパイプラインをセットアップする
-  if (selectedFormat.subType == MFVideoFormat_H264 && !setupDecoderPipeline(selectedFormat))
+  if (selectedSubType == MFVideoFormat_H264 && !setupDecoderPipeline(selectedFormat))
   {
     // MFT セットアップ失敗時のクリーンアップ
     close();
@@ -389,10 +376,10 @@ bool CamMf::setupDecoderPipeline(const VideoFormat& nativeH264Format)
   SafeRelease(&pInputType);
   if (FAILED(hr)) return false;
 
-  // MFT 出力タイプの設定 (デコード後の形式: RGB32 を要求)
+  // MFT 出力タイプの設定
   hr = MFCreateMediaType(&pOutputMediaType);
   if (SUCCEEDED(hr)) hr = pOutputMediaType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
-  if (SUCCEEDED(hr)) hr = pOutputMediaType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32); // RGB32を要求
+  if (SUCCEEDED(hr)) hr = pOutputMediaType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_NV12);  // MFVideoFormat_RGB32 は設定できない
   if (SUCCEEDED(hr)) hr = MFSetAttributeSize(pOutputMediaType, MF_MT_FRAME_SIZE, nativeH264Format.width, nativeH264Format.height);
   if (SUCCEEDED(hr)) hr = MFSetAttributeRatio(pOutputMediaType, MF_MT_FRAME_RATE, nativeH264Format.fpsNum, nativeH264Format.fpsDenom);
 
@@ -400,7 +387,7 @@ bool CamMf::setupDecoderPipeline(const VideoFormat& nativeH264Format)
   if (SUCCEEDED(hr)) hr = pDecoderMFT->SetOutputType(0, pOutputMediaType, 0);
   if (FAILED(hr))
   {
-    SafeRelease(&pOutputMediaType); // エラー時は pOutputMediaType も解放
+    SafeRelease(&pOutputMediaType);
     return false;
   }
 
@@ -409,9 +396,7 @@ bool CamMf::setupDecoderPipeline(const VideoFormat& nativeH264Format)
   if (SUCCEEDED(hr)) hr = pDecoderMFT->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
   if (SUCCEEDED(hr)) hr = pDecoderMFT->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
 
-  // 5. frame メンバーをデコード後の RGB32 サイズで初期化
-  frame.create(nativeH264Format.height, nativeH264Format.width, CV_8UC4);
-
+  // 成功したら true を返す
   return SUCCEEDED(hr);
 }
 //
@@ -429,6 +414,10 @@ bool CamMf::open(int device)
 
   // Source Reader の属性ストアにデコード能力を設定する
   hr = pAttributes->SetUINT32(MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS, TRUE);
+  if (FAILED(hr)) goto done;
+
+  // Source Reader の解放時に Media Source をシャットダウンするようにする
+  hr = pAttributes->SetUINT32(MF_SOURCE_READER_DISCONNECT_MEDIASOURCE_ON_SHUTDOWN, TRUE);
   if (FAILED(hr)) goto done;
 
   // Source Reader を作成する
@@ -490,8 +479,42 @@ void CamMf::capture()
       &llTimestamp,
       &pSample)) && pSample)
     {
-      // サンプルからメディアバッファを取得して
+      // デコードされた RGB フレームを保持するサンプルへのポインタ
+      IMFSample* pDecodedSample{ nullptr };
+
+      // サンプルから取り出したメディアバッファのポインタ
       IMFMediaBuffer* pBuffer{ nullptr };
+
+      // H.264 コーデックのときはデコードパイプラインを通す
+      if (selectedSubType == MFVideoFormat_H264)
+      {
+        // H.264 サンプルを MFT デコーダーに渡す
+        if (FAILED(pDecoderMFT->ProcessInput(0, pSample, 0))) goto done;
+
+        // 出力サンプルを作成する (MFTから渡される pOutputMediaType を使う)
+        if (FAILED(MFCreateSample(&pDecodedSample))) goto done;
+
+        // 出力バッファ
+        MFT_OUTPUT_DATA_BUFFER outputBuffer{};
+        outputBuffer.dwStreamID = 0;
+        outputBuffer.pSample = pDecodedSample;
+        outputBuffer.dwStatus = 0;
+
+        // デコード処理を実行
+        DWORD dwStatus{ 0 };
+        HRESULT hr{ pDecoderMFT->ProcessOutput(0, 1, &outputBuffer, &dwStatus) };
+
+        // 元のサンプルはもう使わないので解放する
+        SafeRelease(&pSample);
+
+        // デコードに失敗したら次のフレームへ
+        if (FAILED(hr) || !outputBuffer.pSample) goto done;
+
+        // デコードに成功したらデコードされたサンプルを使う
+        pSample = outputBuffer.pSample;
+      }
+
+      // サンプルからメディアバッファを取得して
       if (SUCCEEDED(pSample->ConvertToContiguousBuffer(&pBuffer)) && pBuffer)
       {
         // メディアバッファからフレームの情報を取得できたら
@@ -521,6 +544,11 @@ void CamMf::capture()
         // メディアバッファを解放する
         pBuffer->Release();
       }
+
+    done:
+
+      // pDecodedSampleは outputBuffer.pSample として解放
+      SafeRelease(&pDecodedSample);
 
       // サンプルを解放する
       pSample->Release();

@@ -80,13 +80,9 @@ public:
   ///
   /// @return 使用可能なビデオフォーマットの表示名のリスト
   ///
-  const std::vector<std::string>& getFormatList() const
+  const std::vector<std::string>* getFormatList() const
   {
-    // エラーが発生したときに表示する空のリスト
-    static const std::vector<std::string> empty;
-
-    // 使用可能なビデオフォーマットの表示名のリストを返す
-    return formatList ? *formatList : empty;
+    return formatList;
   }
 
   ///

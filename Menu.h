@@ -71,11 +71,6 @@ class Menu
   mutable const char* errorMessage;
 
   ///
-  /// キャプチャデバイスを開く
-  ///
-  bool openDevice();
-
-  ///
   /// 画像ファイルを開く
   ///
   void openImage();

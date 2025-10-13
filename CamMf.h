@@ -13,8 +13,11 @@
 
 // Microsoft Media Foundation
 #include <MFapi.h>
-#include <MFidl.h>
+#include <Mfidl.h>
+#include <MFtransform.h>
 #include <MFreadwrite.h>
+#include <Mferror.h>
+#include <wmcodecdsp.h>
 
 ///
 /// Microsoft Media Foundation を使ってビデオをキャプチャするクラス
@@ -130,6 +133,9 @@ class CamMf : public Camera
   /// 使用可能なビデオフォーマットのリスト
   std::vector<VideoFormat> availableFormats;
 
+  /// 選択されているフォーマットの符号化方式
+  GUID selectedSubType;
+
   /// 使用可能なビデオフォーマットの表示名のリスト
   std::vector<std::string> formatList;
 
@@ -161,6 +167,7 @@ public:
     , pMediaSource{ nullptr }
     , pDecoderMFT{ nullptr }
     , pOutputMediaType{ nullptr }
+    , selectedSubType{ GUID{} }
   {
   }
 

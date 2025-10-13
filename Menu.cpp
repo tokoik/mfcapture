@@ -29,22 +29,6 @@ constexpr nfdfilteritem_t movieFilter[]{ "Movies", "mp4,m4v,mpg,mov,avi,ogg,mkv"
 #include <sstream>
 #include <chrono>
 
-///
-/// キャプチャデバイスを開く
-///
-bool Menu::openDevice()
-{
-  // ダイアログで指定したキャプチャデバイスが開けなかったら
-  if (!capture.openDevice(deviceNumber))
-  {
-    // 開けなかった
-    errorMessage = u8"デバイスが開けません";
-    return false;
-  }
-
-  return true;
-}
-
 //
 // 画像ファイルを開く
 //
@@ -72,7 +56,7 @@ void Menu::openImage()
     NFD_FreePath(filepath);
   }
 }
-  
+
 //
 // 動画ファイルを開く
 //
@@ -516,11 +500,21 @@ void Menu::draw()
           // キャプチャデバイス名を（それを選択していればハイライトして）コンボボックスに表示する
           if (ImGui::Selectable(config.getDeviceName(i).c_str(), i == deviceNumber))
           {
-            // 表示したキャプチャデバイスが選択されていたらそのキャプチャデバイスを選択する
-            deviceNumber = i;
+            // キャプチャデバイスが変わったら
+            if (deviceNumber != i)
+            {
+              // キャプチャスレッドが動いていたら止める
+              capture.stop();
 
-            // キャプチャデバイスのビデオフォーマットを未選択にする
-            formatNumber = -1;
+              // 前に開いていたキャプチャデバイスを閉じる
+              capture.close();
+
+              // 表示したキャプチャデバイスが選択されていたらそのキャプチャデバイスを選択する
+              deviceNumber = i;
+
+              // キャプチャデバイスが変わったのでビデオフォーマットの選択を未選択にする
+              formatNumber = -1;
+            }
 
             // この選択を次にコンボボックスを開いたときのデフォルトにしておく
             ImGui::SetItemDefaultFocus();
@@ -529,28 +523,26 @@ void Menu::draw()
         ImGui::EndCombo();
       }
 
-      // キャプチャデバイスのビデオフォーマットが選択されていれば
+      // キャプチャデバイスのビデオフォーマットが未選択なら
       if (formatNumber < 0)
       {
-        // キャプチャデバイスを開く
-        if (capture.openDevice(deviceNumber))
-        {
-          // 最初のビデオフォーマットを選ぶ
-          formatNumber = 0;
-        }
-        else
-        {
-          // キャプチャデバイスが開けなかったらエラー
-          errorMessage = u8"キャプチャデバイスが開けません";
-        }
+        // そのキャプチャデバイスを開いて
+        capture.openDevice(deviceNumber);
+
+        // 最初のビデオフォーマットを選択する
+        formatNumber = 0;
       }
-      else
+
+      // 使用可能なビデオフォーマットのリストが空でなければ
+      if (capture.getFormatList())
       {
+        // 使用可能なビデオフォーマットの表示名のリスト
+        const auto& formatList{ *capture.getFormatList() };
+
         // ビデオフォーマットの選択コンボボックス
-        if (ImGui::BeginCombo(u8"形式", capture.getFormatList()[formatNumber].c_str()))
+        if (ImGui::BeginCombo(u8"形式", formatList[formatNumber].c_str()))
         {
           // すべてのビデオフォーマットについて
-          const auto& formatList{ capture.getFormatList() };
           for (int i = 0; i < static_cast<int>(formatList.size()); ++i)
           {
             // ビデオフォーマットを（それを選択していればハイライトして）コンボボックスに表示する
@@ -565,6 +557,31 @@ void Menu::draw()
           }
           ImGui::EndCombo();
         }
+
+        // キャプチャの開始と停止
+        if (capture)
+        {
+          // キャプチャスレッドが動いているので止める
+          if (ImGui::Button(u8"停止")) capture.stop();
+          ImGui::SameLine();
+          ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.0f, 1.0f), "%s", u8"取得中");
+        }
+        else
+        {
+          // キャプチャスレッドが止まっているので
+          if (ImGui::Button(u8"開始") && deviceNumber >= 0)
+          {
+            // キャプチャデバイスが開けたらキャプチャスレッドを動かす
+            capture.start();
+          }
+          ImGui::SameLine();
+          ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"停止中");
+        }
+      }
+      else
+      {
+        // キャプチャデバイスが開けなかった
+        ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"デバイスが開けません");
       }
     }
     else
@@ -573,25 +590,7 @@ void Menu::draw()
       ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"デバイスが見つかりません");
     }
 
-    // キャプチャの開始と停止
-    if (capture)
-    {
-      // キャプチャスレッドが動いているので止める
-      if (ImGui::Button(u8"停止")) capture.stop();
-      ImGui::SameLine();
-      ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.0f, 1.0f), "%s", u8"取得中");
-    }
-    else
-    {
-      // キャプチャスレッドが止まっているので
-      if (ImGui::Button(u8"開始") && deviceNumber >= 0)
-      {
-        // キャプチャデバイスが開けたらキャプチャスレッドを動かす
-        capture.start();
-      }
-      ImGui::SameLine();
-      ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"停止中");
-    }
+    // 入力パネルのメニュー終了
     ImGui::End();
   }
 
@@ -697,6 +696,7 @@ void Menu::draw()
     // 再投影誤差の表示
     ImGui::Text(u8"再投影誤差: %.4f", calibration.getReprojectionError());
 
+    // 構成パネルのメニュー終了
     ImGui::End();
   }
 
@@ -722,6 +722,8 @@ void Menu::draw()
       // エラーメッセージを消去する
       errorMessage = nullptr;
     }
+
+    // エラーメッセージのパネル終了
     ImGui::End();
   }
 

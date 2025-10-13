@@ -59,18 +59,16 @@ bool Capture::openDevice(int deviceNumber)
   auto camMf{ std::make_unique<CamMf>() };
 
   // このデバイスをデバイス番号で開いて
-  if (camMf->open(deviceNumber))
-  {
-    // 使用可能なビデオフォーマットの表示名のリストを保存しておく
-    formatList = &camMf->getFormatList();
+  if (!camMf->open(deviceNumber)) return false;
 
-    // このキャプチャデバイスを使うことにする
-    camera = std::move(camMf);
-    return true;
-  }
+  // 使用可能なビデオフォーマットの表示名のリストを保存しておく
+  formatList = &camMf->getFormatList();
 
-  // 開けなかった
-  return false;
+  // このキャプチャデバイスを使うことにする
+  camera = std::move(camMf);
+
+  // 開けた
+  return true;
 }
 
 //
