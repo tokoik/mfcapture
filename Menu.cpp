@@ -568,11 +568,20 @@ void Menu::draw()
         }
         else
         {
-          // キャプチャスレッドが止まっているので
+          // 「開始」ボタンをクリックしたときデバイスが選択されているとき
           if (ImGui::Button(u8"開始") && deviceNumber >= 0)
           {
-            // キャプチャデバイスが開けたらキャプチャスレッドを動かす
-            capture.start();
+            // ビデオフォーマットを指定できたら
+            if (capture.select(formatNumber))
+            {
+              // キャプチャスレッドを動かす
+              capture.start();
+            }
+            else
+            {
+              // ビデオフォーマットが選択できなかった
+              errorMessage = u8"ビデオフォーマットが選択できません";
+            }
           }
           ImGui::SameLine();
           ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"停止中");

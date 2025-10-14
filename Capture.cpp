@@ -72,6 +72,22 @@ bool Capture::openDevice(int deviceNumber)
 }
 
 //
+// ビデオフォーマット選択
+//
+bool Capture::select(int index)
+{
+  // カメラが有効でなければ戻る
+  if (!camera) return false;
+
+  // バックエンドが Microsoft Media Foundation でなければ戻る
+  auto camMf{ dynamic_cast<CamMf*>(camera.get()) };
+  if (!camMf) return true; // Media Foundation 以外なら常に true
+  
+  // ビデオフォーマットを選択する
+  return camMf->select(index);
+}
+
+//
 // キャプチャ開始
 //
 void Capture::start()

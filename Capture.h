@@ -86,6 +86,13 @@ public:
   }
 
   ///
+  /// ビデオフォーマット選択
+  ///
+  /// @param index 選択するビデオフォーマットのインデックス
+  ///
+  bool select(int index);
+
+  ///
   /// キャプチャ開始
   ///
   void start();

@@ -231,58 +231,57 @@ bool CamMf::enumerateFormats()
 
   // ネイティブメディアタイプを一つずつ列挙する
   IMFMediaType* pMediaType{ nullptr };
-  DWORD dwMediaTypeIndex{ 0 };
-  while (SUCCEEDED(pSourceReader->GetNativeMediaType(
-    MF_SOURCE_READER_FIRST_VIDEO_STREAM,
-    dwMediaTypeIndex,
-    &pMediaType
-  )))
+  for (DWORD dwMediaTypeIndex = 0;
+    SUCCEEDED(pSourceReader->GetNativeMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
+      dwMediaTypeIndex, &pMediaType));
+    ++dwMediaTypeIndex
+    )
   {
-    // メディアタイプがビデオなら
-    GUID majorType{ 0 };
-    if (SUCCEEDED(pMediaType->GetGUID(MF_MT_MAJOR_TYPE, &majorType)) && (majorType == MFMediaType_Video))
-    {
-      // 解像度、フレームレート、ピクセルフォーマット/コーデックを取得する
-      GUID subType{ 0 };
-      UINT32 width{ 0 }, height{ 0 };
-      UINT32 numerator{ 0 }, denominator{ 0 };
-      if (SUCCEEDED(pMediaType->GetGUID(MF_MT_SUBTYPE, &subType)) &&
-        SUCCEEDED(MFGetAttributeSize(pMediaType, MF_MT_FRAME_SIZE, &width, &height)) &&
-        SUCCEEDED(MFGetAttributeRatio(pMediaType, MF_MT_FRAME_RATE, &numerator, &denominator)))
-      {
-        // コーデックの文字列を取り出す
-        const auto& codecName{ SubTypeToName(subType) };
+    // メディアタイプを取得する
+    GUID majorType{};
+    if (FAILED(pMediaType->GetGUID(MF_MT_MAJOR_TYPE, &majorType))) continue;
 
-        // コーデックか対応可能でフレームレートに問題が無ければ
-        if (codecName.size() > 0 && denominator > 0 && numerator > 0)
-        {
-          // フレームレートを求める
-          const double fps{ static_cast<double>(numerator) / static_cast<double>(denominator) };
+    // メディアタイプがビデオで無ければ次へ
+    if (majorType != MFMediaType_Video) continue;
 
-          // フレームレートが 5 以上なら
-          if (fps >= 5.0)
-          {
-            // 使用可能なビデオフォーマットの表示名を作成する
-            std::stringstream ss;
-            ss << width << " x " << height << " @ "
-              << std::fixed << std::setprecision(2) << fps
-              << " fps (" << codecName << ")##" << dwMediaTypeIndex;
+    // ビデオフォーマットを取得する
+    GUID subType{};
+    if (FAILED(pMediaType->GetGUID(MF_MT_SUBTYPE, &subType))) continue;
 
-            // 使用可能なビデオフォーマットの表示名をリストに追加する
-            formatList.emplace_back(ss.str());
+    // 解像度を取得する
+    UINT32 width{ 0 }, height{ 0 };
+    if (FAILED(MFGetAttributeSize(pMediaType, MF_MT_FRAME_SIZE, &width, &height))) continue;
 
-            // 使用可能なビデオフォーマットのリストに追加する
-            availableFormats.emplace_back(width, height, numerator, denominator, subType);
-          }
-        }
-      }
-    }
+    // フレームレートを取得する
+    UINT32 numerator{ 0 }, denominator{ 0 };
+    if (FAILED(MFGetAttributeRatio(pMediaType, MF_MT_FRAME_RATE, &numerator, &denominator))) continue;
 
-    // メディアタイプに使ったメモリを解放する
+    // コーデックの文字列を取り出す
+    const auto& codecName{ SubTypeToName(subType) };
+
+    // 対応できないコーデックかフレームレートに問題があれば次へ
+    if (codecName.empty() || denominator <= 0 || numerator <= 0) continue;
+
+    // フレームレートを求める
+    const double fps{ static_cast<double>(numerator) / static_cast<double>(denominator) };
+
+    // フレームレートが 5 未満なら次へ
+    if (fps < 5.0) continue;
+
+    // 使用可能なビデオフォーマットの表示名を作成する
+    std::stringstream ss;
+    ss << width << " x " << height << " @ "
+      << std::fixed << std::setprecision(2) << fps
+      << " fps (" << codecName << ")##" << dwMediaTypeIndex;
+
+    // 使用可能なビデオフォーマットの表示名をリストに追加する
+    formatList.emplace_back(ss.str());
+
+    // 使用可能なビデオフォーマットのリストに追加する
+    availableFormats.emplace_back(width, height, numerator, denominator, subType);
+
+    // メディアタイプの取得に使ったメモリを解放する
     SafeRelease(&pMediaType);
-
-    // 次のメディアタイプに進む
-    ++dwMediaTypeIndex;
   }
 
   // リストが空でなければ成功
@@ -297,18 +296,20 @@ bool CamMf::setFormat(int index)
   // 使用可能なフォーマットのリストから選択されたフォーマットを取得する
   const VideoFormat& selectedFormat{ availableFormats[index] };
 
+  // 結果
+  HRESULT hr{ S_OK };
+
   // 新しいメディアタイプを作成する
   IMFMediaType* pMediaType{ nullptr };
-  HRESULT hr{ MFCreateMediaType(&pMediaType) };
+  hr = MFCreateMediaType(&pMediaType);
   if (FAILED(hr)) goto done;
 
   // メジャータイプにビデオを指定する
   hr = pMediaType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
   if (FAILED(hr)) goto done;
 
-  // サブタイプにピクセルフォーマット/コーデックを指定する
+  // ビデオフォーマットを指定する
   hr = pMediaType->SetGUID(MF_MT_SUBTYPE, selectedFormat.subType);
-  //hr = pMediaType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32);
   if (FAILED(hr)) goto done;
 
   // 解像度を設定する
@@ -334,12 +335,47 @@ bool CamMf::setFormat(int index)
   // 選択されたフォーマットのコーデックを記録しておく
   selectedSubType = selectedFormat.subType;
 
-  // 選択したフォーマットのコーデックが H.264 のとき MFT デコーダーパイプラインをセットアップする
-  if (selectedSubType == MFVideoFormat_H264 && !setupDecoderPipeline(selectedFormat))
+  // 選択したフォーマットのコーデックが H.264 のとき
+  if (selectedSubType == MFVideoFormat_H264)
   {
-    // MFT セットアップ失敗時のクリーンアップ
-    close();
-    return false;
+    // H.264 デコーダ MFT のセットアップと接続を行う
+    hr = setupDecoderPipeline(selectedFormat);
+    if (FAILED(hr))
+    {
+      // MFT セットアップ失敗時のクリーンアップ
+      close();
+      goto done;
+    }
+
+    // デコード後のビデオフォーマット
+    const VideoFormat decodedFormat
+    {
+      selectedFormat.width,
+      selectedFormat.height,
+      selectedFormat.fpsNum,
+      selectedFormat.fpsDenom,
+      MFVideoFormat_NV12  // H.264 デコーダは NV12 出力を生成する
+    };
+
+    // カラーコンバータ MFT のセットアップと接続を行う
+    hr = setupConverterPipeline(decodedFormat);
+    if (FAILED(hr))
+    {
+      // MFT セットアップ失敗時のクリーンアップ
+      close();
+      goto done;
+    }
+  }
+  else if (selectedSubType != MFVideoFormat_RGB32)
+  {
+    // H.264 以外で RGB32 出力でないときはカラーコンバータ MFT のセットアップと接続を行う
+    hr = setupConverterPipeline(selectedFormat);
+    if (FAILED(hr))
+    {
+      // MFT セットアップ失敗時のクリーンアップ
+      close();
+      goto done;
+    }
   }
 
 done:
@@ -352,53 +388,105 @@ done:
 }
 
 //
-// MFTデコーダーのセットアップと接続を行う
+// H.264 デコーダ MFT のセットアップと接続を行う
 //
-bool CamMf::setupDecoderPipeline(const VideoFormat& nativeH264Format)
+HRESULT CamMf::setupDecoderPipeline(const VideoFormat& format)
 {
+  // 入力と出力のメディアタイプ
+  IMFMediaType* pInputType{ nullptr };
+  IMFMediaType* pOutputType{ nullptr };
+
   // 結果
   HRESULT hr{ S_OK };
 
-  // H.264 デコーダー MFT をインスタンス化する
-  hr = CoCreateInstance(CLSID_CMSH264DecoderMFT, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pDecoderMFT));
-  if (FAILED(hr)) return false;
+  // H.264 デコーダ MFT をインスタンス化する
+  hr = CoCreateInstance(CLSID_CMSH264DecoderMFT, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pDecoder));
+  if (FAILED(hr)) goto done;
 
-  // MFT 入力タイプの設定 (Source Readerのネイティブ H.264 ストリームの形式)
-  IMFMediaType* pInputType{ nullptr };
+  // H.264 デコーダ MFT の入力タイプの設定 (Source Readerのネイティブ H.264 ストリームの形式)
   hr = MFCreateMediaType(&pInputType);
   if (SUCCEEDED(hr)) hr = pInputType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
-  if (SUCCEEDED(hr)) hr = pInputType->SetGUID(MF_MT_SUBTYPE, nativeH264Format.subType); // MFVideoFormat_H264
-  if (SUCCEEDED(hr)) hr = MFSetAttributeSize(pInputType, MF_MT_FRAME_SIZE, nativeH264Format.width, nativeH264Format.height);
-  if (SUCCEEDED(hr)) hr = MFSetAttributeRatio(pInputType, MF_MT_FRAME_RATE, nativeH264Format.fpsNum, nativeH264Format.fpsDenom);
+  if (SUCCEEDED(hr)) hr = pInputType->SetGUID(MF_MT_SUBTYPE, format.subType); // MFVideoFormat_H264
+  if (SUCCEEDED(hr)) hr = MFSetAttributeSize(pInputType, MF_MT_FRAME_SIZE, format.width, format.height);
+  if (SUCCEEDED(hr)) hr = MFSetAttributeRatio(pInputType, MF_MT_FRAME_RATE, format.fpsNum, format.fpsDenom);
 
-  // MFTに入力タイプを設定する
-  if (SUCCEEDED(hr)) hr = pDecoderMFT->SetInputType(0, pInputType, 0);
+  // H.264 デコーダ MFT に入力タイプを設定する
+  if (SUCCEEDED(hr)) hr = pDecoder->SetInputType(0, pInputType, 0);
   SafeRelease(&pInputType);
-  if (FAILED(hr)) return false;
+  if (FAILED(hr)) goto done;
 
-  // MFT 出力タイプの設定
-  hr = MFCreateMediaType(&pOutputMediaType);
-  if (SUCCEEDED(hr)) hr = pOutputMediaType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
-  if (SUCCEEDED(hr)) hr = pOutputMediaType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_NV12);  // MFVideoFormat_RGB32 は設定できない
-  if (SUCCEEDED(hr)) hr = MFSetAttributeSize(pOutputMediaType, MF_MT_FRAME_SIZE, nativeH264Format.width, nativeH264Format.height);
-  if (SUCCEEDED(hr)) hr = MFSetAttributeRatio(pOutputMediaType, MF_MT_FRAME_RATE, nativeH264Format.fpsNum, nativeH264Format.fpsDenom);
+  // H.264 デコーダ MFT の出力タイプの設定
+  hr = MFCreateMediaType(&pOutputType);
+  if (SUCCEEDED(hr)) hr = pOutputType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
+  if (SUCCEEDED(hr)) hr = pOutputType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_NV12);  // MFVideoFormat_RGB32 は設定できない
+  if (SUCCEEDED(hr)) hr = MFSetAttributeSize(pOutputType, MF_MT_FRAME_SIZE, format.width, format.height);
+  if (SUCCEEDED(hr)) hr = MFSetAttributeRatio(pOutputType, MF_MT_FRAME_RATE, format.fpsNum, format.fpsDenom);
 
-  // MFT に出力タイプを設定する
-  if (SUCCEEDED(hr)) hr = pDecoderMFT->SetOutputType(0, pOutputMediaType, 0);
-  if (FAILED(hr))
-  {
-    SafeRelease(&pOutputMediaType);
-    return false;
-  }
+  // H.264 デコーダ MFT に出力タイプを設定する
+  if (SUCCEEDED(hr)) hr = pDecoder->SetOutputType(0, pOutputType, 0);
+  SafeRelease(&pOutputType);
+  if (FAILED(hr)) goto done;
 
-  // MFT をアクティブにする
-  hr = pDecoderMFT->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, NULL);
-  if (SUCCEEDED(hr)) hr = pDecoderMFT->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
-  if (SUCCEEDED(hr)) hr = pDecoderMFT->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
+  // H.264 デコーダ MFT をアクティブにする
+  hr = pDecoder->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, NULL);
+  if (SUCCEEDED(hr)) hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
+  if (SUCCEEDED(hr)) hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
 
-  // 成功したら true を返す
-  return SUCCEEDED(hr);
+done:
+
+  // 結果を返す
+  return hr;
 }
+
+//
+// カラーコンバータ MFT のセットアップと接続を行う
+//
+HRESULT CamMf::setupConverterPipeline(const VideoFormat& format)
+{
+  // 入力と出力のメディアタイプ
+  IMFMediaType* pInputType{ nullptr };
+  IMFMediaType* pOutputType{ nullptr };
+
+  // 結果
+  HRESULT hr{ S_OK };
+
+  // カラーコンバータ MFT をインスタンス化する
+  hr = CoCreateInstance(CLSID_CColorConvertDMO, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pConverter));
+  if (FAILED(hr)) goto done;
+
+  // カラーコンバータ MFT の入力タイプの設定
+  hr = MFCreateMediaType(&pInputType);
+  if (SUCCEEDED(hr)) hr = pInputType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
+  if (SUCCEEDED(hr)) hr = pInputType->SetGUID(MF_MT_SUBTYPE, format.subType);
+  if (SUCCEEDED(hr)) hr = MFSetAttributeSize(pInputType, MF_MT_FRAME_SIZE, format.width, format.height);
+
+  // カラーコンバータ MFT に入力タイプを設定する
+  if (SUCCEEDED(hr)) hr = pConverter->SetInputType(0, pInputType, 0);
+  SafeRelease(&pInputType);
+  if (FAILED(hr)) goto done;
+
+  // カラーコンバータ MFT の出力タイプの設定
+  hr = MFCreateMediaType(&pOutputType);
+  if (SUCCEEDED(hr)) hr = pOutputType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
+  if (SUCCEEDED(hr)) hr = pOutputType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32);
+  if (SUCCEEDED(hr)) hr = MFSetAttributeSize(pOutputType, MF_MT_FRAME_SIZE, format.width, format.height);
+
+  // カラーコンバータ MFT に出力タイプを設定する
+  if (SUCCEEDED(hr)) hr = pConverter->SetOutputType(0, pOutputType, 0);
+  SafeRelease(&pOutputType);
+  if (FAILED(hr)) goto done;
+
+  // カラーコンバータ MFT をアクティブにする
+  hr = pConverter->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, NULL);
+  if (SUCCEEDED(hr)) hr = pConverter->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
+  if (SUCCEEDED(hr)) hr = pConverter->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
+
+done:
+
+  // 結果を返す
+  return hr;
+}
+
 //
 // カメラを開く
 //
@@ -407,13 +495,27 @@ bool CamMf::open(int device)
   // メディアソースを作成する
   if (!ComInitializer::activate(device, &pMediaSource)) return false;
 
+  // 結果
+  HRESULT hr{ S_OK };
+
   // Source Reader の属性ストアを作成する
   IMFAttributes* pAttributes{ nullptr };
-  HRESULT hr{ MFCreateAttributes(&pAttributes, 1) };
+  hr = MFCreateAttributes(&pAttributes, 1);
   if (FAILED(hr)) goto done;
 
   // Source Reader の属性ストアにデコード能力を設定する
-  hr = pAttributes->SetUINT32(MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS, TRUE);
+  // 
+  //  | 設定                                                        | 効果                                      |
+  //  | ----------------------------------------------------------- | ----------------------------------------- |
+  //  | `MF_SOURCE_READER_ENABLE_ADVANCED_VIDEO_PROCESSING = TRUE`  | 色変換・デインターレース・スケーリングが  |
+  //  | `MF_READWRITE_DISABLE_CONVERTERS = FALSE`                   | 自動的に行われる（もっとも簡単な自動処理）|
+  //  | ----------------------------------------------------------- | ----------------------------------------- |
+  //  | `MF_SOURCE_READER_ENABLE_ADVANCED_VIDEO_PROCESSING = FALSE` | シンプルなGPUデコードパス                 |
+  //  | `MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS = TRUE`            | （カラースペース変換は限定）              |
+  //  | ----------------------------------------------------------- | ----------------------------------------- |
+  //  | `MF_READWRITE_DISABLE_CONVERTERS = TRUE`                    | 自動処理なし。自前でデコード／変換する    |
+  //
+  hr = pAttributes->SetUINT32(MF_READWRITE_DISABLE_CONVERTERS, TRUE);
   if (FAILED(hr)) goto done;
 
   // Source Reader の解放時に Media Source をシャットダウンするようにする
@@ -463,6 +565,10 @@ bool CamMf::select(int index)
 //
 void CamMf::capture()
 {
+#if defined(_DEBUG)
+  std::cerr << SubTypeToName(selectedSubType) << std::endl;
+#endif
+
   // スレッドが実行可の間
   while (running)
   {
@@ -471,88 +577,120 @@ void CamMf::capture()
     DWORD dwStreamFlags{ 0 };
     LONGLONG llTimestamp{ 0 };
     IMFSample* pSample{ nullptr };
-    if (SUCCEEDED(pSourceReader->ReadSample(
-      MF_SOURCE_READER_FIRST_VIDEO_STREAM,
-      0,
-      &dwStreamIndex,
-      &dwStreamFlags,
-      &llTimestamp,
-      &pSample)) && pSample)
+    if (FAILED(pSourceReader->ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
+      0, &dwStreamIndex, &dwStreamFlags, &llTimestamp, &pSample))) continue;
+
+    // サンプルが取得できていなければ戻る
+    if (!pSample) continue;
+
+    // サンプルから取り出したメディアバッファのポインタ
+    IMFMediaBuffer* pBuffer{ nullptr };
+
+    // ProcessOutput の呼び出しの状態
+    DWORD dwStatus{ 0 };
+
+    // H.264 コーデックのときはデコードパイプラインを通す
+    if (selectedSubType == MFVideoFormat_H264)
     {
-      // デコードされた RGB フレームを保持するサンプルへのポインタ
+      // デコードされた NV12 フレームを保持するサンプルへのポインタ
       IMFSample* pDecodedSample{ nullptr };
 
-      // サンプルから取り出したメディアバッファのポインタ
-      IMFMediaBuffer* pBuffer{ nullptr };
+      // H.264 サンプルをデコーダに渡す
+      if (FAILED(pDecoder->ProcessInput(0, pSample, 0))) goto done;
 
-      // H.264 コーデックのときはデコードパイプラインを通す
-      if (selectedSubType == MFVideoFormat_H264)
+      // デコード出力サンプルを作成する
+      if (FAILED(MFCreateSample(&pDecodedSample))) goto done;
+
+      // デコード出力バッファ
+      MFT_OUTPUT_DATA_BUFFER decodedBuffer{ 0, pDecodedSample, 0, nullptr };
+
+      // デコード処理を実行
+      if (FAILED(pDecoder->ProcessOutput(0, 1, &decodedBuffer, &dwStatus)))
       {
-        // H.264 サンプルを MFT デコーダーに渡す
-        if (FAILED(pDecoderMFT->ProcessInput(0, pSample, 0))) goto done;
-
-        // 出力サンプルを作成する (MFTから渡される pOutputMediaType を使う)
-        if (FAILED(MFCreateSample(&pDecodedSample))) goto done;
-
-        // 出力バッファ
-        MFT_OUTPUT_DATA_BUFFER outputBuffer{};
-        outputBuffer.dwStreamID = 0;
-        outputBuffer.pSample = pDecodedSample;
-        outputBuffer.dwStatus = 0;
-
-        // デコード処理を実行
-        DWORD dwStatus{ 0 };
-        HRESULT hr{ pDecoderMFT->ProcessOutput(0, 1, &outputBuffer, &dwStatus) };
-
-        // 元のサンプルはもう使わないので解放する
-        SafeRelease(&pSample);
-
-        // デコードに失敗したら次のフレームへ
-        if (FAILED(hr) || !outputBuffer.pSample) goto done;
-
-        // デコードに成功したらデコードされたサンプルを使う
-        pSample = outputBuffer.pSample;
+        pDecodedSample->Release();
+        goto done;
       }
 
-      // サンプルからメディアバッファを取得して
-      if (SUCCEEDED(pSample->ConvertToContiguousBuffer(&pBuffer)) && pBuffer)
-      {
-        // メディアバッファからフレームの情報を取得できたら
-        BYTE* pData{ nullptr };
-        DWORD cbDataLength{ 0 };
-        if (SUCCEEDED(pBuffer->Lock(&pData, nullptr, &cbDataLength)) && pData)
-        {
-          // フレームの大きさを求める
-          const auto length{ frame.cols * frame.rows * frame.channels() };
-
-          // 転送用に必要なメモリサイズが以前と違ったらメモリを確保しなおす
-          if (static_cast<int>(pixels.size()) != length) pixels.resize(length);
-
-          // ピクセルバッファオブジェクトをロックしてから
-          std::lock_guard<std::mutex> lock{ mtx };
-
-          // データをコピーする
-          std::copy(pData, pData + std::min(cbDataLength, static_cast<DWORD>(length)), pixels.data());
-
-          // メディアバッファのロックを解除する
-          pBuffer->Unlock();
-
-          // 新しいフレームがキャプチャされたことを通知する
-          captured = true;
-        }
-
-        // メディアバッファを解放する
-        pBuffer->Release();
-      }
-
-    done:
-
-      // pDecodedSampleは outputBuffer.pSample として解放
-      SafeRelease(&pDecodedSample);
-
-      // サンプルを解放する
+      // 元のサンプルはもう使わないので解放する
       pSample->Release();
+
+      // デコードに成功したらデコードされたサンプルを使う
+      pSample = pDecodedSample;
     }
+
+    // RGB32 出力でないときはカラーコンバータパイプラインを通す
+    if (selectedSubType != MFVideoFormat_RGB32)
+    {
+      // コンバートされた RGB32 フレームを保持するサンプルへのポインタ
+      IMFSample* pConvertedSample{ nullptr };
+
+      // デコードされたフレームをカラーコンバータに渡す
+      if (FAILED(pConverter->ProcessInput(0, pSample, 0))) goto done;
+
+      // コンバート出力サンプルを作成する
+      if (FAILED(MFCreateSample(&pConvertedSample))) goto done;
+
+      // コンバート出力バッファ
+      MFT_OUTPUT_DATA_BUFFER convertedBuffer{ 0, pConvertedSample, 0, nullptr };
+
+      // カラー変換処理を実行
+      if (FAILED(pConverter->ProcessOutput(0, 1, &convertedBuffer, &dwStatus)))
+      {
+        pConvertedSample->Release();
+        goto done;
+      }
+
+      // 元のサンプルはもう使わないので解放する
+      pSample->Release();
+
+      // コンバートに成功したらコンバートされたサンプルを使う
+      pSample = pConvertedSample;
+    }
+
+    // サンプルからメディアバッファを取得して
+    if (FAILED(pSample->ConvertToContiguousBuffer(&pBuffer))) goto done;
+
+    // メディアバッファが取得できていれば
+    if (pBuffer)
+    {
+      // メディアバッファから取り出したデータ
+      BYTE* pData{ nullptr };
+
+      // メディアバッファから取り出したデータの長さ
+      DWORD cbDataLength{ 0 };
+
+      // メディアバッファからフレームの情報を取得できたら
+      if (SUCCEEDED(pBuffer->Lock(&pData, nullptr, &cbDataLength)) && pData)
+      {
+        // フレームの大きさを求める
+        const auto length{ frame.cols * frame.rows * frame.channels() };
+
+        // 転送用に必要なメモリサイズが以前と違ったらメモリを確保しなおす
+        pixels.resize(length);
+
+        // ピクセルバッファオブジェクトをロックしてから
+        std::lock_guard<std::mutex> lock{ mtx };
+
+        // データをコピーする
+        std::copy(pData, pData + std::min(cbDataLength, static_cast<DWORD>(length)), pixels.data());
+
+        // メディアバッファのロックを解除する
+        pBuffer->Unlock();
+
+        // 新しいフレームがキャプチャされたことを通知する
+        captured = true;
+      }
+
+      // メディアバッファを解放する
+      pBuffer->Release();
+      pBuffer = nullptr;
+    }
+
+  done:
+
+    // サンプルを解放する
+    pSample->Release();
+    pSample = nullptr;
 
     // 少し休む
     std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(interval)));
@@ -564,11 +702,29 @@ void CamMf::capture()
 //
 void CamMf::close()
 {
-  // MFT デコーダーを解放する
-  SafeRelease(&pDecoderMFT);
+  // デコーダ MFT が作成されていれば
+  if (pDecoder)
+  {
+    // デコーダ MFT のストリーミングの終了を通知する
+    pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
+    pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, NULL);
 
-  // 出力メディアタイプを解放する
-  SafeRelease(&pOutputMediaType);
+    // デコーダ MFT を解放する
+    pDecoder->Release();
+    pDecoder = nullptr;
+  }
+
+  // コンバータ MFT が作成されていれば
+  if (pConverter)
+  {
+    // コンバータ MFT のストリーミングの終了を通知する
+    pConverter->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
+    pConverter->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, NULL);
+
+    // コンバータ MFT を解放する
+    pConverter->Release();
+    pConverter = nullptr;
+  }
 
   // Source Reader を解放する
   SafeRelease(&pSourceReader);
@@ -576,7 +732,7 @@ void CamMf::close()
   // Media Source 解放する
   SafeRelease(&pMediaSource);
 
-  // フォーマットリストをクリア
+  // フォーマットリストをクリアする
   availableFormats.clear();
   formatList.clear();
 
