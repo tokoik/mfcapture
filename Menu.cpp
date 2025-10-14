@@ -331,6 +331,12 @@ Menu::Menu(const Config& config, Capture& capture, Calibration& calibration)
 //
 Menu::~Menu()
 {
+  // キャプチャスレッドが動いていたら止める
+  capture.stop();
+
+  // 前に開いていたキャプチャデバイスを閉じる
+  capture.close();
+
   // ファイルダイアログ (Native File Dialog Extended) を終了する
   NFD_Quit();
 }
