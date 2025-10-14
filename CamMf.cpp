@@ -324,8 +324,17 @@ bool CamMf::setFormat(int index)
   hr = pSourceReader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM, nullptr, pMediaType);
   if (FAILED(hr)) goto done;
 
-  // 基底クラスの frame メンバーを初期化する（サイズとタイプを記録するためにヘッダだけ作る）
+  // 基底クラスの frame メンバーをフレームのサイズに合わせる
   frame.create(selectedFormat.height, selectedFormat.width, CV_8UC4);
+
+  // 基底クラスの pixels メンバーのサイズをフレームのサイズに合わせる
+  pixels.resize(frame.total() * frame.elemSize());
+
+  // カラー変換用の出力バッファを作成する
+  UINT32 cbOutput;
+  MFCalculateImageSize(MFVideoFormat_RGB32, selectedFormat.width, selectedFormat.height, &cbOutput);
+  MFCreateMemoryBuffer(cbOutput, &pOutputBuffer);
+  pOutputBuffer->SetCurrentLength(static_cast<DWORD>(cbOutput));
 
   // インターバルを設定する
   interval = (selectedFormat.fpsDenom != 0)
@@ -523,7 +532,6 @@ bool CamMf::open(int device)
   if (FAILED(hr)) goto done;
 
   // Source Reader を作成する
-  SafeRelease(&pSourceReader);
   hr = MFCreateSourceReaderFromMediaSource(pMediaSource, pAttributes, &pSourceReader);
   if (FAILED(hr)) goto done;
 
@@ -554,7 +562,7 @@ bool CamMf::select(int index)
   if (!pSourceReader || index < 0 || index >= availableFormats.size()) return false;
 
   // キャプチャスレッドが実行中であれば安全のために停止する
-  if (running) stop();
+  stop();
 
   // 選択されたフォーマットを設定する
   return setFormat(index);
@@ -630,6 +638,9 @@ void CamMf::capture()
       // コンバート出力サンプルを作成する
       if (FAILED(MFCreateSample(&pConvertedSample))) goto done;
 
+      // コンバート出力サンプルに出力バッファを追加する
+      pConvertedSample->AddBuffer(pOutputBuffer);
+
       // コンバート出力バッファ
       MFT_OUTPUT_DATA_BUFFER convertedBuffer{ 0, pConvertedSample, 0, nullptr };
 
@@ -662,17 +673,11 @@ void CamMf::capture()
       // メディアバッファからフレームの情報を取得できたら
       if (SUCCEEDED(pBuffer->Lock(&pData, nullptr, &cbDataLength)) && pData)
       {
-        // フレームの大きさを求める
-        const auto length{ frame.cols * frame.rows * frame.channels() };
-
-        // 転送用に必要なメモリサイズが以前と違ったらメモリを確保しなおす
-        pixels.resize(length);
-
         // ピクセルバッファオブジェクトをロックしてから
         std::lock_guard<std::mutex> lock{ mtx };
 
         // データをコピーする
-        std::copy(pData, pData + std::min(cbDataLength, static_cast<DWORD>(length)), pixels.data());
+        copyPixels(pData, cbDataLength);
 
         // メディアバッファのロックを解除する
         pBuffer->Unlock();
@@ -702,18 +707,6 @@ void CamMf::capture()
 //
 void CamMf::close()
 {
-  // デコーダ MFT が作成されていれば
-  if (pDecoder)
-  {
-    // デコーダ MFT のストリーミングの終了を通知する
-    pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
-    pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, NULL);
-
-    // デコーダ MFT を解放する
-    pDecoder->Release();
-    pDecoder = nullptr;
-  }
-
   // コンバータ MFT が作成されていれば
   if (pConverter)
   {
@@ -726,12 +719,27 @@ void CamMf::close()
     pConverter = nullptr;
   }
 
+  // デコーダ MFT が作成されていれば
+  if (pDecoder)
+  {
+    // デコーダ MFT のストリーミングの終了を通知する
+    pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
+    pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, NULL);
+
+    // デコーダ MFT を解放する
+    pDecoder->Release();
+    pDecoder = nullptr;
+  }
+
+  // 出力バッファを解放する
+  SafeRelease(&pOutputBuffer);
+
   // Source Reader を解放する
   SafeRelease(&pSourceReader);
 
   // Media Source 解放する
   SafeRelease(&pMediaSource);
-
+  
   // フォーマットリストをクリアする
   availableFormats.clear();
   formatList.clear();

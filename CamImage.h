@@ -58,7 +58,7 @@ public:
     if (flip) cv::flip(frame, frame, 1);
 
     // 転送用の一時メモリにデータを格納する
-    copyFrame();
+    copyPixels();
 
     // 画像が読み込まれたことを記録する
     captured = true;

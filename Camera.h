@@ -66,20 +66,24 @@ protected:
   bool running;
 
   ///
-  /// フレームを一時メモリにコピーする
+  /// データを一時メモリにコピーする
   ///
-  /// @param frame コピーするフレーム
-  ///
-  void copyFrame()
+  void copyPixels(const unsigned char* data, std::size_t size)
   {
-    // フレームの大きさを求める
-    const auto length{ frame.cols * frame.rows * frame.channels() };
-
-    // 転送用に必要なメモリサイズが以前と違ったらメモリを確保しなおす
-    if (static_cast<int>(pixels.size()) != length) pixels.resize(length);
+    // コピーするサイズを計算する
+    const auto length{ std::min(size, pixels.size()) };
 
     // データをコピーする
-    std::copy(frame.data, frame.data + length, pixels.data());
+    std::copy(data, data + length, pixels.data());
+  }
+
+  ///
+  /// フレームを一時メモリにコピーする
+  ///
+  void copyPixels()
+  {
+    // フレームのデータをコピーする
+    std::copy(frame.data, frame.data + pixels.size(), pixels.data());
   }
 
   ///

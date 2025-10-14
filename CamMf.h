@@ -118,11 +118,14 @@ class CamMf : public Camera
     static const std::vector<std::string>& getDeviceList();
   };
 
+  /// メディアソース
+  IMFMediaSource* pMediaSource;
+
   /// メディアソースの読み取り
   IMFSourceReader* pSourceReader;
 
-  /// メディアソース
-  IMFMediaSource* pMediaSource;
+  // MFT カラーコンバータが使うバッファ
+  IMFMediaBuffer* pOutputBuffer;
 
   // MFT H.264 デコーダ
   IMFTransform* pDecoder;
@@ -133,11 +136,11 @@ class CamMf : public Camera
   /// 使用可能なビデオフォーマットのリスト
   std::vector<VideoFormat> availableFormats;
 
-  /// 選択されているフォーマットの符号化方式
-  GUID selectedSubType;
-
   /// 使用可能なビデオフォーマットの表示名のリスト
   std::vector<std::string> formatList;
+
+  /// 選択されているフォーマットの符号化方式
+  GUID selectedSubType;
 
   ///
   /// H.264 デコーダ MFT のセットアップと接続を行う
@@ -171,8 +174,9 @@ public:
   /// コンストラクタ
   ///
   CamMf()
-    : pSourceReader{ nullptr }
-    , pMediaSource{ nullptr }
+    : pMediaSource{ nullptr }
+    , pSourceReader{ nullptr }
+    , pOutputBuffer{ nullptr }
     , pDecoder{ nullptr }
     , pConverter{ nullptr }
     , selectedSubType{ GUID{} }
