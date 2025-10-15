@@ -524,12 +524,11 @@ bool CamMf::open(int device)
   //  | ----------------------------------------------------------- | ----------------------------------------- |
   //  | `MF_READWRITE_DISABLE_CONVERTERS = TRUE`                    | 自動処理なし。自前でデコード／変換する    |
   //
-  hr = pAttributes->SetUINT32(MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS, TRUE);
-  if (FAILED(hr)) goto done;
+  pAttributes->SetUINT32(MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS, TRUE);
+  pAttributes->SetUINT32(MF_READWRITE_DISABLE_CONVERTERS, FALSE);
 
   // Source Reader の解放時に Media Source をシャットダウンするようにする
-  hr = pAttributes->SetUINT32(MF_SOURCE_READER_DISCONNECT_MEDIASOURCE_ON_SHUTDOWN, TRUE);
-  if (FAILED(hr)) goto done;
+  pAttributes->SetUINT32(MF_SOURCE_READER_DISCONNECT_MEDIASOURCE_ON_SHUTDOWN, TRUE);
 
   // Source Reader を作成する
   hr = MFCreateSourceReaderFromMediaSource(pMediaSource, pAttributes, &pSourceReader);
