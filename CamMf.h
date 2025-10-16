@@ -127,7 +127,7 @@ class CamMf : public Camera
   // MFT カラーコンバータが使うバッファ
   IMFMediaBuffer* pOutputBuffer;
 
-  // MFT H.264 デコーダ
+  // MFT デコーダ
   IMFTransform* pDecoder;
 
   // MFT カラーコンバータ
@@ -143,9 +143,34 @@ class CamMf : public Camera
   GUID selectedSubType;
 
   ///
-  /// H.264 デコーダ MFT のセットアップと接続を行う
+  /// 使用可能な解像度、フレームレート、コーデックのリストを作成する
   ///
-  /// @param format ネイティブの H.264 フォーマット
+  /// @return 成功したら true
+  ///
+  bool enumerateFormats();
+
+  ///
+  /// 指定されたサブタイプに対応するビデオデコーダを探す
+  ///
+  /// @param subtype ピクセルフォーマット/コーデックの GUID
+  /// @param ppDecoder 見つかったデコーダを返すポインタへのポインタ
+  /// @param bAllowAsync 非同期デコーダを許可するなら TRUE
+  /// @param bAllowHardware ハードウェアデコーダを許可するなら TRUE
+  /// @param bAllowTranscode ソフトウェアデコーダを許可するなら TRUE
+  /// @return 結果の HRESULT コード
+  /// 
+  HRESULT findVideoDecoder(
+    const GUID& subtype,
+    IMFTransform** ppDecoder,
+    BOOL bAllowAsync = FALSE,
+    BOOL bAllowHardware = FALSE,
+    BOOL bAllowTranscode = FALSE
+  ) const;
+
+  ///
+  /// デコーダ MFT のセットアップと接続を行う
+  ///
+  /// @param format ネイティブのフォーマット
   /// @return 結果の HRESULT コード
   ///
   HRESULT setupDecoderPipeline(const VideoFormat& format);
@@ -158,14 +183,11 @@ class CamMf : public Camera
   ///
   HRESULT setupConverterPipeline(const VideoFormat& format);
 
-  //
-  // 使用可能な解像度、フレームレート、コーデックのリストを作成する
-  //
-  bool enumerateFormats();
-
-  //
-  // Source Reader の出力フォーマットを設定し、基底クラスの frame を初期化する
-  //
+  ///
+  /// Source Reader の出力フォーマットを設定し、基底クラスの frame を初期化する
+  ///
+  /// @param index 選択するフォーマットのリストインデックス
+  ///
   bool setFormat(int index);
 
 public:
