@@ -139,9 +139,6 @@ class CamMf : public Camera
   /// 使用可能なビデオフォーマットの表示名のリスト
   std::vector<std::string> formatList;
 
-  /// 選択されているフォーマットの符号化方式
-  GUID selectedSubType;
-
   ///
   /// 使用可能な解像度、フレームレート、コーデックのリストを作成する
   ///
@@ -201,7 +198,6 @@ public:
     , pOutputBuffer{ nullptr }
     , pDecoder{ nullptr }
     , pConverter{ nullptr }
-    , selectedSubType{ GUID{} }
   {
   }
 

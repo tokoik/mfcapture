@@ -472,6 +472,20 @@ bool CamMf::setFormat(int index)
   // 使用可能なフォーマットのリストから選択されたフォーマットを取得する
   VideoFormat selectedFormat{ availableFormats[index] };
 
+  // デコード方法
+  enum class DecodeMethod { None = 0, Convert, Decode } decodeMethod
+  {
+    selectedFormat.subType == MFVideoFormat_MJPG ? DecodeMethod::Decode :
+    selectedFormat.subType == MFVideoFormat_H264 ? DecodeMethod::Decode :
+    selectedFormat.subType == MFVideoFormat_NV12 ? DecodeMethod::Convert :
+    selectedFormat.subType == MFVideoFormat_YUY2 ? DecodeMethod::Convert :
+    DecodeMethod::None
+  };
+
+  // デコーダとカラーコンバータを未設定にする
+  SafeRelease(&pDecoder);
+  SafeRelease(&pConverter);
+
   // 結果
   HRESULT hr{ S_OK };
 
@@ -511,17 +525,9 @@ bool CamMf::setFormat(int index)
     ? (1000.0 * selectedFormat.fpsDenom / selectedFormat.fpsNum)
     : 10.0;
 
-  // 選択されたフォーマットのサブタイプを保存する
-  selectedSubType = selectedFormat.subType;
-
-  // 選択したフォーマットのサブタイプが MJPG か H264 なら
-  if (selectedSubType == MFVideoFormat_MJPG
-    || selectedSubType == MFVideoFormat_H264
-    || selectedSubType == MFVideoFormat_NV12
-    || selectedSubType == MFVideoFormat_YUY2)
+  if (decodeMethod != DecodeMethod::None)
   {
-    if (selectedSubType == MFVideoFormat_MJPG
-      || selectedSubType == MFVideoFormat_H264)
+    if (decodeMethod == DecodeMethod::Decode)
     {
       // デコーダ MFT のセットアップと接続を行う
       hr = setupDecoderPipeline(selectedFormat);
@@ -576,10 +582,10 @@ bool CamMf::open(int device)
   //  | 設定                                                        | 効果                                      |
   //  | ----------------------------------------------------------- | ----------------------------------------- |
   //  | `MF_SOURCE_READER_ENABLE_ADVANCED_VIDEO_PROCESSING = TRUE`  | 色変換・デインターレース・スケーリングが  |
-  //  | `MF_READWRITE_DISABLE_CONVERTERS = FALSE`                   | 自動的に行われる（もっとも簡単な自動処理）|
+  //  | `MF_READWRITE_DISABLE_CONVERTERS = FALSE`                   | 自動的に行われる (もっとも簡単な自動処理) |
   //  | ----------------------------------------------------------- | ----------------------------------------- |
   //  | `MF_SOURCE_READER_ENABLE_ADVANCED_VIDEO_PROCESSING = FALSE` | シンプルなGPUデコードパス                 |
-  //  | `MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS = TRUE`            | （カラースペース変換は限定）              |
+  //  | `MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS = TRUE`            | (カラースペース変換は限定)                |
   //  | ----------------------------------------------------------- | ----------------------------------------- |
   //  | `MF_READWRITE_DISABLE_CONVERTERS = TRUE`                    | 自動処理なし。自前でデコード／変換する    |
   //
@@ -631,9 +637,8 @@ bool CamMf::select(int index)
 //
 void CamMf::capture()
 {
-#if defined(_DEBUG)
-  std::cerr << SubTypeToName(selectedSubType) << std::endl;
-#endif
+  // 結果
+  HRESULT hr{ S_OK };
 
   // スレッドが実行可の間
   while (running)
@@ -655,45 +660,85 @@ void CamMf::capture()
     // ProcessOutput の呼び出しの状態
     DWORD dwStatus{ 0 };
 
-    // サンプルが MJPG か H264 ならデコードパイプラインを通す
-    if (selectedSubType == MFVideoFormat_MJPG
-      || selectedSubType == MFVideoFormat_H264
-      || selectedSubType == MFVideoFormat_NV12
-      || selectedSubType == MFVideoFormat_YUY2)
+    // デコーダーが設定されていれば (MJPG か H264 の場合)
+    if (pDecoder)
     {
       // デコードされた NV12 フレームを保持するサンプルへのポインタ
       IMFSample* pDecodedSample{ nullptr };
 
-      if (selectedSubType == MFVideoFormat_MJPG
-        || selectedSubType == MFVideoFormat_H264)
+      // サンプルをデコーダに渡す
+      hr = pDecoder->ProcessInput(0, pSample, 0);
+      if (FAILED(hr))
       {
-        // サンプルをデコーダに渡す
-        if (FAILED(pDecoder->ProcessInput(0, pSample, 0))) goto done;
-
-        // デコード出力サンプルを作成する
-        if (FAILED(MFCreateSample(&pDecodedSample))) goto done;
-
-        // デコード出力バッファ
-        MFT_OUTPUT_DATA_BUFFER decodedBuffer{ 0, pDecodedSample, 0, nullptr };
-
-        // デコード処理を実行
-        if (FAILED(pDecoder->ProcessOutput(0, 1, &decodedBuffer, &dwStatus)))
+#if defined(_DEBUG)
+        switch (hr)
         {
-          pDecodedSample->Release();
-          goto done;
+        case E_INVALIDARG:
+          std::cerr << "Invalid argument." << std::endl; break;
+        case MF_E_INVALIDSTREAMNUMBER:
+          std::cerr << "Invalid stream number." << std::endl; break;
+        case MF_E_NO_SAMPLE_DURATION:
+          std::cerr << "No sample duration." << std::endl; break;
+        case MF_E_NO_SAMPLE_TIMESTAMP:
+          std::cerr << "No sample timestamp." << std::endl; break;
+        case MF_E_NOTACCEPTING:
+          std::cerr << "Not accepting input." << std::endl; break;
+        case MF_E_TRANSFORM_TYPE_NOT_SET:
+          std::cerr << "Transform type not set." << std::endl; break;
+        case MF_E_UNSUPPORTED_D3D_TYPE:
+          std::cerr << "Unsupported D3D type." << std::endl; break;
+        default:
+          std::cerr << "Decoder process input failed: " << std::hex << hr << std::endl; break;
         }
-
-        // 元のサンプルはもう使わないので解放する
-        pSample->Release();
-
-        // デコードに成功したらデコードされたサンプルを使う
-        pSample = pDecodedSample;
+#endif
+        goto done;
       }
 
+      // デコード出力サンプルを作成する
+      if (FAILED(MFCreateSample(&pDecodedSample))) goto done;
+
+      // デコード出力バッファ
+      MFT_OUTPUT_DATA_BUFFER decodedBuffer{ 0, pDecodedSample, 0, nullptr };
+
+      // デコード処理を実行
+      hr = pDecoder->ProcessOutput(0, 1, &decodedBuffer, &dwStatus);
+      if (FAILED(hr))
+      {
+#if defined(_DEBUG)
+        switch (hr)
+        {
+        case E_UNEXPECTED:
+          std::cerr << "Unexpected error." << std::endl; break;
+        case MF_E_INVALIDSTREAMNUMBER:
+          std::cerr << "Invalid stream number." << std::endl; break;
+        case MF_E_TRANSFORM_NEED_MORE_INPUT:
+          std::cerr << "Transform needs more input." << std::endl; break;
+        case MF_E_TRANSFORM_STREAM_CHANGE:
+          std::cerr << "Transform stream change." << std::endl; break;
+        case MF_E_TRANSFORM_TYPE_NOT_SET:
+          std::cerr << "Transform type not set." << std::endl; break;
+        default:
+          std::cerr << "Decoder process input failed: " << std::hex << hr << std::endl; break;
+        }
+#endif
+        pDecodedSample->Release();
+        goto done;
+      }
+
+      // 元のサンプルはもう使わないので解放する
+      pSample->Release();
+
+      // デコードに成功したらデコードされたサンプルを使う
+      pSample = pDecodedSample;
+    }
+
+    // カラーコンバータが設定されていれば (NV12 か YUY2 か MJPG が H264 の場合)
+    if (pConverter)
+    {
       // コンバートされた RGB32 フレームを保持するサンプルへのポインタ
       IMFSample* pConvertedSample{ nullptr };
 
-      // デコードされたフレームをカラーコンバータに渡す
+      // サンプルをカラーコンバータに渡す
       if (FAILED(pConverter->ProcessInput(0, pSample, 0))) goto done;
 
       // コンバート出力サンプルを作成する
@@ -768,14 +813,14 @@ void CamMf::capture()
 //
 void CamMf::close()
 {
-  // コンバータ MFT が作成されていれば
+  // カラーコンバータ MFT が作成されていれば
   if (pConverter)
   {
-    // コンバータ MFT のストリーミングの終了を通知する
+    // カラーコンバータ MFT のストリーミングの終了を通知する
     pConverter->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
     pConverter->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, NULL);
 
-    // コンバータ MFT を解放する
+    // カラーコンバータ MFT を解放する
     pConverter->Release();
     pConverter = nullptr;
   }

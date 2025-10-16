@@ -443,7 +443,7 @@ void Menu::draw()
         // その投影方式が選択されていれば真
         const bool selected{ i == preferenceNumber };
 
-        // 投影方式を（それが現在の投影方式ならハイライトして）コンボボックスに表示する
+        // 投影方式を (それが現在の投影方式ならハイライトして) コンボボックスに表示する
         if (ImGui::Selectable(getPreference(i).getDescription().c_str(), selected))
         {
           // 表示した投影方式が選択されていたらそれを現在の選択とする
@@ -503,7 +503,7 @@ void Menu::draw()
         // すべてのキャプチャデバイスについて
         for (int i = 0; i < static_cast<int>(config.getDeviceList().size()); ++i)
         {
-          // キャプチャデバイス名を（それを選択していればハイライトして）コンボボックスに表示する
+          // キャプチャデバイス名を (それを選択していればハイライトして) コンボボックスに表示する
           if (ImGui::Selectable(config.getDeviceName(i).c_str(), i == deviceNumber))
           {
             // キャプチャデバイスが変わったら
@@ -551,7 +551,7 @@ void Menu::draw()
           // すべてのビデオフォーマットについて
           for (int i = 0; i < static_cast<int>(formatList.size()); ++i)
           {
-            // ビデオフォーマットを（それを選択していればハイライトして）コンボボックスに表示する
+            // ビデオフォーマットを (それを選択していればハイライトして) コンボボックスに表示する
             if (ImGui::Selectable(formatList[i].c_str(), i == formatNumber))
             {
               // 表示したビデオフォーマットが選択されていたらそのビデオフォーマットを選択する
@@ -626,7 +626,7 @@ void Menu::draw()
         // その設定が現在選択されている設定なら真
         const bool selected(d->first == settings.dictionaryName);
 
-        // 設定を（それが現在の設定ならハイライトして）コンボボックスに表示する
+        // 設定を (それが現在の設定ならハイライトして) コンボボックスに表示する
         if (ImGui::Selectable(d->first.c_str(), d->first == settings.dictionaryName))
         {
           // 表示した設定が選択されていたらそれを現在の選択とする
