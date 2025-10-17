@@ -38,7 +38,8 @@ class CamMf : public Camera
     //
     // コンストラクタ
     //
-    VideoFormat(UINT32 width, UINT32 height, UINT32 fpsNum, UINT32 fpsDenom, GUID subType)
+    VideoFormat(UINT32 width, UINT32 height,
+      UINT32 fpsNum, UINT32 fpsDenom, GUID subType)
       : width{ width }
       , height{ height }
       , fpsNum{ fpsNum }
@@ -124,14 +125,17 @@ class CamMf : public Camera
   /// メディアソースの読み取り
   IMFSourceReader* pSourceReader;
 
-  // MFT カラーコンバータが使うバッファ
-  IMFMediaBuffer* pOutputBuffer;
-
-  // MFT デコーダ
+  /// MFT デコーダ
   IMFTransform* pDecoder;
 
-  // MFT カラーコンバータ
+  /// MFT デコーダが使うバッファのサイズ
+  UINT32 cbDecoder;
+
+  /// MFT カラーコンバータ
   IMFTransform* pConverter;
+
+  /// MFT カラーコンバータが使うバッファのサイズ
+  UINT32 cbConverter;
 
   /// 使用可能なビデオフォーマットのリスト
   std::vector<VideoFormat> availableFormats;
@@ -165,23 +169,25 @@ class CamMf : public Camera
   ) const;
 
   ///
-  /// デコーダ MFT のセットアップと接続を行う
+  /// MFT のセットアップと接続を行う
   ///
-  /// @param format ネイティブのフォーマット
+  /// @param pTransform セットアップする MFT のポインタ
+  /// @param format 出力フレームのフォーマット
+  /// @param subType 出力フレームのピクセルフォーマット/コーデックの GUID
   /// @return 結果の HRESULT コード
   ///
-  HRESULT setupDecoderPipeline(const VideoFormat& format);
+  HRESULT setUpPipeline(IMFTransform* pTransform,
+    const VideoFormat& format, const GUID& subType) const;
 
   ///
-  /// カラーコンバータ MFT のセットアップと接続を行う
+  /// MFT を解放する
   ///
-  /// @param format フレームのフォーマット
-  /// @return 結果の HRESULT コード
-  ///
-  HRESULT setupConverterPipeline(const VideoFormat& format);
+  /// @param pTransform 解放する MFT のポインタのポインタ
+  /// 
+  void cleanUpTransform(IMFTransform** pTransform) const;
 
   ///
-  /// Source Reader の出力フォーマットを設定し、基底クラスの frame を初期化する
+  /// Source Reader の出力フォーマットを設定し基底クラスの frame を初期化する
   ///
   /// @param index 選択するフォーマットのリストインデックス
   ///
@@ -195,9 +201,10 @@ public:
   CamMf()
     : pMediaSource{ nullptr }
     , pSourceReader{ nullptr }
-    , pOutputBuffer{ nullptr }
     , pDecoder{ nullptr }
+    , cbDecoder{ 0 }
     , pConverter{ nullptr }
+    , cbConverter{ 0 }
   {
   }
 
