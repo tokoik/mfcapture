@@ -96,7 +96,7 @@ const char* CamMf::ComInitializer::initialize()
   IMFAttributes* pAttributes{ nullptr };
 
   // COM ライブラリを初期化する
-  if (FAILED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)))
+  if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
   {
     // COM ライブラリの初期化に失敗した
     message = "Failed to initialize COM library.";
@@ -107,7 +107,7 @@ const char* CamMf::ComInitializer::initialize()
   coInitialized = true;
 
   // Media Foundation を起動する
-  if (FAILED(MFStartup(MF_VERSION)))
+  if (FAILED(MFStartup(MF_VERSION, MFSTARTUP_FULL)))
   {
     // Media Foundation の起動に失敗した
     message = "Failed to start Media Foundation.";
@@ -136,8 +136,8 @@ const char* CamMf::ComInitializer::initialize()
   }
 
   // メディアソースを列挙する
-  if (FAILED(MFEnumDeviceSources(
-    pAttributes, &ppSourceActivate, &cSourceActivate)))
+  if (FAILED(MFEnumDeviceSources(pAttributes,
+    &ppSourceActivate, &cSourceActivate)))
   {
     // メディアソースの列挙に失敗した
     message = "Failed to enumerate media sources.";
@@ -471,7 +471,7 @@ bool CamMf::setFormat(int index)
   if (FAILED(hr)) goto done;
 
   // 基底クラスの frame メンバーをフレームのサイズに合わせる
-  frame.create(selectedFormat.height, selectedFormat.width, CV_8UC4);
+  frame = cv::Mat(selectedFormat.height, selectedFormat.width, CV_8UC4);
 
   // 基底クラスの pixels メンバーのサイズをフレームのサイズに合わせる
   pixels.resize(frame.total() * frame.elemSize());
