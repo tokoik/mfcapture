@@ -175,6 +175,7 @@
     <ClInclude Include="Calibration.h" />
     <ClInclude Include="CamCv.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CamImage.h" />
     <ClInclude Include="CamMf.h" />
     <ClInclude Include="Capture.h" />
     <ClInclude Include="Config.h" />

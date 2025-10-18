@@ -57,8 +57,8 @@ public:
     // 必要なら上下を反転する
     if (flip) cv::flip(frame, frame, 1);
 
-    // 転送用の一時メモリにデータを格納する
-    copyPixels();
+    // 読み出したデータを一時メモリにコピーする
+    frame.copyTo(image);
 
     // 画像が読み込まれたことを記録する
     captured = true;
@@ -75,7 +75,7 @@ public:
   bool isOpened() const
   {
     // 画像が読み込めていたら true
-    return !pixels.empty();
+    return !image.empty();
   }
 
   ///

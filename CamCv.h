@@ -72,14 +72,8 @@ class CamCv : public Camera
       << ", fourcc: " << codec << "\n";
 #endif
 
-    // 取り出したフレームのデータサイズを求める
-    const auto length{ frame.total() * frame.elemSize() };
-
-    // 転送用の一時メモリを確保する
-    pixels.resize(length);
-
-    // 取り出したフレームのデータを転送用の一時メモリに格納する
-    copyPixels();
+    // キャプチャしたデータを一時メモリにコピーする
+    frame.copyTo(image);
 
     // フレームがキャプチャされたことを記録する
     captured = true;
@@ -108,8 +102,8 @@ class CamCv : public Camera
         // ピクセルバッファオブジェクトをロックしてから
         std::lock_guard<std::mutex> lock{ mtx };
 
-        // 転送用の一時メモリにデータを格納したら
-        copyPixels();
+        // キャプチャしたデータを一時メモリにコピーして
+        frame.copyTo(image);
 
         // 新しいフレームがキャプチャされたことを通知する
         captured = true;

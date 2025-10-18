@@ -470,11 +470,8 @@ bool CamMf::setFormat(int index)
   hr = pSourceReader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM, nullptr, pMediaType);
   if (FAILED(hr)) goto done;
 
-  // 基底クラスの frame メンバーをフレームのサイズに合わせる
+  // 基底クラスの frame メンバーをフレームのサイズに合わせて作っておく
   frame = cv::Mat(selectedFormat.height, selectedFormat.width, CV_8UC4);
-
-  // 基底クラスの pixels メンバーのサイズをフレームのサイズに合わせる
-  pixels.resize(frame.total() * frame.elemSize());
 
   // インターバルを計算する
   interval = (selectedFormat.fpsDenom != 0)
@@ -797,8 +794,11 @@ void CamMf::capture()
         // ピクセルバッファオブジェクトをロックしてから
         std::lock_guard<std::mutex> lock{ mtx };
 
-        // データをコピーする
-        copyPixels(pData, cbDataLength);
+        // 基底クラスの frame をキャプチャデータで更新する
+        frame = cv::Mat(frame.rows, frame.cols, frame.type(), pData);
+
+        // キャプチャしたデータを一時メモリにコピーする
+        frame.copyTo(image);
 
         // メディアバッファのロックを解除する
         pBuffer->Unlock();
