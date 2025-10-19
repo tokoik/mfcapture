@@ -486,41 +486,47 @@ bool CamMf::setFormat(int index)
     {
       // 選択されたビデオフォーマットのデコーダを探す
       hr = findVideoDecoder(selectedFormat.subType, &pDecoder);
+      if (FAILED(hr)) goto done;
 
-      // デコーダ MFT のセットアップと接続を行う
-      if (SUCCEEDED(hr)) hr = setUpPipeline(pDecoder, selectedFormat, MFVideoFormat_NV12);
-
-      // MFT のセットアップに失敗したら
-      if (FAILED(hr))
-      {
-        // カメラを閉じてクリーンアップする
-        close();
-        goto done;
-      }
-
-      // デコーダの出力バッファのサイズを計算する
-      MFCalculateImageSize(MFVideoFormat_NV12, frame.rows, frame.cols, &cbDecoder);
+      // MFT デコーダのセットアップと接続を行う
+      hr = setUpPipeline(pDecoder, selectedFormat, MFVideoFormat_NV12);
+      if (FAILED(hr)) goto done;
 
       // デコード後のビデオフォーマットは NV12 にしている
       selectedFormat.subType = MFVideoFormat_NV12;
+
+      // デコーダの出力バッファのサイズを計算する
+      UINT32 cbDecoder{ 0 };
+      MFCalculateImageSize(MFVideoFormat_NV12, frame.rows, frame.cols, &cbDecoder);
+
+      // デコーダの出力バッファを作成する
+      hr = MFCreateMemoryBuffer(cbDecoder, &pDecoderBuffer);
+      if (FAILED(hr)) goto done;
+
+      // 出力バッファのサイズを設定する
+      hr = pDecoderBuffer->SetCurrentLength(static_cast<DWORD>(cbDecoder));
+      if (FAILED(hr)) goto done;
     }
 
     // MFT をインスタンス化する
-    if (SUCCEEDED(hr)) hr = CoCreateInstance(CLSID_CColorConvertDMO, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pConverter));
+    hr = CoCreateInstance(CLSID_CColorConvertDMO, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pConverter));
+    if (FAILED(hr)) goto done;
 
-    // カラーコンバータ MFT のセットアップと接続を行う
-    if (SUCCEEDED(hr)) hr = setUpPipeline(pConverter, selectedFormat, MFVideoFormat_RGB32);
-
-    // MFT のセットアップに失敗したら
-    if (FAILED(hr))
-    {
-      // カメラを閉じてクリーンアップする
-      close();
-      goto done;
-    }
+    // MFT カラーコンバータのセットアップと接続を行う
+    hr = setUpPipeline(pConverter, selectedFormat, MFVideoFormat_RGB32);
+    if (FAILED(hr)) goto done;
 
     // カラーコンバータの出力バッファのサイズを計算する
+    UINT32 cbConverter{ 0 };
     MFCalculateImageSize(MFVideoFormat_RGB32, frame.rows, frame.cols, &cbConverter);
+
+    // カラー変換用の出力バッファを作成する
+    hr = MFCreateMemoryBuffer(cbConverter, &pConverterBuffer);
+    if (FAILED(hr)) goto done;
+
+    // 出力バッファのサイズを設定する
+    hr = pConverterBuffer->SetCurrentLength(static_cast<DWORD>(cbConverter));
+    if (FAILED(hr)) goto done;
   }
 
 done:
@@ -528,8 +534,14 @@ done:
   // メディアタイプはもう使わないので解放する
   SafeRelease(&pMediaType);
 
-  // フォーマットの設定に成功していたら true を返す
-  return SUCCEEDED(hr);
+  // 成功したら true を返す
+  if (SUCCEEDED(hr)) return true;
+
+  // 失敗したときはカメラを閉じて
+  close();
+
+  // false を返す
+  return false;
 }
 
 //
@@ -625,16 +637,14 @@ void CamMf::capture()
     // サンプルが取得できていなければ戻る
     if (!pSample) continue;
 
-    // サンプルから取り出したメディアバッファのポインタ
+    // サンプルから取り出したメディアバッファ
     IMFMediaBuffer* pBuffer{ nullptr };
 
-    // デコーダの出力フレームを保持するサンプルとバッファのポインタ
+    // デコーダの出力フレームを保持するサンプル
     IMFSample* pDecodedSample{ nullptr };
-    IMFMediaBuffer* pDecoderBuffer{ nullptr };
 
-    // カラーコンバータの出力フレームを保持するサンプルとバッファのポインタ
+    // カラーコンバータの出力フレームを保持するサンプル
     IMFSample* pConvertedSample{ nullptr };
-    IMFMediaBuffer* pConverterBuffer{ nullptr };
 
     // ProcessOutput の呼び出しの状態
     DWORD dwStatus{ 0 };
@@ -670,14 +680,6 @@ void CamMf::capture()
 #endif
         goto done;
       }
-
-      // デコーダの出力バッファを作成する
-      hr = MFCreateMemoryBuffer(cbDecoder, &pDecoderBuffer);
-      if (FAILED(hr)) goto done;
-
-      // 出力バッファのサイズを設定する
-      hr = pDecoderBuffer->SetCurrentLength(static_cast<DWORD>(cbDecoder));
-      if (FAILED(hr)) goto done;
 
       // デコーダの出力サンプルを作成する
       hr = MFCreateSample(&pDecodedSample);
@@ -730,14 +732,6 @@ void CamMf::capture()
     {
       // サンプルをカラーコンバータに渡す
       if (FAILED(pConverter->ProcessInput(0, pSample, 0))) goto done;
-
-      // カラー変換用の出力バッファを作成する
-      hr = MFCreateMemoryBuffer(cbConverter, &pConverterBuffer);
-      if (FAILED(hr)) goto done;
-
-      // 出力バッファのサイズを設定する
-      hr = pConverterBuffer->SetCurrentLength(static_cast<DWORD>(cbConverter));
-      if (FAILED(hr)) goto done;
 
       // カラーコンバータの出力サンプルを作成する
       hr = MFCreateSample(&pConvertedSample);
@@ -806,11 +800,9 @@ void CamMf::capture()
 
     // デコーダの出力サンプルとバッファを解放する
     if (pDecodedSample) pDecodedSample->Release();
-    if (pDecoderBuffer) pDecoderBuffer->Release();
 
     // カラーコンバータの出力サンプルバッファを解放する
     if (pConvertedSample) pConvertedSample->Release();
-    if (pConverterBuffer) pConverterBuffer->Release();
 
     // サンプルを解放する
     pSample->Release();
@@ -826,9 +818,17 @@ void CamMf::capture()
 //
 void CamMf::close()
 {
-  // MFT を解放する
+  // MFT デコーダを解放する
   cleanUpTransform(&pDecoder);
+
+  // MFT カラーコンバータを解放する
   cleanUpTransform(&pConverter);
+
+  // MFT デコーダのバッファを解放する
+  SafeRelease(&pDecoderBuffer);
+
+  // MFT カラーコンバータのバッファを解放する
+  SafeRelease(&pConverterBuffer);
 
   // Source Reader を解放する
   SafeRelease(&pSourceReader);

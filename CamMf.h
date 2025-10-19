@@ -122,20 +122,20 @@ class CamMf : public Camera
   /// メディアソース
   IMFMediaSource* pMediaSource;
 
-  /// メディアソースの読み取り
+  /// メディアソースのリーダー
   IMFSourceReader* pSourceReader;
 
   /// MFT デコーダ
   IMFTransform* pDecoder;
 
-  /// MFT デコーダが使うバッファのサイズ
-  UINT32 cbDecoder;
+  // MFT デコーダの出力フレームを保持するバッファ
+  IMFMediaBuffer* pDecoderBuffer;
 
   /// MFT カラーコンバータ
   IMFTransform* pConverter;
 
-  /// MFT カラーコンバータが使うバッファのサイズ
-  UINT32 cbConverter;
+  /// MFT カラーコンバータの出力フレームを保持するバッファ
+  IMFMediaBuffer* pConverterBuffer;
 
   /// 使用可能なビデオフォーマットのリスト
   std::vector<VideoFormat> availableFormats;
@@ -202,9 +202,9 @@ public:
     : pMediaSource{ nullptr }
     , pSourceReader{ nullptr }
     , pDecoder{ nullptr }
-    , cbDecoder{ 0 }
+    , pDecoderBuffer{ nullptr }
     , pConverter{ nullptr }
-    , cbConverter{ 0 }
+    , pConverterBuffer{ nullptr }
   {
   }
 
