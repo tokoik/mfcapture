@@ -628,6 +628,14 @@ void CamMf::capture()
     // サンプルから取り出したメディアバッファのポインタ
     IMFMediaBuffer* pBuffer{ nullptr };
 
+    // デコーダの出力フレームを保持するサンプルとバッファのポインタ
+    IMFSample* pDecodedSample{ nullptr };
+    IMFMediaBuffer* pDecoderBuffer{ nullptr };
+
+    // カラーコンバータの出力フレームを保持するサンプルとバッファのポインタ
+    IMFSample* pConvertedSample{ nullptr };
+    IMFMediaBuffer* pConverterBuffer{ nullptr };
+
     // ProcessOutput の呼び出しの状態
     DWORD dwStatus{ 0 };
 
@@ -663,25 +671,21 @@ void CamMf::capture()
         goto done;
       }
 
-      // デコードされた NV12 フレームを保持するサンプルへのポインタ
-      IMFSample* pDecodedSample{ nullptr };
-
       // デコーダの出力バッファを作成する
-      IMFMediaBuffer* pDecoderBuffer{ nullptr };
-      if (FAILED(MFCreateMemoryBuffer(cbDecoder, &pDecoderBuffer))) goto done;
+      hr = MFCreateMemoryBuffer(cbDecoder, &pDecoderBuffer);
+      if (FAILED(hr)) goto done;
 
       // 出力バッファのサイズを設定する
-      if (SUCCEEDED(hr)) pDecoderBuffer->SetCurrentLength(static_cast<DWORD>(cbDecoder));
+      hr = pDecoderBuffer->SetCurrentLength(static_cast<DWORD>(cbDecoder));
+      if (FAILED(hr)) goto done;
 
       // デコーダの出力サンプルを作成する
-      if (FAILED(MFCreateSample(&pDecodedSample)))
-      {
-        pDecoderBuffer->Release();
-        goto done;
-      }
+      hr = MFCreateSample(&pDecodedSample);
+      if (FAILED(hr)) goto done;
 
       // デコーダの出力サンプルにバッファを追加する
-      pDecodedSample->AddBuffer(pDecoderBuffer);
+      hr = pDecodedSample->AddBuffer(pDecoderBuffer);
+      if (FAILED(hr)) goto done;
 
       // デコーダの出力バッファ
       MFT_OUTPUT_DATA_BUFFER decodedBuffer{ 0, pDecodedSample, 0, nullptr };
@@ -710,8 +714,6 @@ void CamMf::capture()
           std::cerr << "Code: " << std::hex << hr << std::endl; break;
         }
 #endif
-        pDecoderBuffer->Release();
-        pDecodedSample->Release();
         goto done;
       }
 
@@ -720,6 +722,7 @@ void CamMf::capture()
 
       // デコードに成功したらデコードされたサンプルを使う
       pSample = pDecodedSample;
+      pDecodedSample = nullptr;
     }
 
     // カラーコンバータが設定されていれば (NV12 か YUY2 か MJPG が H264 の場合)
@@ -728,46 +731,40 @@ void CamMf::capture()
       // サンプルをカラーコンバータに渡す
       if (FAILED(pConverter->ProcessInput(0, pSample, 0))) goto done;
 
-      // カラー変換された RGB32 フレームを保持するサンプルへのポインタ
-      IMFSample* pConvertedSample{ nullptr };
-
       // カラー変換用の出力バッファを作成する
-      IMFMediaBuffer* pConverterBuffer{ nullptr };
-      if (FAILED(MFCreateMemoryBuffer(cbConverter, &pConverterBuffer))) goto done;
+      hr = MFCreateMemoryBuffer(cbConverter, &pConverterBuffer);
+      if (FAILED(hr)) goto done;
 
       // 出力バッファのサイズを設定する
-      if (SUCCEEDED(hr)) pConverterBuffer->SetCurrentLength(static_cast<DWORD>(cbConverter));
+      hr = pConverterBuffer->SetCurrentLength(static_cast<DWORD>(cbConverter));
+      if (FAILED(hr)) goto done;
 
       // カラーコンバータの出力サンプルを作成する
-      if (FAILED(MFCreateSample(&pConvertedSample)))
-      {
-        pConverterBuffer->Release();
-        goto done;
-      }
+      hr = MFCreateSample(&pConvertedSample);
+      if (FAILED(hr)) goto done;
 
       // カラーコンバータの出力サンプルにバッファを追加する
-      pConvertedSample->AddBuffer(pConverterBuffer);
+      hr = pConvertedSample->AddBuffer(pConverterBuffer);
+      if (FAILED(hr)) goto done;
 
       // カラーコンバータの出力バッファ
       MFT_OUTPUT_DATA_BUFFER convertedBuffer{ 0, pConvertedSample, 0, nullptr };
 
       // カラー変換処理を実行
-      if (FAILED(pConverter->ProcessOutput(0, 1, &convertedBuffer, &dwStatus)))
-      {
-        pConverterBuffer->Release();
-        pConvertedSample->Release();
-        goto done;
-      }
+      hr = pConverter->ProcessOutput(0, 1, &convertedBuffer, &dwStatus);
+      if (FAILED(hr)) goto done;
 
       // 元のサンプルはもう使わないので解放する
       pSample->Release();
 
       // コンバートに成功したらコンバートされたサンプルを使う
       pSample = pConvertedSample;
+      pConvertedSample = nullptr;
     }
 
     // サンプルからメディアバッファを取得して
-    if (FAILED(pSample->ConvertToContiguousBuffer(&pBuffer))) goto done;
+    hr = pSample->GetBufferByIndex(0, &pBuffer);
+    if (FAILED(hr)) goto done;
 
     // メディアバッファが取得できていれば
     if (pBuffer)
@@ -806,6 +803,14 @@ void CamMf::capture()
     }
 
   done:
+
+    // デコーダの出力サンプルとバッファを解放する
+    if (pDecodedSample) pDecodedSample->Release();
+    if (pDecoderBuffer) pDecoderBuffer->Release();
+
+    // カラーコンバータの出力サンプルバッファを解放する
+    if (pConvertedSample) pConvertedSample->Release();
+    if (pConverterBuffer) pConverterBuffer->Release();
 
     // サンプルを解放する
     pSample->Release();
