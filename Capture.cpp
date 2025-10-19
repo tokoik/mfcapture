@@ -20,6 +20,11 @@ bool Capture::openImage(const std::string& filename)
   {
     // このキャプチャデバイスを使うことにする
     camera = std::move(camImage);
+
+    // 使用可能なビデオフォーマットの表示名のリストを空にしておく
+    formatList = nullptr;
+
+    // 開けた
     return true;
   }
 
@@ -40,6 +45,14 @@ bool Capture::openMovie(const std::string& filename)
   {
     // このキャプチャデバイスを使うことにする
     camera = std::move(camCv);
+
+    // 使用可能なビデオフォーマットの表示名のリストを空にしておく
+    formatList = nullptr;
+
+    // ビデオの再生を開始する
+    start();
+
+    // 開けた
     return true;
   }
 

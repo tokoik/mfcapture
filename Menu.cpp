@@ -40,12 +40,12 @@ void Menu::openImage()
   // ファイルダイアログを開く
   if (NFD_OpenDialog(&filepath, imageFilter, 1, NULL) == NFD_OKAY)
   {
+    // スレッドが動作中なら停止する
+    capture.stop();
+
     // ダイアログで指定した画像ファイルが開けたら
     if (capture.openImage(filepath))
     {
-      // スレッドが動作中なら停止する
-      capture.stop();
-
       // 構成データの解像度と画角を開いた画像に合わせる
       setSize(capture.getSize());
     }
@@ -297,7 +297,7 @@ Menu::Menu(const Config& config, Capture& capture, Calibration& calibration)
   , capture{ capture }
   , calibration{ calibration }
   , deviceNumber{ 0 }
-  , formatNumber{ -1 }
+  , formatNumber{ 0 }
   , fileNumber{ 0 }
   , preferenceNumber{ 0 }
   , pose{ ggIdentity() }
@@ -494,71 +494,42 @@ void Menu::draw()
 
     ImGui::Separator();
 
-    // キャプチャデバイスが存在すれば
-    if (config.getDeviceCount() > 0)
+    // キャプチャデバイスが存在するとき
+    if (!config.getDeviceList().empty())
     {
-      // 装置関連項目
-      ImGui::Text("%s", u8"以下の変更は [開始] で反映します");
-
-      // キャプチャデバイスの選択コンボボックス
-      if (ImGui::BeginCombo(u8"装置", config.getDeviceName(deviceNumber).c_str()))
-      {
-        // すべてのキャプチャデバイスについて
-        for (int i = 0; i < static_cast<int>(config.getDeviceList().size()); ++i)
-        {
-          // キャプチャデバイス名を (それを選択していればハイライトして) コンボボックスに表示する
-          if (ImGui::Selectable(config.getDeviceName(i).c_str(), i == deviceNumber))
-          {
-            // キャプチャデバイスが変わったら
-            if (deviceNumber != i)
-            {
-              // キャプチャスレッドが動いていたら止める
-              capture.stop();
-
-              // 前に開いていたキャプチャデバイスを閉じる
-              capture.close();
-
-              // 表示したキャプチャデバイスが選択されていたらそのキャプチャデバイスを選択する
-              deviceNumber = i;
-
-              // キャプチャデバイスが変わったのでビデオフォーマットの選択を未選択にする
-              formatNumber = -1;
-            }
-
-            // この選択を次にコンボボックスを開いたときのデフォルトにしておく
-            ImGui::SetItemDefaultFocus();
-          }
-        }
-        ImGui::EndCombo();
-      }
-
-      // キャプチャデバイスのビデオフォーマットが未選択なら
-      if (formatNumber < 0)
-      {
-        // そのキャプチャデバイスを開いて
-        capture.openDevice(deviceNumber);
-
-        // 最初のビデオフォーマットを選択する
-        formatNumber = 0;
-      }
-
-      // 使用可能なビデオフォーマットのリストが空でなければ
+      // 使用可能なビデオフォーマットのリストが存在するデバイスなら
       if (capture.getFormatList())
       {
-        // 使用可能なビデオフォーマットの表示名のリスト
-        const auto& formatList{ *capture.getFormatList() };
+        // 装置関連項目
+        ImGui::Text("%s", u8"以下の変更は [開始] で反映します");
 
-        // ビデオフォーマットの選択コンボボックス
-        if (!formatList.empty() && ImGui::BeginCombo(u8"形式", formatList[formatNumber].c_str()))
+        // キャプチャデバイスの選択コンボボックス
+        if (ImGui::BeginCombo(u8"装置", config.getDeviceName(deviceNumber).c_str()))
         {
-          // すべてのビデオフォーマットについて
-          for (int i = 0; i < static_cast<int>(formatList.size()); ++i)
+          // すべてのキャプチャデバイスについて
+          for (int i = 0; i < static_cast<int>(config.getDeviceList().size()); ++i)
           {
-            // ビデオフォーマットを (それを選択していればハイライトして) コンボボックスに表示する
-            if (ImGui::Selectable(formatList[i].c_str(), i == formatNumber))
+            // キャプチャデバイス名を (それを選択していればハイライトして) コンボボックスに表示する
+            if (ImGui::Selectable(config.getDeviceName(i).c_str(), i == deviceNumber))
             {
-              // 表示したビデオフォーマットが選択されていたらそのビデオフォーマットを選択する
-              formatNumber = i;
+              // キャプチャデバイスが変わったら
+              if (deviceNumber != i)
+              {
+                // キャプチャスレッドが動いていたら止める
+                capture.stop();
+
+                // 前に開いていたキャプチャデバイスを閉じる
+                capture.close();
+
+                // 表示したキャプチャデバイスが選択されていたらそのキャプチャデバイスを選択する
+                deviceNumber = i;
+
+                // キャプチャデバイスが変わったので最初のビデオフォーマットを選択する
+                formatNumber = 0;
+
+                // 選択したキャプチャデバイスを開く
+                capture.openDevice(deviceNumber);
+              }
 
               // この選択を次にコンボボックスを開いたときのデフォルトにしておく
               ImGui::SetItemDefaultFocus();
@@ -567,39 +538,74 @@ void Menu::draw()
           ImGui::EndCombo();
         }
 
-        // キャプチャの開始と停止
-        if (capture)
+        // 使用可能なビデオフォーマットの表示名のリスト
+        const auto& formatList{ *capture.getFormatList() };
+
+        // 使用可能なビデオフォーマットが存在するなら
+        if (!formatList.empty())
         {
-          // キャプチャスレッドが動いているので止める
-          if (ImGui::Button(u8"停止")) capture.stop();
-          ImGui::SameLine();
-          ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.0f, 1.0f), "%s", u8"取得中");
+          // ビデオフォーマットの選択コンボボックス
+          if (ImGui::BeginCombo(u8"形式", formatList[formatNumber].c_str()))
+          {
+            // すべてのビデオフォーマットについて
+            for (int i = 0; i < static_cast<int>(formatList.size()); ++i)
+            {
+              // ビデオフォーマットを (それを選択していればハイライトして) コンボボックスに表示する
+              if (ImGui::Selectable(formatList[i].c_str(), i == formatNumber))
+              {
+                // 表示したビデオフォーマットが選択されていたらそのビデオフォーマットを選択する
+                formatNumber = i;
+
+                // この選択を次にコンボボックスを開いたときのデフォルトにしておく
+                ImGui::SetItemDefaultFocus();
+              }
+            }
+            ImGui::EndCombo();
+          }
+
+          // キャプチャの開始と停止
+          if (capture)
+          {
+            // キャプチャスレッドが動いているので止める
+            if (ImGui::Button(u8"停止")) capture.stop();
+            ImGui::SameLine();
+            ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.0f, 1.0f), "%s", u8"取得中");
+          }
+          else
+          {
+            // 「開始」ボタンをクリックしたときデバイスが選択されているとき
+            if (ImGui::Button(u8"開始") && deviceNumber >= 0)
+            {
+              // ビデオフォーマットを指定できたら
+              if (capture.select(formatNumber))
+              {
+                // キャプチャスレッドを動かす
+                capture.start();
+              }
+              else
+              {
+                // ビデオフォーマットが選択できなかった
+                errorMessage = u8"ビデオフォーマットが選択できません";
+              }
+            }
+            ImGui::SameLine();
+            ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"停止中");
+          }
         }
         else
         {
-          // 「開始」ボタンをクリックしたときデバイスが選択されているとき
-          if (ImGui::Button(u8"開始") && deviceNumber >= 0)
-          {
-            // ビデオフォーマットを指定できたら
-            if (capture.select(formatNumber))
-            {
-              // キャプチャスレッドを動かす
-              capture.start();
-            }
-            else
-            {
-              // ビデオフォーマットが選択できなかった
-              errorMessage = u8"ビデオフォーマットが選択できません";
-            }
-          }
-          ImGui::SameLine();
-          ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"停止中");
+          // キャプチャデバイスが開けなかった
+          ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"デバイスが開けません");
         }
       }
       else
       {
-        // キャプチャデバイスが開けなかった
-        ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"デバイスが開けません");
+        // ビデオキャプチャデバイスが選択されていないとき「ビデオ入力」ボタンが押されたら
+        if (ImGui::Button(u8"ビデオ入力") && deviceNumber >= 0)
+        {
+          // 以前に選んでいたキャプチャデバイスを以前のビデオフォーマットで開く
+          capture.openDevice(deviceNumber);
+        }
       }
     }
     else

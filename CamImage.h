@@ -94,7 +94,7 @@ public:
       std::ifstream::ate);
 
     // 画像ファイルが開けたら
-    if (file.good())
+    if (file.is_open())
     {
       // 画像ファイルを読み込むメモリを確保する
       std::vector<char> buffer(static_cast<std::vector<char>::size_type>(file.tellg()));

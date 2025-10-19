@@ -222,16 +222,6 @@ public:
   }
 
   ///
-  /// キャプチャデバイスの数を調べる
-  ///
-  /// @return キャプチャデバイスの数
-  ///
-  auto getDeviceCount() const
-  {
-    return static_cast<int>(deviceList.size());
-  }
-
-  ///
   /// キャプチャデバイスの名前を調べる
   ///
   /// @param number キャプチャデバイスの番号
