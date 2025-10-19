@@ -99,7 +99,7 @@ class CamCv : public Camera
       // ムービーファイルでないかムービーファイルの終端でなければ次のフレームを取り出して
       if (status && camera.retrieve(frame))
       {
-        // ピクセルバッファオブジェクトをロックしてから
+        // 一時メモリをロックしてから
         std::lock_guard<std::mutex> lock{ mtx };
 
         // キャプチャしたデータを一時メモリにコピーして

@@ -791,20 +791,23 @@ void CamMf::capture()
       // メディアバッファからフレームの情報を取得できたら
       if (SUCCEEDED(pBuffer->Lock(&pData, nullptr, &cbDataLength)) && pData)
       {
-        // ピクセルバッファオブジェクトをロックしてから
-        std::lock_guard<std::mutex> lock{ mtx };
+        // 一時メモリをロックして
+        mtx.lock();
 
-        // 基底クラスの frame をキャプチャデータで更新する
+        // 基底クラスの frame をキャプチャデータで更新してから
         frame = cv::Mat(frame.rows, frame.cols, frame.type(), pData);
 
-        // キャプチャしたデータを一時メモリにコピーする
+        // キャプチャしたデータを一時メモリにコピーしたら
         frame.copyTo(image);
+
+        // 新しいフレームがキャプチャされたことを通知して
+        captured = true;
+
+        // 一時メモリロックを解除したら
+        mtx.unlock();
 
         // メディアバッファのロックを解除する
         pBuffer->Unlock();
-
-        // 新しいフレームがキャプチャされたことを通知する
-        captured = true;
       }
 
       // メディアバッファを解放する

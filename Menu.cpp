@@ -43,6 +43,9 @@ void Menu::openImage()
     // ダイアログで指定した画像ファイルが開けたら
     if (capture.openImage(filepath))
     {
+      // スレッドが動作中なら停止する
+      capture.stop();
+
       // 構成データの解像度と画角を開いた画像に合わせる
       setSize(capture.getSize());
     }
@@ -546,7 +549,7 @@ void Menu::draw()
         const auto& formatList{ *capture.getFormatList() };
 
         // ビデオフォーマットの選択コンボボックス
-        if (ImGui::BeginCombo(u8"形式", formatList[formatNumber].c_str()))
+        if (!formatList.empty() && ImGui::BeginCombo(u8"形式", formatList[formatNumber].c_str()))
         {
           // すべてのビデオフォーマットについて
           for (int i = 0; i < static_cast<int>(formatList.size()); ++i)
