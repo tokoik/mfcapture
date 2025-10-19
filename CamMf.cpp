@@ -497,7 +497,7 @@ bool CamMf::setFormat(int index)
 
       // デコーダの出力バッファのサイズを計算する
       UINT32 cbDecoder{ 0 };
-      MFCalculateImageSize(MFVideoFormat_NV12, frame.rows, frame.cols, &cbDecoder);
+      MFCalculateImageSize(MFVideoFormat_NV12, frame.cols, frame.rows, &cbDecoder);
 
       // デコーダの出力バッファを作成する
       hr = MFCreateMemoryBuffer(cbDecoder, &pDecoderBuffer);
@@ -518,7 +518,7 @@ bool CamMf::setFormat(int index)
 
     // カラーコンバータの出力バッファのサイズを計算する
     UINT32 cbConverter{ 0 };
-    MFCalculateImageSize(MFVideoFormat_RGB32, frame.rows, frame.cols, &cbConverter);
+    MFCalculateImageSize(MFVideoFormat_RGB32, frame.cols, frame.rows, &cbConverter);
 
     // カラー変換用の出力バッファを作成する
     hr = MFCreateMemoryBuffer(cbConverter, &pConverterBuffer);
@@ -615,6 +615,49 @@ bool CamMf::select(int index)
   return setFormat(index);
 }
 
+HRESULT HandleStreamChange(IMFTransform* pDecoder)
+{
+  HRESULT hr = S_OK;
+  IMFMediaType* pNewOutputType = nullptr;
+
+  // 1. 新しい出力タイプの候補を取得
+  DWORD typeIndex = 0;
+  while (SUCCEEDED(hr))
+  {
+    hr = pDecoder->GetOutputAvailableType(0, typeIndex, &pNewOutputType);
+    if (FAILED(hr)) break;
+
+    // 2. ここで、アプリが受け入れられるフォーマットを探す
+    GUID subtype = { 0 };
+    pNewOutputType->GetGUID(MF_MT_SUBTYPE, &subtype);
+
+    if (subtype == MFVideoFormat_NV12) std::cerr << "Stream change to NV12" << std::endl;
+    else if (subtype == MFVideoFormat_YUY2) std::cerr << "Stream change to YUY2" << std::endl;
+    else std::cerr << "Stream change to other format" << std::endl;
+
+    if (subtype == MFVideoFormat_NV12 || subtype == MFVideoFormat_YUY2)
+    {
+
+      // 3. 新しい出力タイプを設定
+      hr = pDecoder->SetOutputType(0, pNewOutputType, 0);
+      pNewOutputType->Release();
+      break;
+    }
+
+    pNewOutputType->Release();
+    ++typeIndex;
+  }
+
+  // (2) 空の出力呼び出しを行う（重要）
+  MFT_OUTPUT_DATA_BUFFER dummy = { 0 };
+  DWORD status = 0;
+  do
+    hr = pDecoder->ProcessOutput(0, 1, &dummy, &status);
+  while (hr != MF_E_TRANSFORM_NEED_MORE_INPUT);
+
+  return hr;
+}
+
 //
 // フレームをキャプチャする
 //
@@ -709,7 +752,9 @@ void CamMf::capture()
         case MF_E_TRANSFORM_NEED_MORE_INPUT:
           std::cerr << "Transform needs more input." << std::endl; break;
         case MF_E_TRANSFORM_STREAM_CHANGE:
-          std::cerr << "Transform stream change." << std::endl; break;
+          std::cerr << "Transform stream change." << std::endl;
+          hr = HandleStreamChange(pDecoder);
+          break;
         case MF_E_TRANSFORM_TYPE_NOT_SET:
           std::cerr << "Transform type not set." << std::endl; break;
         default:
