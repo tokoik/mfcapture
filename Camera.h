@@ -309,20 +309,28 @@ public:
   ///
   /// 露出を上げる
   ///
-  virtual void increaseExposure() {}
+  virtual void increaseExposure()
+  {
+  }
 
   ///
   /// 露出を下げる
   ///
-  virtual void decreaseExposure() {}
+  virtual void decreaseExposure()
+  {
+  }
 
   ///
   /// 利得を上げる
   ///
-  virtual void increaseGain() {}
+  virtual void increaseGain()
+  {
+  }
 
   ///
   /// 利得を下げる
   ///
-  virtual void decreaseGain() {}
+  virtual void decreaseGain()
+  {
+  }
 };
