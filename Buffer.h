@@ -15,8 +15,6 @@ using namespace gg;
 // ピクセルバッファオブジェクトを使うとき
 #define USE_PIXEL_BUFFER_OBJECT
 
-#include <iostream>
-
 ///
 /// バッファクラス
 ///
