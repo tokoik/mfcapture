@@ -772,9 +772,9 @@ void CamMf::capture()
         // 現在のストリームを一旦止める
         pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, NULL);
         //pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
-        //pDecoder->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, NULL);
 
         // ストリームを再開する
+        pDecoder->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, NULL);
         //hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
         //if (FAILED(hr)) goto done;
         hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
