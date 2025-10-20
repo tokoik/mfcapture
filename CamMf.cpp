@@ -389,8 +389,8 @@ HRESULT CamMf::setUpPipeline(IMFTransform* pTransform, const VideoFormat& format
 
   // MFT をアクティブにする
   hr = pTransform->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, NULL);
-  if (SUCCEEDED(hr)) hr = pTransform->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
   if (SUCCEEDED(hr)) hr = pTransform->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
+  if (SUCCEEDED(hr)) hr = pTransform->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
 
 done:
 
@@ -411,8 +411,8 @@ void CamMf::cleanUpTransform(IMFTransform** pTransform) const
   if (*pTransform)
   {
     // MFT のストリーミングの終了を通知する
-    (*pTransform)->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
     (*pTransform)->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, NULL);
+    (*pTransform)->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
 
     // MFT を解放する
     (*pTransform)->Release();
@@ -621,8 +621,8 @@ bool CamMf::select(int index)
 HRESULT HandleStreamChange(IMFTransform* pDecoder)
 {
   // 現在のストリームを止める
-  pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
   pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, NULL);
+  pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
 
   HRESULT hr{ S_OK };
   IMFMediaType* pNewOutputType{ nullptr };
@@ -663,8 +663,8 @@ HRESULT HandleStreamChange(IMFTransform* pDecoder)
 
   // ストリームを再開する
   if (SUCCEEDED(hr)) pDecoder->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, NULL);
-  if (SUCCEEDED(hr)) hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
   if (SUCCEEDED(hr)) hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
+  if (SUCCEEDED(hr)) hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
 
   // 結果を返す
   return hr;
@@ -759,16 +759,26 @@ void CamMf::capture()
 #if defined(_DEBUG)
         std::cerr << "Transform stream change." << std::endl;
 #endif
+        // 保留中のフレームをすべて処理する
+        do
+        {
+          hr = pDecoder->ProcessOutput(0, 1, &decodedBuffer, &dwStatus);
+#if defined(_DEBUG)
+          if (hr == E_FAIL) std::cerr << "Failed to process output during stream change handling." << std::endl;
+#endif
+        }
+        while (hr != MF_E_TRANSFORM_NEED_MORE_INPUT);
 
         // 現在のストリームを一旦止める
-        pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
         pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, NULL);
+        //pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
+        //pDecoder->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, NULL);
 
         // ストリームを再開する
+        //hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
+        //if (FAILED(hr)) goto done;
         hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
-        if (FAILED(hr)) goto done;
-        hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
-        if (FAILED(hr)) goto done;
+        //if (FAILED(hr)) goto done;
       }
 
       // デコード処理に失敗したら
