@@ -675,8 +675,8 @@ HRESULT HandleStreamChange(IMFTransform* pDecoder)
 //
 void CamMf::capture()
 {
-  // 結果
-  HRESULT hr{ S_OK };
+  // ストリームを再開するかどうかのフラグ
+  bool restart{ false };
 
   // スレッドが実行可の間
   while (running)
@@ -707,8 +707,21 @@ void CamMf::capture()
     // デコーダが設定されていれば (MJPG か H264 の場合)
     if (pDecoder)
     {
+      // ストリームが止まっていたら
+      if (restart)
+      {
+        // 再開する
+        HRESULT hr{ pDecoder->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, NULL) };
+        if (FAILED(hr)) goto done;
+        hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
+        if (FAILED(hr)) goto done;
+        hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
+        if (FAILED(hr)) goto done;
+        restart = false;
+      }
+
       // サンプルをデコーダに渡す
-      hr = pDecoder->ProcessInput(0, pSample, 0);
+      HRESULT hr{ pDecoder->ProcessInput(0, pSample, 0) };
       if (FAILED(hr))
       {
 #if defined(_DEBUG)
@@ -756,10 +769,13 @@ void CamMf::capture()
 #if defined(_DEBUG)
         std::cerr << "Transform stream change." << std::endl;
 #endif
-        hr = HandleStreamChange(pDecoder);
+        // 現在のストリームを一旦止める
+        pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
+        pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, NULL);
+        restart = true;
+        // hr = HandleStreamChange(pDecoder);
       }
-
-      if (FAILED(hr))
+      else if (FAILED(hr))
       {
 #if defined(_DEBUG)
         std::cerr << "Decoder process output failed: ";
@@ -794,7 +810,8 @@ void CamMf::capture()
     if (pConverter)
     {
       // サンプルをカラーコンバータに渡す
-      if (FAILED(pConverter->ProcessInput(0, pSample, 0))) goto done;
+      HRESULT hr{ pConverter->ProcessInput(0, pSample, 0) };
+      if (FAILED(hr)) goto done;
 
       // カラーコンバータの出力サンプルを作成する
       hr = MFCreateSample(&pConvertedSample);
@@ -820,8 +837,7 @@ void CamMf::capture()
     }
 
     // サンプルからメディアバッファを取得して
-    hr = pSample->GetBufferByIndex(0, &pBuffer);
-    if (FAILED(hr)) goto done;
+    if (FAILED(pSample->GetBufferByIndex(0, &pBuffer))) goto done;
 
     // メディアバッファが取得できていれば
     if (pBuffer)
