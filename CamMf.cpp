@@ -615,46 +615,58 @@ bool CamMf::select(int index)
   return setFormat(index);
 }
 
+//
+// ストリームのフォーマット変更を処理する
+//
 HRESULT HandleStreamChange(IMFTransform* pDecoder)
 {
-  HRESULT hr = S_OK;
-  IMFMediaType* pNewOutputType = nullptr;
+  // 現在のストリームを止める
+  pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
+  pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, NULL);
 
-  // 1. 新しい出力タイプの候補を取得
-  DWORD typeIndex = 0;
-  while (SUCCEEDED(hr))
+  HRESULT hr{ S_OK };
+  IMFMediaType* pNewOutputType{ nullptr };
+
+  // 使用可能な出力タイプを探す
+  for (DWORD typeIndex = 0;; ++typeIndex)
   {
+    // 出力タイプの候補を取得する
     hr = pDecoder->GetOutputAvailableType(0, typeIndex, &pNewOutputType);
+
+    // 取得に失敗したら終わる
     if (FAILED(hr)) break;
 
-    // 2. ここで、アプリが受け入れられるフォーマットを探す
-    GUID subtype = { 0 };
+    // 取得した出力タイプのビデオフォーマットを調べる
+    GUID subtype{ 0 };
     pNewOutputType->GetGUID(MF_MT_SUBTYPE, &subtype);
 
-    if (subtype == MFVideoFormat_NV12) std::cerr << "Stream change to NV12" << std::endl;
-    else if (subtype == MFVideoFormat_YUY2) std::cerr << "Stream change to YUY2" << std::endl;
-    else std::cerr << "Stream change to other format" << std::endl;
+#if defined(_DEBUG)
+    if (subtype == MFVideoFormat_NV12)
+      std::cerr << "Stream change to NV12" << std::endl;
+    else if (subtype == MFVideoFormat_YUY2)
+      std::cerr << "Stream change to YUY2" << std::endl;
+    else
+      std::cerr << "Stream change to other format" << std::endl;
+#endif
 
+    // ビデオフォーマットが NV12 または YUY2 フォーマットなら
     if (subtype == MFVideoFormat_NV12 || subtype == MFVideoFormat_YUY2)
     {
-
-      // 3. 新しい出力タイプを設定
+      // これを新しい出力タイプとして設定する
       hr = pDecoder->SetOutputType(0, pNewOutputType, 0);
       pNewOutputType->Release();
       break;
     }
 
     pNewOutputType->Release();
-    ++typeIndex;
   }
 
-  // (2) 空の出力呼び出しを行う（重要）
-  MFT_OUTPUT_DATA_BUFFER dummy = { 0 };
-  DWORD status = 0;
-  do
-    hr = pDecoder->ProcessOutput(0, 1, &dummy, &status);
-  while (hr != MF_E_TRANSFORM_NEED_MORE_INPUT);
+  // ストリームを再開する
+  if (SUCCEEDED(hr)) pDecoder->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, NULL);
+  if (SUCCEEDED(hr)) hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
+  if (SUCCEEDED(hr)) hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
 
+  // 結果を返す
   return hr;
 }
 
@@ -737,6 +749,16 @@ void CamMf::capture()
 
       // デコード処理を実行
       hr = pDecoder->ProcessOutput(0, 1, &decodedBuffer, &dwStatus);
+
+      // ストリームのフォーマットが変化した場合の処理 (フレームのデコード完了？)
+      if (hr == MF_E_TRANSFORM_STREAM_CHANGE)
+      {
+#if defined(_DEBUG)
+        std::cerr << "Transform stream change." << std::endl;
+#endif
+        hr = HandleStreamChange(pDecoder);
+      }
+
       if (FAILED(hr))
       {
 #if defined(_DEBUG)
@@ -751,10 +773,6 @@ void CamMf::capture()
           std::cerr << "Invalid stream number." << std::endl; break;
         case MF_E_TRANSFORM_NEED_MORE_INPUT:
           std::cerr << "Transform needs more input." << std::endl; break;
-        case MF_E_TRANSFORM_STREAM_CHANGE:
-          std::cerr << "Transform stream change." << std::endl;
-          hr = HandleStreamChange(pDecoder);
-          break;
         case MF_E_TRANSFORM_TYPE_NOT_SET:
           std::cerr << "Transform type not set." << std::endl; break;
         default:
