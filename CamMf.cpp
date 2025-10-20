@@ -675,9 +675,6 @@ HRESULT HandleStreamChange(IMFTransform* pDecoder)
 //
 void CamMf::capture()
 {
-  // ストリームを再開するかどうかのフラグ
-  bool restart{ false };
-
   // スレッドが実行可の間
   while (running)
   {
@@ -707,21 +704,10 @@ void CamMf::capture()
     // デコーダが設定されていれば (MJPG か H264 の場合)
     if (pDecoder)
     {
-      // ストリームが止まっていたら
-      if (restart)
-      {
-        // 再開する
-        HRESULT hr{ pDecoder->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, NULL) };
-        if (FAILED(hr)) goto done;
-        hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
-        if (FAILED(hr)) goto done;
-        hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
-        if (FAILED(hr)) goto done;
-        restart = false;
-      }
-
       // サンプルをデコーダに渡す
       HRESULT hr{ pDecoder->ProcessInput(0, pSample, 0) };
+
+      // デコーダへの入力に失敗したら
       if (FAILED(hr))
       {
 #if defined(_DEBUG)
@@ -730,6 +716,10 @@ void CamMf::capture()
         {
         case E_INVALIDARG:
           std::cerr << "Invalid argument." << std::endl; break;
+        case E_UNEXPECTED:
+          std::cerr << "Unexpected error." << std::endl; break;
+        case E_FAIL:
+          std::cerr << "Unspecified error." << std::endl; break;
         case MF_E_INVALIDSTREAMNUMBER:
           std::cerr << "Invalid stream number." << std::endl; break;
         case MF_E_NO_SAMPLE_DURATION:
@@ -769,13 +759,22 @@ void CamMf::capture()
 #if defined(_DEBUG)
         std::cerr << "Transform stream change." << std::endl;
 #endif
+
         // 現在のストリームを一旦止める
         pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
         pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, NULL);
-        restart = true;
-        // hr = HandleStreamChange(pDecoder);
+
+        // ストリームを再開する
+        hr = pDecoder->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, NULL);
+        if (FAILED(hr)) goto done;
+        hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
+        if (FAILED(hr)) goto done;
+        hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
+        if (FAILED(hr)) goto done;
       }
-      else if (FAILED(hr))
+
+      // デコード処理に失敗したら
+      if (FAILED(hr))
       {
 #if defined(_DEBUG)
         std::cerr << "Decoder process output failed: ";
@@ -785,6 +784,8 @@ void CamMf::capture()
           std::cerr << "Invalid argument." << std::endl; break;
         case E_UNEXPECTED:
           std::cerr << "Unexpected error." << std::endl; break;
+        case E_FAIL:
+          std::cerr << "Unspecified error." << std::endl; break;
         case MF_E_INVALIDSTREAMNUMBER:
           std::cerr << "Invalid stream number." << std::endl; break;
         case MF_E_TRANSFORM_NEED_MORE_INPUT:
