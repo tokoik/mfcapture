@@ -7,6 +7,9 @@
 ///
 #include "Capture.h"
 
+/// 空のビデオフォーマットの表示名のリスト
+const std::vector<std::string> Capture::emptyFormatList;
+
 //
 // 画像ファイルを開く
 //
@@ -22,7 +25,7 @@ bool Capture::openImage(const std::string& filename)
     camera = std::move(camImage);
 
     // 使用可能なビデオフォーマットの表示名のリストを空にしておく
-    formatList = nullptr;
+    formatList = &emptyFormatList;
 
     // 開けた
     return true;
@@ -47,7 +50,7 @@ bool Capture::openMovie(const std::string& filename)
     camera = std::move(camCv);
 
     // 使用可能なビデオフォーマットの表示名のリストを空にしておく
-    formatList = nullptr;
+    formatList = &emptyFormatList;
 
     // ビデオの再生を開始する
     start();
@@ -72,16 +75,26 @@ bool Capture::openDevice(int deviceNumber)
   auto camMf{ std::make_unique<CamMf>() };
 
   // このデバイスをデバイス番号で開いて
-  if (!camMf->open(deviceNumber)) return false;
+  if (camMf->open(deviceNumber))
+  {
+    // 使用可能なビデオフォーマットの表示名のリストを保存しておく
+    formatList = &camMf->getFormatList();
 
-  // 使用可能なビデオフォーマットの表示名のリストを保存しておく
-  formatList = &camMf->getFormatList();
+    // このキャプチャデバイスを使うことにする
+    camera = std::move(camMf);
 
-  // このキャプチャデバイスを使うことにする
-  camera = std::move(camMf);
+    // 開けた
+    return true;
+  }
 
-  // 開けた
-  return true;
+  // 使用可能なビデオフォーマットの表示名のリストを空にしておく
+  formatList = &emptyFormatList;
+
+  // カメラを無効にしておく
+  camera.reset();
+
+  // 開けなかった
+  return false;
 }
 
 //
@@ -126,7 +139,7 @@ void Capture::close()
   // キャプチャデバイスが有効ならキャプチャスレッドを停止する
   if (camera)
   {
-    formatList = nullptr;
+    formatList = &emptyFormatList;
     camera->close();
     camera.reset();
   }

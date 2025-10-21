@@ -31,6 +31,9 @@ class Capture
   /// 使用可能なビデオフォーマットの表示名のリスト
   const std::vector<std::string>* formatList;
 
+  /// 空のビデオフォーマットの表示名のリスト
+  static const std::vector<std::string> emptyFormatList;
+
 public:
 
   ///
@@ -38,7 +41,7 @@ public:
   ///
   Capture()
     : camera{ nullptr }
-    , formatList{ nullptr }
+    , formatList{ &emptyFormatList }
   {
   }
 
@@ -80,9 +83,9 @@ public:
   ///
   /// @return 使用可能なビデオフォーマットの表示名のリスト
   ///
-  const std::vector<std::string>* getFormatList() const
+  const auto& getFormatList() const
   {
-    return formatList;
+    return *formatList;
   }
 
   ///

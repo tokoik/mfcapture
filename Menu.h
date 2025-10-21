@@ -43,12 +43,6 @@ class Menu
   /// 選択しているビデオフォーマットの番号
   int formatNumber;
 
-  /// 入力ファイルリスト
-  std::vector<std::string> fileList;
-
-  /// 入力ファイルリストの現在の番号
-  int fileNumber;
-
   /// 使用中の構成の番号
   int preferenceNumber;
 

@@ -48,6 +48,9 @@ void Menu::openImage()
     {
       // 構成データの解像度と画角を開いた画像に合わせる
       setSize(capture.getSize());
+
+      // キャプチャデバイスを使わない
+      formatNumber = -1;
     }
     else
     {
@@ -71,31 +74,17 @@ void Menu::openMovie()
   // ファイルダイアログを開く
   if (NFD_OpenDialog(&filepath, movieFilter, 1, NULL) == NFD_OKAY)
   {
-    // ファイルのリストの要素数
-    const auto fileListLength{ static_cast<int>(fileList.size()) };
-
-    // ファイルのリストの各ファイルについて
-    for (fileNumber = 0; fileNumber < fileListLength; ++fileNumber)
-    {
-      // 選択したファイルと同じものがあればそれを選択する
-      if (fileList[fileNumber] == filepath) break;
-    }
-
-    // 選択したファイルがファイルのリストの中になければ
-    if (fileNumber == fileListLength)
-    {
-      // その先頭にファイルパスを挿入して
-      fileList.insert(fileList.begin(), filepath);
-
-      // そのエントリを選択する
-      fileNumber = 0;
-    }
+    // スレッドが動作中なら停止する
+    capture.stop();
 
     // ダイアログで指定した動画ファイルが開けたら
     if (capture.openMovie(filepath))
     {
       // 構成データの解像度と画角を開いた画像に合わせる
       setSize(capture.getSize());
+
+      // キャプチャデバイスを使わない
+      formatNumber = -1;
     }
     else
     {
@@ -297,8 +286,7 @@ Menu::Menu(const Config& config, Capture& capture, Calibration& calibration)
   , capture{ capture }
   , calibration{ calibration }
   , deviceNumber{ 0 }
-  , formatNumber{ 0 }
-  , fileNumber{ 0 }
+  , formatNumber{ -1 }
   , preferenceNumber{ 0 }
   , pose{ ggIdentity() }
   , menubarHeight{ 0 }
@@ -497,8 +485,8 @@ void Menu::draw()
     // キャプチャデバイスが存在するとき
     if (!config.getDeviceList().empty())
     {
-      // 使用可能なビデオフォーマットのリストが存在するデバイスなら
-      if (capture.getFormatList())
+      // キャプチャデバイスを使うとき
+      if (formatNumber >= 0)
       {
         // 装置関連項目
         ImGui::Text("%s", u8"以下の変更は [開始] で反映します");
@@ -539,7 +527,7 @@ void Menu::draw()
         }
 
         // 使用可能なビデオフォーマットの表示名のリスト
-        const auto& formatList{ *capture.getFormatList() };
+        const auto& formatList{ capture.getFormatList() };
 
         // 使用可能なビデオフォーマットが存在するなら
         if (!formatList.empty())
@@ -601,17 +589,20 @@ void Menu::draw()
       else
       {
         // ビデオキャプチャデバイスが選択されていないとき「ビデオ入力」ボタンが押されたら
-        if (ImGui::Button(u8"ビデオ入力") && deviceNumber >= 0)
+        if (ImGui::Button(u8"ビデオ入力"))
         {
-          // 以前に選んでいたキャプチャデバイスを以前のビデオフォーマットで開く
+          // 最初のビデオフォーマットを選択する
+          formatNumber = 0;
+
+          // 以前に選んでいたキャプチャデバイスを開く
           capture.openDevice(deviceNumber);
         }
       }
     }
     else
     {
-      // 使えるキャプチャデバイスがない
-      ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"デバイスが見つかりません");
+      // キャプチャデバイスが存在しないとき
+      ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"キャプチャデバイスが見つかりません");
     }
 
     // 入力パネルのメニュー終了
