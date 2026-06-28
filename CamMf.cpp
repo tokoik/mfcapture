@@ -6,6 +6,9 @@
 /// @date December 24, 2024
 ///
 #include "CamMf.h"
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 
 // Microsoft Media Foundation
 #pragma comment(lib, "MF.lib")
@@ -470,8 +473,12 @@ bool CamMf::setFormat(int index)
   hr = pSourceReader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM, nullptr, pMediaType);
   if (FAILED(hr)) goto done;
 
-  // 基底クラスの frame メンバーをフレームのサイズに合わせて作っておく
-  frame = cv::Mat(selectedFormat.height, selectedFormat.width, CV_8UC4);
+  // 基底クラスの解像度とチャンネル数を設定し、バッファサイズを設定する
+  width = selectedFormat.width;
+  height = selectedFormat.height;
+  channels = 4;
+  frame.resize(width * height * channels);
+  image.resize(width * height * channels);
 
   // インターバルを計算する
   interval = (selectedFormat.fpsDenom != 0)
@@ -497,7 +504,7 @@ bool CamMf::setFormat(int index)
 
       // デコーダの出力バッファのサイズを計算する
       UINT32 cbDecoder{ 0 };
-      MFCalculateImageSize(MFVideoFormat_NV12, frame.cols, frame.rows, &cbDecoder);
+      MFCalculateImageSize(MFVideoFormat_NV12, width, height, &cbDecoder);
 
       // デコーダの出力バッファを作成する
       hr = MFCreateMemoryBuffer(cbDecoder, &pDecoderBuffer);
@@ -518,7 +525,7 @@ bool CamMf::setFormat(int index)
 
     // カラーコンバータの出力バッファのサイズを計算する
     UINT32 cbConverter{ 0 };
-    MFCalculateImageSize(MFVideoFormat_RGB32, frame.cols, frame.rows, &cbConverter);
+    MFCalculateImageSize(MFVideoFormat_RGB32, width, height, &cbConverter);
 
     // カラー変換用の出力バッファを作成する
     hr = MFCreateMemoryBuffer(cbConverter, &pConverterBuffer);
@@ -863,11 +870,13 @@ void CamMf::capture()
         // 一時メモリをロックして
         mtx.lock();
 
-        // 基底クラスの frame をキャプチャデータで更新してから
-        frame = cv::Mat(frame.rows, frame.cols, frame.type(), pData);
+        // 基底クラスの frame バッファにデータをコピーする
+        if (frame.size() < cbDataLength) frame.resize(cbDataLength);
+        memcpy(frame.data(), pData, cbDataLength);
 
         // キャプチャしたデータを一時メモリにコピーしたら
-        frame.copyTo(image);
+        if (image.size() < cbDataLength) image.resize(cbDataLength);
+        memcpy(image.data(), frame.data(), cbDataLength);
 
         // 新しいフレームがキャプチャされたことを通知して
         captured = true;

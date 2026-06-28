@@ -12,6 +12,9 @@
 #include "gg.h"
 using namespace gg;
 
+// OpenCV へのリンクとインクルード
+#include "opencv_link.h"
+
 // ArUco Maker
 #include <opencv2/aruco.hpp>
 
