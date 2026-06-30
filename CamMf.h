@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 ///
 /// Microsoft Media Foundation を使ったビデオキャプチャクラスの定義
@@ -185,6 +185,13 @@ class CamMf : public Camera
   /// @param pTransform 解放する MFT のポインタのポインタ
   /// 
   void cleanUpTransform(IMFTransform** pTransform) const;
+
+  ///
+  /// ストリームのフォーマット変更を処理する
+  ///
+  /// @return 結果の HRESULT コード
+  ///
+  HRESULT handleStreamChange();
 
   ///
   /// Source Reader の出力フォーマットを設定し基底クラスの frame を初期化する

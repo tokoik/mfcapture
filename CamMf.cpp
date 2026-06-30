@@ -1,4 +1,4 @@
-﻿///
+///
 /// Microsoft Media Foundation を使ったビデオキャプチャクラスの実装
 ///
 /// @file
@@ -625,14 +625,13 @@ bool CamMf::select(int index)
 //
 // ストリームのフォーマット変更を処理する
 //
-HRESULT HandleStreamChange(IMFTransform* pDecoder)
+HRESULT CamMf::handleStreamChange()
 {
-  // 現在のストリームを止める
-  pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, NULL);
-  pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
+  if (!pDecoder) return E_UNEXPECTED;
 
   HRESULT hr{ S_OK };
   IMFMediaType* pNewOutputType{ nullptr };
+  GUID subtype{ 0 };
 
   // 使用可能な出力タイプを探す
   for (DWORD typeIndex = 0;; ++typeIndex)
@@ -644,7 +643,6 @@ HRESULT HandleStreamChange(IMFTransform* pDecoder)
     if (FAILED(hr)) break;
 
     // 取得した出力タイプのビデオフォーマットを調べる
-    GUID subtype{ 0 };
     pNewOutputType->GetGUID(MF_MT_SUBTYPE, &subtype);
 
 #if defined(_DEBUG)
@@ -659,19 +657,128 @@ HRESULT HandleStreamChange(IMFTransform* pDecoder)
     // ビデオフォーマットが NV12 または YUY2 フォーマットなら
     if (subtype == MFVideoFormat_NV12 || subtype == MFVideoFormat_YUY2)
     {
+      // デコーダの現在の入力メディアタイプを取得し、属性を上書き設定する
+      IMFMediaType* pInputType{ nullptr };
+      if (SUCCEEDED(pDecoder->GetInputCurrentType(0, &pInputType)))
+      {
+        UINT32 w{ 0 }, h{ 0 };
+        if (SUCCEEDED(MFGetAttributeSize(pInputType, MF_MT_FRAME_SIZE, &w, &h)))
+        {
+          MFSetAttributeSize(pNewOutputType, MF_MT_FRAME_SIZE, w, h);
+        }
+
+        UINT32 fpsNum{ 0 }, fpsDenom{ 0 };
+        if (SUCCEEDED(MFGetAttributeRatio(pInputType, MF_MT_FRAME_RATE, &fpsNum, &fpsDenom)))
+        {
+          MFSetAttributeRatio(pNewOutputType, MF_MT_FRAME_RATE, fpsNum, fpsDenom);
+        }
+
+        UINT32 aspectNum{ 0 }, aspectDenom{ 0 };
+        if (SUCCEEDED(MFGetAttributeRatio(pInputType, MF_MT_PIXEL_ASPECT_RATIO, &aspectNum, &aspectDenom)))
+        {
+          MFSetAttributeRatio(pNewOutputType, MF_MT_PIXEL_ASPECT_RATIO, aspectNum, aspectDenom);
+        }
+
+        UINT32 interlace{ 0 };
+        if (SUCCEEDED(pInputType->GetUINT32(MF_MT_INTERLACE_MODE, &interlace)))
+        {
+          pNewOutputType->SetUINT32(MF_MT_INTERLACE_MODE, interlace);
+        }
+
+        SafeRelease(&pInputType);
+      }
+
       // これを新しい出力タイプとして設定する
       hr = pDecoder->SetOutputType(0, pNewOutputType, 0);
-      pNewOutputType->Release();
+#if defined(_DEBUG)
+      if (FAILED(hr))
+      {
+        std::cerr << "pDecoder->SetOutputType failed. Code: 0x" << std::hex << hr << std::endl;
+      }
+#endif
       break;
     }
 
     pNewOutputType->Release();
+    pNewOutputType = nullptr;
   }
 
-  // ストリームを再開する
-  if (SUCCEEDED(hr)) pDecoder->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, NULL);
-  if (SUCCEEDED(hr)) hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
-  if (SUCCEEDED(hr)) hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
+  if (FAILED(hr) || !pNewOutputType)
+  {
+    if (pNewOutputType) pNewOutputType->Release();
+    return hr;
+  }
+
+  // 新しい出力タイプから属性を取得する
+  UINT32 newWidth{ 0 }, newHeight{ 0 };
+  if (SUCCEEDED(MFGetAttributeSize(pNewOutputType, MF_MT_FRAME_SIZE, &newWidth, &newHeight)) && newWidth > 0 && newHeight > 0)
+  {
+    width = newWidth;
+    height = newHeight;
+  }
+
+  UINT32 fpsNum{ 0 }, fpsDenom{ 0 };
+  MFGetAttributeRatio(pNewOutputType, MF_MT_FRAME_RATE, &fpsNum, &fpsDenom);
+
+  // デコーダの出力バッファのサイズを決定する
+  MFT_OUTPUT_STREAM_INFO streamInfo{};
+  UINT32 cbDecoder{ 0 };
+  if (SUCCEEDED(pDecoder->GetOutputStreamInfo(0, &streamInfo)))
+  {
+    cbDecoder = streamInfo.cbSize;
+  }
+  if (cbDecoder == 0)
+  {
+    MFCalculateImageSize(subtype, width, height, &cbDecoder);
+  }
+
+  // 古いデコーダの出力バッファを解放し、再作成する
+  SafeRelease(&pDecoderBuffer);
+  hr = MFCreateMemoryBuffer(cbDecoder, &pDecoderBuffer);
+  if (SUCCEEDED(hr))
+  {
+    hr = pDecoderBuffer->SetCurrentLength(static_cast<DWORD>(cbDecoder));
+  }
+
+  // 後続のカラーコンバータがあれば、その入力タイプも変更する
+  if (pConverter && SUCCEEDED(hr))
+  {
+    VideoFormat newFormat{ static_cast<UINT32>(width), static_cast<UINT32>(height), fpsNum, fpsDenom, subtype };
+
+    // MFT カラーコンバータのセットアップと接続を行う
+    hr = setUpPipeline(pConverter, newFormat, MFVideoFormat_RGB32);
+
+    // カラーコンバータの出力バッファのサイズを決定し、再作成する
+    if (SUCCEEDED(hr))
+    {
+      MFT_OUTPUT_STREAM_INFO convStreamInfo{};
+      UINT32 cbConverter{ 0 };
+      if (SUCCEEDED(pConverter->GetOutputStreamInfo(0, &convStreamInfo)))
+      {
+        cbConverter = convStreamInfo.cbSize;
+      }
+      if (cbConverter == 0)
+      {
+        MFCalculateImageSize(MFVideoFormat_RGB32, width, height, &cbConverter);
+      }
+
+      SafeRelease(&pConverterBuffer);
+      hr = MFCreateMemoryBuffer(cbConverter, &pConverterBuffer);
+      if (SUCCEEDED(hr))
+      {
+        hr = pConverterBuffer->SetCurrentLength(static_cast<DWORD>(cbConverter));
+      }
+    }
+  }
+
+  // 基底クラスのバッファもリサイズ
+  if (SUCCEEDED(hr))
+  {
+    frame.resize(width * height * channels);
+    image.resize(width * height * channels);
+  }
+
+  pNewOutputType->Release();
 
   // 結果を返す
   return hr;
@@ -746,72 +853,116 @@ void CamMf::capture()
         goto done;
       }
 
-      // デコーダの出力サンプルを作成する
-      hr = MFCreateSample(&pDecodedSample);
-      if (FAILED(hr)) goto done;
-
-      // デコーダの出力サンプルにバッファを追加する
-      hr = pDecodedSample->AddBuffer(pDecoderBuffer);
-      if (FAILED(hr)) goto done;
-
-      // デコーダの出力バッファ
-      MFT_OUTPUT_DATA_BUFFER decodedBuffer{ 0, pDecodedSample, 0, nullptr };
-
-      // デコード処理を実行
-      hr = pDecoder->ProcessOutput(0, 1, &decodedBuffer, &dwStatus);
-
-      // ストリームのフォーマットが変化した場合の処理 (フレームのデコード完了？)
-      if (hr == MF_E_TRANSFORM_STREAM_CHANGE)
+      // デコーダの出力ストリーム情報を取得し、誰がサンプルを提供するべきかを判定する
+      MFT_OUTPUT_STREAM_INFO streamInfo{};
+      bool mftProvidesSamples{ false };
+      if (SUCCEEDED(pDecoder->GetOutputStreamInfo(0, &streamInfo)))
       {
-#if defined(_DEBUG)
-        std::cerr << "Transform stream change." << std::endl;
-#endif
-        // 保留中のフレームをすべて処理する
-        do
-        {
-          hr = pDecoder->ProcessOutput(0, 1, &decodedBuffer, &dwStatus);
-#if defined(_DEBUG)
-          if (hr == E_FAIL) std::cerr << "Failed to process output during stream change handling." << std::endl;
-#endif
-        }
-        while (hr != MF_E_TRANSFORM_NEED_MORE_INPUT);
-
-        // 現在のストリームを一旦止める
-        pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, NULL);
-        //pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, NULL);
-
-        // ストリームを再開する
-        pDecoder->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, NULL);
-        //hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, NULL);
-        //if (FAILED(hr)) goto done;
-        hr = pDecoder->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, NULL);
-        //if (FAILED(hr)) goto done;
+        mftProvidesSamples = (streamInfo.dwFlags & MFT_OUTPUT_STREAM_PROVIDES_SAMPLES) != 0;
       }
 
-      // デコード処理に失敗したら
-      if (FAILED(hr))
+      // デコーダの出力サンプルをループで取得できるようにする
+      bool hasOutput{ false };
+      while (true)
       {
-#if defined(_DEBUG)
-        std::cerr << "Decoder process output failed: ";
-        switch (hr)
+        if (mftProvidesSamples)
         {
-        case E_INVALIDARG:
-          std::cerr << "Invalid argument." << std::endl; break;
-        case E_UNEXPECTED:
-          std::cerr << "Unexpected error." << std::endl; break;
-        case E_FAIL:
-          std::cerr << "Unspecified error." << std::endl; break;
-        case MF_E_INVALIDSTREAMNUMBER:
-          std::cerr << "Invalid stream number." << std::endl; break;
-        case MF_E_TRANSFORM_NEED_MORE_INPUT:
-          std::cerr << "Transform needs more input." << std::endl; break;
-        case MF_E_TRANSFORM_TYPE_NOT_SET:
-          std::cerr << "Transform type not set." << std::endl; break;
-        default:
-          std::cerr << "Code: " << std::hex << hr << std::endl; break;
+          pDecodedSample = nullptr;
         }
+        else
+        {
+          // デコーダの出力サンプルを作成する
+          hr = MFCreateSample(&pDecodedSample);
+          if (FAILED(hr)) goto done;
+
+          // デコーダの出力サンプルにバッファを追加する
+          hr = pDecodedSample->AddBuffer(pDecoderBuffer);
+          if (FAILED(hr)) goto done;
+        }
+
+        // デコーダの出力バッファ
+        MFT_OUTPUT_DATA_BUFFER decodedBuffer{ 0, pDecodedSample, 0, nullptr };
+
+        // デコード処理を実行
+        hr = pDecoder->ProcessOutput(0, 1, &decodedBuffer, &dwStatus);
+
+        if (hr == MF_E_TRANSFORM_STREAM_CHANGE)
+        {
+#if defined(_DEBUG)
+          std::cerr << "Transform stream change." << std::endl;
 #endif
-        goto done;
+          // 出力サンプルを破棄して、ストリームチェンジを処理する
+          if (!mftProvidesSamples) SafeRelease(&pDecodedSample);
+          else SafeRelease(&decodedBuffer.pSample);
+
+          hr = handleStreamChange();
+          if (FAILED(hr))
+          {
+#if defined(_DEBUG)
+            std::cerr << "Failed to process stream change." << std::endl;
+#endif
+            goto done;
+          }
+
+          // ストリーム情報を再取得する（ストリームチェンジによってフラグが変わる可能性があるため）
+          if (SUCCEEDED(pDecoder->GetOutputStreamInfo(0, &streamInfo)))
+          {
+            mftProvidesSamples = (streamInfo.dwFlags & MFT_OUTPUT_STREAM_PROVIDES_SAMPLES) != 0;
+          }
+
+          // ストリームチェンジを処理したので、再度 ProcessOutput を行うためにループを継続する
+          continue;
+        }
+
+        if (hr == MF_E_TRANSFORM_NEED_MORE_INPUT)
+        {
+          // デコーダがさらに入力を必要としている（エラーではない）
+          if (!mftProvidesSamples) SafeRelease(&pDecodedSample);
+          else SafeRelease(&decodedBuffer.pSample);
+          break; // このサンプルの処理を終え、次のサンプル読み込みに進む
+        }
+
+        if (FAILED(hr))
+        {
+#if defined(_DEBUG)
+          std::cerr << "Decoder process output failed: ";
+          switch (hr)
+          {
+          case E_INVALIDARG:
+            std::cerr << "Invalid argument." << std::endl; break;
+          case E_UNEXPECTED:
+            std::cerr << "Unexpected error." << std::endl; break;
+          case E_FAIL:
+            std::cerr << "Unspecified error." << std::endl; break;
+          case MF_E_INVALIDSTREAMNUMBER:
+            std::cerr << "Invalid stream number." << std::endl; break;
+          case MF_E_TRANSFORM_TYPE_NOT_SET:
+            std::cerr << "Transform type not set." << std::endl; break;
+          default:
+            std::cerr << "Code: " << std::hex << hr << std::endl; break;
+          }
+#endif
+          if (!mftProvidesSamples) SafeRelease(&pDecodedSample);
+          else SafeRelease(&decodedBuffer.pSample);
+          goto done;
+        }
+
+        // デコードに成功
+        hasOutput = true;
+        if (mftProvidesSamples)
+        {
+          pDecodedSample = decodedBuffer.pSample;
+        }
+        SafeRelease(&decodedBuffer.pEvents);
+        break;
+      }
+
+      // もし出力が得られなかった場合は、次のキャプチャループに進む
+      if (!hasOutput)
+      {
+        pSample->Release();
+        pSample = nullptr;
+        continue;
       }
 
       // 元のサンプルはもう使わないので解放する
