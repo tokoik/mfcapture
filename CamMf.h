@@ -24,20 +24,26 @@
 ///
 class CamMf : public Camera
 {
-  //
-  // ビデオフォーマットの詳細を保持する構造体
-  //
+  ///
+  /// ビデオフォーマットの詳細を保持する構造体
+  ///
   struct VideoFormat
   {
-    UINT32 width;     // 幅
-    UINT32 height;    // 高さ
-    UINT32 fpsNum;    // フレームレートの分子 (Numerator)
-    UINT32 fpsDenom;  // フレームレートの分母 (Denominator)
-    GUID subType;     // ピクセルフォーマット/コーデックの GUID
+    UINT32 width;     ///< 幅
+    UINT32 height;    ///< 高さ
+    UINT32 fpsNum;    ///< フレームレートの分子 (Numerator)
+    UINT32 fpsDenom;  ///< フレームレートの分母 (Denominator)
+    GUID subType;     ///< ピクセルフォーマット/コーデックの GUID
 
-    //
-    // コンストラクタ
-    //
+    ///
+    /// コンストラクタ
+    ///
+    /// @param width 幅
+    /// @param height 高さ
+    /// @param fpsNum フレームレートの分子
+    /// @param fpsDenom フレームレートの分母
+    /// @param subType ピクセルフォーマット/コーデックの GUID
+    ///
     VideoFormat(UINT32 width, UINT32 height,
       UINT32 fpsNum, UINT32 fpsDenom, GUID subType)
       : width{ width }
@@ -54,7 +60,7 @@ class CamMf : public Camera
   ///
   class ComInitializer
   {
-    /// COM ライブラリの初期化と終了を行うオブジェクト
+    /// COM ライブラリの初期化と終了を行うオブジェクト (シングルトン)
     static ComInitializer instance;
 
     /// メディアソースのリスト
@@ -84,6 +90,8 @@ class CamMf : public Camera
 
     ///
     /// COM ライブラリを初期化して Media Foundation を開始する
+    ///
+    /// @return エラーメッセージ（成功時は nullptr）
     ///
     const char* initialize();
 
@@ -119,19 +127,19 @@ class CamMf : public Camera
     static const std::vector<std::string>& getDeviceList();
   };
 
-  /// メディアソース
+  /// メディアソースのポインタ
   IMFMediaSource* pMediaSource;
 
-  /// メディアソースのリーダー
+  /// メディアソースのリーダーへのポインタ
   IMFSourceReader* pSourceReader;
 
-  /// MFT デコーダ
+  /// MFT デコーダへのポインタ (MJPG, H264 等デコード用)
   IMFTransform* pDecoder;
 
-  // MFT デコーダの出力フレームを保持するバッファ
+  /// MFT デコーダの出力フレームを保持するバッファ
   IMFMediaBuffer* pDecoderBuffer;
 
-  /// MFT カラーコンバータ
+  /// MFT カラーコンバータへのポインタ (RGB32 変換用)
   IMFTransform* pConverter;
 
   /// MFT カラーコンバータの出力フレームを保持するバッファ
@@ -197,6 +205,7 @@ class CamMf : public Camera
   /// Source Reader の出力フォーマットを設定し基底クラスの frame を初期化する
   ///
   /// @param index 選択するフォーマットのリストインデックス
+  /// @return 成功したら true
   ///
   bool setFormat(int index);
 
@@ -238,11 +247,15 @@ public:
   /// カメラを開く
   ///
   /// @param device デバイスの番号
+  /// @param setupFormat 最初のフォーマットを設定するかどうか (遅延初期化時は false を指定)
+  /// @return 開くことができたら true
   ///
-  bool open(int device);
+  bool open(int device, bool setupFormat = true);
 
   ///
   /// 使用可能なビデオフォーマットの表示名のリストを返す
+  ///
+  /// @return フォーマット名のリスト
   ///
   const auto& getFormatList() const
   {
@@ -258,7 +271,7 @@ public:
   bool select(int index);
 
   ///
-  /// フレームをキャプチャする
+  /// フレームをキャプチャする（別スレッドでループ実行される）
   ///
   void capture();
 

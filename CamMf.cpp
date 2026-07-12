@@ -554,7 +554,7 @@ done:
 //
 // カメラを開く
 //
-bool CamMf::open(int device)
+bool CamMf::open(int device, bool setupFormat)
 {
   // メディアソースを作成する
   if (!ComInitializer::activate(device, &pMediaSource)) return false;
@@ -568,17 +568,6 @@ bool CamMf::open(int device)
   if (FAILED(hr)) goto done;
 
   // Source Reader の属性ストアにデコード能力を設定する
-  // 
-  //  | 設定                                                        | 効果                                      |
-  //  | ----------------------------------------------------------- | ----------------------------------------- |
-  //  | `MF_SOURCE_READER_ENABLE_ADVANCED_VIDEO_PROCESSING = TRUE`  | 色変換・デインターレース・スケーリングが  |
-  //  | `MF_READWRITE_DISABLE_CONVERTERS = FALSE`                   | 自動的に行われる (もっとも簡単な自動処理) |
-  //  | ----------------------------------------------------------- | ----------------------------------------- |
-  //  | `MF_SOURCE_READER_ENABLE_ADVANCED_VIDEO_PROCESSING = FALSE` | シンプルなGPUデコードパス                 |
-  //  | `MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS = TRUE`            | (カラースペース変換は限定)                |
-  //  | ----------------------------------------------------------- | ----------------------------------------- |
-  //  | `MF_READWRITE_DISABLE_CONVERTERS = TRUE`                    | 自動処理なし。自前でデコード／変換する    |
-  //
   pAttributes->SetUINT32(MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS, TRUE);
   pAttributes->SetUINT32(MF_READWRITE_DISABLE_CONVERTERS, FALSE);
 
@@ -593,7 +582,11 @@ bool CamMf::open(int device)
   SafeRelease(&pAttributes);
 
   // 使用可能なフォーマットを列挙して最初のフォーマットを選択する
-  if (enumerateFormats() && setFormat(0)) return true;
+  if (enumerateFormats())
+  {
+    // 要求された場合のみ最初のフォーマットを設定する
+    if (!setupFormat || setFormat(0)) return true;
+  }
 
 done:
 
@@ -603,7 +596,6 @@ done:
   availableFormats.clear();
   formatList.clear();
 
-  // ビデオキャプチャデバイスが開けたので true を返す
   return false;
 }
 

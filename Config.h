@@ -95,14 +95,19 @@ class Config
   /// メニューフォントサイズ
   float menuFontSize;
 
-  /// キャプチャデバイスのリスト
-  const std::vector<std::string>& deviceList;
-
   /// 初期表示の画像ファイル名
   static std::string initialImage;
 
+  /// GStreamer のパイプラインのリスト
+  std::vector<std::string> gstreamerPipelines;
+
   /// すべての構成のリスト
   std::vector<Preference> preferenceList;
+
+#if defined(_WIN32)
+  /// キャプチャデバイスのリスト
+  const std::vector<std::string>& deviceList;
+#endif
 
 public:
 
@@ -211,6 +216,7 @@ public:
     return settings.markerLength;
   }
 
+#if defined(_WIN32)
   ///
   /// キャプチャデバイスのリストを取り出す
   ///
@@ -232,4 +238,5 @@ public:
     static const std::string empty{};
     return deviceList.empty() ? empty : deviceList[number];
   }
+#endif
 };

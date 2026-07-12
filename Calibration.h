@@ -12,14 +12,8 @@
 #include "gg.h"
 using namespace gg;
 
-// OpenCV へのリンクとインクルード
-#include "opencv_link.h"
-
-// ArUco Maker
-#include <opencv2/aruco.hpp>
-
-// ChArUco Board
-#include <opencv2/aruco/charuco.hpp>
+// OpenCV ArUco & ChArUco (modern OpenCV 4.7+)
+#include <opencv2/objdetect.hpp>
 
 // 標準ライブラリ
 #include <map>

@@ -28,6 +28,56 @@ class Menu
   /// 設定データのコピー
   Settings settings;
 
+#if !defined(_WIN32)
+  /// バックエンドのリスト
+  static const std::map<cv::VideoCaptureAPIs, const char*> backendList;
+
+  /// コーデックのリスト
+  static const std::vector<const char*> codecList;
+
+  /// キャプチャデバイスのリスト
+  static std::map <cv::VideoCaptureAPIs, std::vector<std::string>> deviceList;
+
+  /// 読み込む動画ファイル名の履歴
+  std::vector<std::string> fileHistory;
+
+  ///
+  /// キャプチャデバイスのリストを取り出す
+  ///
+  /// @param api 使用しているバックエンドの API 名
+  /// @return キャプチャデバイスのリスト
+  ///
+  const auto& getDeviceList(cv::VideoCaptureAPIs api) const
+  {
+    return deviceList.at(api);
+  }
+
+  ///
+  /// キャプチャデバイスの数を調べる
+  ///
+  /// @param api 使用しているバックエンドの API 名
+  /// @return キャプチャデバイスの数
+  ///
+  auto getDeviceCount(cv::VideoCaptureAPIs api) const
+  {
+    return static_cast<int>(deviceList.at(api).size());
+  }
+
+  ///
+  /// キャプチャデバイスの名前を調べる
+  ///
+  /// @param api 使用しているバックエンドの API 名
+  /// @param number キャプチャデバイスの番号
+  /// @return キャプチャデバイスの名前
+  ///
+  const auto& getDeviceName(cv::VideoCaptureAPIs api, int number) const
+  {
+    static const std::string empty{};
+    const auto& list{ deviceList.at(api) };
+    return list.empty() ? empty : list[number];
+  }
+#endif
+
   /// 使用中の構成のキャプチャデバイス固有のパラメータのコピー
   Intrinsics intrinsics;
 
@@ -40,8 +90,52 @@ class Menu
   /// 選択しているキャプチャデバイスの番号
   int deviceNumber;
 
+#if defined(_WIN32)
   /// 選択しているビデオフォーマットの番号
   int formatNumber;
+
+  /// ビデオフォーマットの詳細を保持する構造体
+  struct FormatInfo
+  {
+    std::string resolution; // "640 x 480"
+    std::string fps;        // "30.00"
+    std::string codec;      // "NV12"
+    int index;              // formatList のインデックス
+  };
+
+  /// パースされたビデオフォーマットのリスト
+  std::vector<FormatInfo> parsedFormats;
+
+  /// 重複のない解像度のリスト
+  std::vector<std::string> uniqueResolutions;
+
+  /// 重複のないフレームレートのリスト
+  std::vector<std::string> uniqueFpsList;
+
+  /// 重複のないコーデックのリスト
+  std::vector<std::string> uniqueCodecs;
+
+  /// 現在選択されている解像度
+  std::string currentRes;
+
+  /// 現在選択されているフレームレート
+  std::string currentFps;
+
+  /// 現在選択されているコーデック
+  std::string currentCodec;
+
+  /// 最後に処理したデバイスの番号
+  int lastDeviceNumber;
+
+  /// 解像度、フレームレート、コーデックの選択リストを更新する
+  void updateFormatDropdowns();
+#else
+  /// 選択しているコーデックの番号
+  int codecNumber;
+
+  /// デバイスプリファレンス
+  cv::VideoCaptureAPIs backend;
+#endif
 
   /// 使用中の構成の番号
   int preferenceNumber;
@@ -63,6 +157,11 @@ class Menu
 
   /// エラーが無ければ nullptr
   mutable const char* errorMessage;
+
+  ///
+  /// キャプチャデバイスを開く
+  ///
+  bool openDevice();
 
   ///
   /// 画像ファイルを開く

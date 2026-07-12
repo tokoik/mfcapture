@@ -10,11 +10,15 @@
 // 標準ライブラリ
 #include <fstream>
 
+#if defined(_WIN32)
 // Microsoft Media Foundation によるキャプチャ
 #include "CamMf.h"
+#endif
 
+#if !defined(_DEBUG) && defined(_WIN32)
 // appData のパスを得るときに使う
 #include <shlobj_core.h>
+#endif
 
 //
 // コンストラクタ
@@ -26,13 +30,15 @@ Config::Config(const std::string& filename)
   , settings{ "DICT_4X4_50" }
   , menuFont{ "Mplus1-Regular.ttf" }
   , menuFontSize{ 20.0f }
+#if defined(_WIN32)
   , deviceList{ CamMf::getDeviceList() }
+#endif
 {
   // 構成ファイルの保存場所を決定する
 #if defined(_DEBUG)
   const auto path{ Utf8ToTChar(filename) };
 #else
-#  if defined(_MSC_VER)
+#  if defined(_WIN32)
   // 構成ファイルの保存先のパス
   wchar_t appDataPath[MAX_PATH];
 
@@ -124,6 +130,9 @@ bool Config::load(const pathString& filename)
   // 初期表示画像
   getString(object, "initial", initialImage);
 
+  // GStreamer のパイプライン設定リスト
+  getString(object, "gstreamer", gstreamerPipelines);
+
   // キャプチャデバイスの構成を探す
   const auto& camera{ object.find("camera") };
 
@@ -180,6 +189,9 @@ bool Config::save(const pathString& filename) const
   // 初期表示画像
   setString(object, "initial", initialImage);
 
+  // GStreamer のパイプライン設定リスト
+  setString(object, "gstreamer", gstreamerPipelines);
+
   // 配列
   picojson::array array;
 
@@ -207,6 +219,3 @@ bool Config::save(const pathString& filename) const
   // 構成データの書き込み成功
   return true;
 }
-
-// 初期表示の画像ファイル名
-std::string Config::initialImage{ "initial.jpg" };

@@ -24,10 +24,157 @@ constexpr nfdfilteritem_t imageFilter[]{ "Images", "png,jpg,jpeg,jfif,bmp,dib" }
 // 動画ファイル名のフィルタ
 constexpr nfdfilteritem_t movieFilter[]{ "Movies", "mp4,m4v,mpg,mov,avi,ogg,mkv" };
 
+// 初期表示の画像ファイル名
+std::string Config::initialImage{ "initial.jpg" };
+
 // 標準ライブラリ
 #include <iomanip>
 #include <sstream>
 #include <chrono>
+
+#if !defined(_WIN32)
+// バックエンドのリスト
+const std::map<cv::VideoCaptureAPIs, const char*> Menu::backendList
+{
+  { cv::CAP_ANY, "(any)" },
+#  if defined(__APPLE__)
+  { cv::CAP_AVFOUNDATION, "AV Foundation" },
+#  endif
+  { cv::CAP_GSTREAMER, "GStreamer" },
+  { cv::CAP_FFMPEG, u8"動画ファイル履歴" }
+};
+
+// コーデックのリスト
+const std::vector<const char*> Menu::codecList
+{
+  "(any)",
+  "MJPG",
+  "H264",
+  "BGR3",
+  "YUY2",
+  "I420",
+  "NV12"
+};
+
+// キャプチャデバイスのリスト
+std::map <cv::VideoCaptureAPIs, std::vector<std::string>> Menu::deviceList;
+
+//
+// デフォルトのビデオデバイスの一覧を作る
+//
+void getAnyList(std::vector<std::string>& list)
+{
+  list.emplace_back("(any)");
+  list.emplace_back("Device 1");
+  list.emplace_back("Device 2");
+  list.emplace_back("Device 3");
+  list.emplace_back("Device 4");
+  list.emplace_back("Device 5");
+  list.emplace_back("Device 6");
+  list.emplace_back("Device 7");
+}
+
+#  if defined(__APPLE__)
+//
+// macOS のビデオデバイスの一覧を作る
+//
+void getAvFoundationList(std::vector<std::string>& list)
+{
+  getAnyList(list);
+}
+#  endif
+
+// パスワードのエントリからホームディレクトリの場所を得るときに使う
+#  include <unistd.h>
+#  include <sys/types.h>
+#  include <pwd.h>
+
+#endif // !defined(_WIN32)
+
+//
+// キャプチャデバイスを開く
+//
+bool Menu::openDevice()
+{
+#if defined(_WIN32)
+  // 何のデバイスも接続されていなければ戻る
+  if (deviceNumber < 0) return false;
+
+  // キャプチャスレッドが動いていたら止める
+  capture.stop();
+
+  // 前に開いていたキャプチャデバイスを閉じる
+  capture.close();
+
+  // 選択したキャプチャデバイスを開く
+  if (capture.openDevice(deviceNumber))
+  {
+    if (formatNumber < 0) formatNumber = 0;
+
+#if defined(_WIN32)
+    updateFormatDropdowns();
+#endif
+
+    // フォーマットを指定して開始できるように準備する
+    if (capture.select(formatNumber))
+    {
+      // 構成データの解像度と画角を開いた画像に合わせる
+      setSize(capture.getSize());
+      return true;
+    }
+  }
+
+  // 開けなかった
+  errorMessage = u8"デバイスが開けません";
+  return false;
+#else
+  // バックエンドが GStreamer なら
+  if (backend == cv::CAP_GSTREAMER)
+  {
+    // パイプライン設定の取り出し
+    const auto& pipeline{ config.gstreamerPipelines[deviceNumber] };
+
+    // ダイアログで指定したパイプラインが開けなかったら
+    if (!capture.openMovie(pipeline, backend))
+    {
+      // 開けなかった
+      errorMessage = u8"パイプラインが開けません";
+      return false;
+    }
+
+    // GStreamer が使える
+    return true;
+  }
+
+  // コーデック
+  char codec[5]{};
+  if (codecNumber > 0) strncpy(codec, codecList[codecNumber], 5);
+
+  // ダイアログで指定したキャプチャデバイスが開けなかったら
+  if (!capture.openDevice(deviceNumber,
+    intrinsics.size, intrinsics.fps, backend, codec))
+  {
+    // 開けなかった
+    errorMessage = u8"デバイスが開けません";
+    return false;
+  }
+
+  // 使うことになったコーデックの番号を調べる
+  for (size_t i = 0; i < codecList.size(); ++i)
+  {
+    if (strncmp(codec, codecList[i], 4) == 0)
+    {
+      // コーデックが分かった
+      codecNumber = static_cast<int>(i);
+      return true;
+    }
+  }
+
+  // コーデックが分からない
+  codecNumber = 0;
+  return true;
+#endif
+}
 
 //
 // 画像ファイルを開く
@@ -48,9 +195,6 @@ void Menu::openImage()
     {
       // 構成データの解像度と画角を開いた画像に合わせる
       setSize(capture.getSize());
-
-      // キャプチャデバイスを使わない
-      formatNumber = -1;
     }
     else
     {
@@ -62,7 +206,7 @@ void Menu::openImage()
     NFD_FreePath(filepath);
   }
 }
-
+  
 //
 // 動画ファイルを開く
 //
@@ -77,20 +221,53 @@ void Menu::openMovie()
     // スレッドが動作中なら停止する
     capture.stop();
 
+#if defined(_WIN32)
     // ダイアログで指定した動画ファイルが開けたら
     if (capture.openMovie(filepath))
     {
       // 構成データの解像度と画角を開いた画像に合わせる
       setSize(capture.getSize());
+    }
+    else
+    {
+      errorMessage = u8"動画ファイルが開けません";
+    }
+#else
+    // 入力特性をファイルに切り替えて
+    backend = cv::CAP_FFMPEG;
 
-      // キャプチャデバイスを使わない
-      formatNumber = -1;
+    // ファイルのリストを取り出し
+    const auto fileListLength{ static_cast<int>(fileHistory.size()) };
+
+    // ファイルのリストの各ファイルについて
+    for (deviceNumber = 0; deviceNumber < fileListLength; ++deviceNumber)
+    {
+      // 選択したファイルと同じものがあればそれを選択する
+      if (fileHistory[deviceNumber] == filepath) break;
+    }
+
+    // 選択したファイルがファイルのリストの中になければ
+    if (deviceNumber == fileListLength)
+    {
+      // その先頭にファイルパスを挿入して
+      fileHistory.insert(fileHistory.begin(), filepath);
+
+      // そのエントリを選択する
+      deviceNumber = 0;
+    }
+
+    // ダイアログで指定した動画ファイルが開けたら
+    if (capture.openMovie(filepath, backend))
+    {
+      // 構成データの解像度と画角を開いた画像に合わせる
+      setSize(capture.getSize());
     }
     else
     {
       // 開けなかった
       errorMessage = u8"動画ファイルが開けません";
     }
+#endif
 
     // ファイルパスの取り出しに使ったメモリを開放する
     NFD_FreePath(filepath);
@@ -286,7 +463,13 @@ Menu::Menu(const Config& config, Capture& capture, Calibration& calibration)
   , capture{ capture }
   , calibration{ calibration }
   , deviceNumber{ 0 }
-  , formatNumber{ -1 }
+#if defined(_WIN32)
+  , formatNumber{ 0 }
+  , lastDeviceNumber{ -1 }
+#else
+  , codecNumber{ 0 }
+  , backend{ cv::CAP_ANY }
+#endif
   , preferenceNumber{ 0 }
   , pose{ ggIdentity() }
   , menubarHeight{ 0 }
@@ -297,6 +480,9 @@ Menu::Menu(const Config& config, Capture& capture, Calibration& calibration)
   , detectMarker{ false }
   , detectBoard{ false }
 {
+  // ファイルダイアログ (Native File Dialog Extended) を初期化する
+  NFD_Init();
+
   // Dear ImGui の入力デバイス
   //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // キーボードコントロールを使う
   //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // ゲームパッドを使う
@@ -310,11 +496,32 @@ Menu::Menu(const Config& config, Capture& capture, Calibration& calibration)
     nullptr, ImGui::GetIO().Fonts->GetGlyphRangesJapanese()))
   {
     // メニューフォントが読み込めなかったらエラーにする
-    throw std::runtime_error("Cannot find any menu font.");
+    throw std::runtime_error("Cannot find any menu fonts.");
   }
 
-  // ファイルダイアログ (Native File Dialog Extended) を初期化する
-  NFD_Init();
+#if defined(_WIN32)
+  // 初期状態で最初のデバイスのフォーマットリストを取得しておく
+  if (!config.getDeviceList().empty())
+  {
+    capture.updateFormatList(deviceNumber);
+  }
+#else
+  // バックエンドごとのキャプチャデバイスの一覧を初期化する
+  for (auto& [api, name] : backendList)
+  {
+    // バックエンドごとに空のリストを追加する
+    deviceList.emplace(api, std::vector<std::string>());
+  }
+
+  // キャプチャデバイスの一覧を作る
+  getAnyList(deviceList.at(cv::CAP_ANY));
+#if defined(_MSC_VER)
+  getDirectShowList(deviceList.at(cv::CAP_DSHOW));
+  getMediaFoundationList(deviceList.at(cv::CAP_MSMF));
+#elif defined(__APPLE__)
+  getAvFoundationList(deviceList.at(cv::CAP_AVFOUNDATION));
+#endif
+#endif
 }
 
 //
@@ -344,6 +551,61 @@ void Menu::setSize(const std::array<int, 2>& size)
   intrinsics.setFov(settings.focal);
   intrinsics.setCenter(0.0f, 0.0f);
 }
+
+#if defined(_WIN32)
+//
+// 解像度、フレームレート、コーデックの選択リストを更新する
+//
+void Menu::updateFormatDropdowns()
+{
+  const auto& formatList{ capture.getFormatList() };
+
+  parsedFormats.clear();
+  uniqueResolutions.clear();
+  uniqueFpsList.clear();
+  uniqueCodecs.clear();
+
+  // 各フォーマット文字列をパースする
+  for (int i = 0; i < static_cast<int>(formatList.size()); ++i)
+  {
+    const std::string& fmt = formatList[i];
+    size_t at_pos = fmt.find(" @ ");
+    size_t fps_pos = fmt.find(" fps (");
+    size_t close_pos = fmt.find(")");
+    if (at_pos != std::string::npos && fps_pos != std::string::npos && close_pos != std::string::npos)
+    {
+      FormatInfo info;
+      info.resolution = fmt.substr(0, at_pos);
+      info.fps = fmt.substr(at_pos + 3, fps_pos - (at_pos + 3));
+      info.codec = fmt.substr(fps_pos + 6, close_pos - (fps_pos + 6));
+      info.index = i;
+      parsedFormats.push_back(info);
+
+      if (std::find(uniqueResolutions.begin(), uniqueResolutions.end(), info.resolution) == uniqueResolutions.end())
+        uniqueResolutions.push_back(info.resolution);
+      if (std::find(uniqueFpsList.begin(), uniqueFpsList.end(), info.fps) == uniqueFpsList.end())
+        uniqueFpsList.push_back(info.fps);
+      if (std::find(uniqueCodecs.begin(), uniqueCodecs.end(), info.codec) == uniqueCodecs.end())
+        uniqueCodecs.push_back(info.codec);
+    }
+  }
+
+  // 現在の formatNumber のフォーマットに同期する
+  if (formatNumber >= 0 && formatNumber < static_cast<int>(parsedFormats.size()))
+  {
+    currentRes = parsedFormats[formatNumber].resolution;
+    currentFps = parsedFormats[formatNumber].fps;
+    currentCodec = parsedFormats[formatNumber].codec;
+  }
+  else
+  {
+    currentRes.clear();
+    currentFps.clear();
+    currentCodec.clear();
+  }
+  lastDeviceNumber = deviceNumber;
+}
+#endif
 
 //
 // シェーダを設定する
@@ -422,7 +684,11 @@ void Menu::draw()
   {
     // ウィンドウの位置とサイズ
     ImGui::SetNextWindowPos(ImVec2(2.0f, 2.0f + menubarHeight), ImGuiCond_Once);
-    ImGui::SetNextWindowSize(ImVec2(231, 426), ImGuiCond_Once);
+#if defined(_WIN32)
+    ImGui::SetNextWindowSize(ImVec2(231, 487), ImGuiCond_Once);
+#else
+    ImGui::SetNextWindowSize(ImVec2(231, 517), ImGuiCond_Once);
+#endif
     ImGui::Begin(u8"入力", &showInputPanel);
 
     // 投影方式の選択
@@ -434,7 +700,7 @@ void Menu::draw()
         // その投影方式が選択されていれば真
         const bool selected{ i == preferenceNumber };
 
-        // 投影方式を (それが現在の投影方式ならハイライトして) コンボボックスに表示する
+        // 投影方式を（それが現在の投影方式ならハイライトして）コンボボックスに表示する
         if (ImGui::Selectable(getPreference(i).getDescription().c_str(), selected))
         {
           // 表示した投影方式が選択されていたらそれを現在の選択とする
@@ -482,91 +748,152 @@ void Menu::draw()
 
     ImGui::Separator();
 
+#if defined(_WIN32)
     // キャプチャデバイスが存在するとき
     if (!config.getDeviceList().empty())
     {
-      // キャプチャデバイスを使うとき
-      if (formatNumber >= 0)
+      // 装置関連項目
+      ImGui::Text("%s", u8"以下の変更は [開始] で反映します");
+
+      // キャプチャデバイスの選択コンボボックス
+      if (ImGui::BeginCombo(u8"装置", config.getDeviceName(deviceNumber).c_str()))
       {
-        // 装置関連項目
-        ImGui::Text("%s", u8"以下の変更は [開始] で反映します");
-
-        // キャプチャデバイスの選択コンボボックス
-        if (ImGui::BeginCombo(u8"装置", config.getDeviceName(deviceNumber).c_str()))
+        // すべてのキャプチャデバイスについて
+        for (int i = 0; i < static_cast<int>(config.getDeviceList().size()); ++i)
         {
-          // すべてのキャプチャデバイスについて
-          for (int i = 0; i < static_cast<int>(config.getDeviceList().size()); ++i)
+          // キャプチャデバイス名を (それを選択していればハイライトして) コンボボックスに表示する
+          if (ImGui::Selectable(config.getDeviceName(i).c_str(), i == deviceNumber))
           {
-            // キャプチャデバイス名を (それを選択していればハイライトして) コンボボックスに表示する
-            if (ImGui::Selectable(config.getDeviceName(i).c_str(), i == deviceNumber))
+            // キャプチャデバイスが変わったら
+            if (deviceNumber != i)
             {
-              // キャプチャデバイスが変わったら
-              if (deviceNumber != i)
-              {
-                // キャプチャスレッドが動いていたら止める
-                capture.stop();
+              // キャプチャスレッドが動いていたら止める
+              capture.stop();
 
-                // 前に開いていたキャプチャデバイスを閉じる
-                capture.close();
+              // 前に開いていたキャプチャデバイスを閉じる
+              capture.close();
 
-                // 表示したキャプチャデバイスが選択されていたらそのキャプチャデバイスを選択する
-                deviceNumber = i;
+              // 表示したキャプチャデバイスが選択されていたらそのキャプチャデバイスを選択する
+              deviceNumber = i;
 
-                // キャプチャデバイスが変わったので最初のビデオフォーマットを選択する
-                formatNumber = 0;
+              // キャプチャデバイスが変わったので最初のビデオフォーマットを選択する
+              formatNumber = 0;
 
-                // 選択したキャプチャデバイスを開く
-                capture.openDevice(deviceNumber);
-              }
+              // 開始ボタンが押されるまでは、フォーマットリストだけを一時取得して更新する
+              capture.updateFormatList(deviceNumber);
 
-              // この選択を次にコンボボックスを開いたときのデフォルトにしておく
-              ImGui::SetItemDefaultFocus();
+              // 選択可能なドロップダウンのリストを更新する
+              updateFormatDropdowns();
+            }
+
+            // この選択を次にコンボボックスを開いたときのデフォルトにしておく
+            ImGui::SetItemDefaultFocus();
+          }
+        }
+        ImGui::EndCombo();
+      }
+
+      // 使用可能なビデオフォーマットの表示名のリスト
+      const auto& formatList{ capture.getFormatList() };
+
+      // 使用可能なビデオフォーマットが存在するなら
+      if (!formatList.empty())
+      {
+        // 必要な場合（デバイス番号の不一致やリスト未作成時）にリストを更新する
+        if (lastDeviceNumber != deviceNumber || parsedFormats.empty())
+        {
+          updateFormatDropdowns();
+        }
+
+        // 1. 解像度の選択コンボボックス
+        if (ImGui::BeginCombo(u8"解像度", currentRes.c_str()))
+        {
+          for (const auto& res : uniqueResolutions)
+          {
+            if (ImGui::Selectable(res.c_str(), currentRes == res))
+            {
+              currentRes = res;
             }
           }
           ImGui::EndCombo();
         }
 
-        // 使用可能なビデオフォーマットの表示名のリスト
-        const auto& formatList{ capture.getFormatList() };
-
-        // 使用可能なビデオフォーマットが存在するなら
-        if (!formatList.empty())
+        // 2. フレームレートの選択コンボボックス
+        std::string fpsLabel = currentFps + " fps";
+        if (ImGui::BeginCombo(u8"コマ数", fpsLabel.c_str()))
         {
-          // ビデオフォーマットの選択コンボボックス
-          if (ImGui::BeginCombo(u8"形式", formatList[formatNumber].c_str()))
+          for (const auto& fpsVal : uniqueFpsList)
           {
-            // すべてのビデオフォーマットについて
-            for (int i = 0; i < static_cast<int>(formatList.size()); ++i)
+            std::string valLabel = fpsVal + " fps";
+            if (ImGui::Selectable(valLabel.c_str(), currentFps == fpsVal))
             {
-              // ビデオフォーマットを (それを選択していればハイライトして) コンボボックスに表示する
-              if (ImGui::Selectable(formatList[i].c_str(), i == formatNumber))
-              {
-                // 表示したビデオフォーマットが選択されていたらそのビデオフォーマットを選択する
-                formatNumber = i;
-
-                // この選択を次にコンボボックスを開いたときのデフォルトにしておく
-                ImGui::SetItemDefaultFocus();
-              }
+              currentFps = fpsVal;
             }
-            ImGui::EndCombo();
           }
+          ImGui::EndCombo();
+        }
 
-          // キャプチャの開始と停止
-          if (capture)
+        // 3. コーデックの選択コンボボックス
+        if (ImGui::BeginCombo(u8"符号化", currentCodec.c_str()))
+        {
+          for (const auto& cod : uniqueCodecs)
           {
-            // キャプチャスレッドが動いているので止める
-            if (ImGui::Button(u8"停止")) capture.stop();
-            ImGui::SameLine();
-            ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.0f, 1.0f), "%s", u8"取得中");
+            if (ImGui::Selectable(cod.c_str(), currentCodec == cod))
+            {
+              currentCodec = cod;
+            }
           }
-          else
+          ImGui::EndCombo();
+        }
+
+        // 選択された組み合わせが parsedFormats に存在するか探す
+        int foundIndex = -1;
+        for (const auto& info : parsedFormats)
+        {
+          if (info.resolution == currentRes && info.fps == currentFps && info.codec == currentCodec)
+          {
+            foundIndex = info.index;
+            break;
+          }
+        }
+
+        bool formatExists = (foundIndex != -1);
+        if (formatExists)
+        {
+          // 存在する場合は、必要なら formatNumber を更新する
+          if (formatNumber != foundIndex)
+          {
+            capture.stop();
+            formatNumber = foundIndex;
+          }
+        }
+
+        // キャプチャの開始と停止
+        if (capture)
+        {
+          // キャプチャスレッドが動いているので止める
+          if (ImGui::Button(u8"停止")) capture.stop();
+          ImGui::SameLine();
+          ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.0f, 1.0f), "%s", u8"取得中");
+        }
+        else
+        {
+          if (formatExists)
           {
             // 「開始」ボタンをクリックしたときデバイスが選択されているとき
             if (ImGui::Button(u8"開始") && deviceNumber >= 0)
             {
+              // もしすでにデバイスが開いていないか、画像が開かれているなら openDevice を呼ぶ
+              if (!capture.isOpend() || capture.isImage())
+              {
+                capture.openDevice(deviceNumber);
+              }
+
               // ビデオフォーマットを指定できたら
               if (capture.select(formatNumber))
               {
+                // 解像度を合わせる
+                setSize(capture.getSize());
                 // キャプチャスレッドを動かす
                 capture.start();
               }
@@ -579,33 +906,128 @@ void Menu::draw()
             ImGui::SameLine();
             ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"停止中");
           }
-        }
-        else
-        {
-          // キャプチャデバイスが開けなかった
-          ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"デバイスが開けません");
+          else
+          {
+            // 存在しない組み合わせの時はメッセージを表示する
+            ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"フォーマットが存在ません");
+          }
         }
       }
       else
       {
-        // ビデオキャプチャデバイスが選択されていないとき「ビデオ入力」ボタンが押されたら
-        if (ImGui::Button(u8"ビデオ入力"))
-        {
-          // 最初のビデオフォーマットを選択する
-          formatNumber = 0;
-
-          // 以前に選んでいたキャプチャデバイスを開く
-          capture.openDevice(deviceNumber);
-        }
+        // キャプチャデバイスが開けなかった
+        ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"デバイスが開けません");
       }
     }
     else
     {
       // キャプチャデバイスが存在しないとき
-      ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"キャプチャデバイスが見つかりません");
+      ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"デバイスが見つかりません");
+    }
+#else
+    // 装置関連項目
+    ImGui::Text("%s", u8"以下の変更は [開始] で反映します");
+
+    // デバイスプリファレンスを選択する
+    if (ImGui::BeginCombo(u8"装置特性", backendList.at(backend)))
+    {
+      // すべての表示方式について
+      for (auto& [apiId, apiName] : backendList)
+      {
+        // その表示方式が選択されていれば真
+        const bool selected{ apiId == backend };
+
+        // 装置特性を（それが現在の装置特性ならハイライトして）コンボボックスに表示する
+        if (ImGui::Selectable(apiName, selected))
+        {
+          // 表示した装置特性が選択されていたらそれを現在の選択とする
+          backend = apiId;
+
+          // 切り替え前の装置特性のデバイスが存在しなければ最初のデバイスの番号を選択する
+          if (deviceNumber < 0) deviceNumber = 0;
+
+          // 選択されているデバイスの番号が接続されたキャプチャデバイスの数を超えないようにする
+          const int count{ getDeviceCount(backend) };
+          if (deviceNumber >= count) deviceNumber = count - 1;
+        }
+
+        // この選択を次にコンボボックスを開いたときのデフォルトにしておく
+        if (selected) ImGui::SetItemDefaultFocus();
+      }
+      ImGui::EndCombo();
     }
 
-    // 入力パネルのメニュー終了
+    // キャプチャデバイスが存在すれば
+    if (deviceNumber >= 0)
+    {
+      // キャプチャデバイスの選択コンボボックス
+      if (ImGui::BeginCombo(u8"入力源", getDeviceName(backend, deviceNumber).c_str()))
+      {
+        // すべてのキャプチャデバイスについて
+        for (int i = 0; i < static_cast<int>(getDeviceList(backend).size()); ++i)
+        {
+          // キャプチャデバイス名を（それを選択していればハイライトして）コンボボックスに表示する
+          if (ImGui::Selectable(getDeviceName(backend, i).c_str(), i == deviceNumber))
+          {
+            // 表示したキャプチャデバイスが選択されていたらそのキャプチャデバイスを選択する
+            deviceNumber = i;
+
+            // この選択を次にコンボボックスを開いたときのデフォルトにしておく
+            ImGui::SetItemDefaultFocus();
+          }
+        }
+        ImGui::EndCombo();
+      }
+    }
+    else
+    {
+      // 使えるキャプチャデバイスがない
+      ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"デバイスが見つかりません");
+    }
+
+    // キャプチャするサイズとフレームレート
+    ImGui::InputInt2(u8"解像度", intrinsics.size.data());
+    ImGui::InputDouble(u8"周波数", &intrinsics.fps, 1.0f, 1.0f, "%.1f");
+
+    // コーデックを選択する
+    if (ImGui::BeginCombo(u8"符号化", codecList[codecNumber]))
+    {
+      // すべてのコーデックについて
+      for (int i = 0; i < static_cast<int>(codecList.size()); ++i)
+      {
+        // コーデックを（それを選択していればハイライトして）コンボボックスに表示する
+        if (ImGui::Selectable(codecList[i], i == codecNumber))
+        {
+          // 表示したキャプチャデバイスが選択されていたらそのキャプチャデバイスを選択する
+          codecNumber = i;
+
+          // この選択を次にコンボボックスを開いたときのデフォルトにしておく
+          ImGui::SetItemDefaultFocus();
+        }
+      }
+      ImGui::EndCombo();
+    }
+
+    // キャプチャの開始と停止
+    if (capture)
+    {
+      // キャプチャスレッドが動いているので止める
+      if (ImGui::Button(u8"停止")) capture.stop();
+      ImGui::SameLine();
+      ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.0f, 1.0f), "%s", u8"取得中");
+    }
+    else
+    {
+      // キャプチャスレッドが止まっているので
+      if (ImGui::Button(u8"開始") && deviceNumber >= 0)
+      {
+        // キャプチャデバイスが開けたらキャプチャスレッドを動かす
+        if (openDevice()) capture.start();
+      }
+      ImGui::SameLine();
+      ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"停止中");
+    }
+#endif
     ImGui::End();
   }
 
@@ -614,7 +1036,7 @@ void Menu::draw()
   {
     // ウィンドウの位置とサイズ
     ImGui::SetNextWindowPos(ImVec2(235.0f, 2.0f + menubarHeight), ImGuiCond_Once);
-    ImGui::SetNextWindowSize(ImVec2(222, 326), ImGuiCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(218, 329), ImGuiCond_Once);
     ImGui::Begin(u8"較正", &showCalibrationPanel);
 
     // 辞書の選択
@@ -626,7 +1048,7 @@ void Menu::draw()
         // その設定が現在選択されている設定なら真
         const bool selected(d->first == settings.dictionaryName);
 
-        // 設定を (それが現在の設定ならハイライトして) コンボボックスに表示する
+        // 設定を（それが現在の設定ならハイライトして）コンボボックスに表示する
         if (ImGui::Selectable(d->first.c_str(), d->first == settings.dictionaryName))
         {
           // 表示した設定が選択されていたらそれを現在の選択とする
@@ -711,7 +1133,6 @@ void Menu::draw()
     // 再投影誤差の表示
     ImGui::Text(u8"再投影誤差: %.4f", calibration.getReprojectionError());
 
-    // 構成パネルのメニュー終了
     ImGui::End();
   }
 
@@ -737,8 +1158,6 @@ void Menu::draw()
       // エラーメッセージを消去する
       errorMessage = nullptr;
     }
-
-    // エラーメッセージのパネル終了
     ImGui::End();
   }
 
