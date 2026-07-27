@@ -180,8 +180,9 @@ public:
   /// キャプチャデバイスをロックしてフレームをピクセルバッファオブジェクトに転送する
   ///
   /// @param buffer 転送先のピクセルバッファオブジェクト
+  /// @return 新しいフレームを転送できたら true
   ///
-  void transmit(GLuint buffer)
+  bool transmit(GLuint buffer)
   {
     // 新しいフレームが取得されているときカメラのロックが成功したら
     std::unique_lock<std::mutex> lock(mtx, std::try_to_lock);
@@ -198,7 +199,10 @@ public:
 
        // 次のフレームの取得を待つ
       captured = false;
+      return true;
     }
+
+    return false;
   }
 
   ///
@@ -230,9 +234,10 @@ public:
   /// キャプチャデバイスをロックしてフレームをメモリに転送する
   ///
   /// @param buffer 転送先のメモリ（cv::Matなど）
+  /// @return 新しいフレームを転送できたら true
   ///
   template <typename MatType>
-  void transmit(MatType& buffer)
+  bool transmit(MatType& buffer)
   {
     // 新しいフレームが取得されているときカメラのロックが成功したら
     std::unique_lock<std::mutex> lock(mtx, std::try_to_lock);
@@ -246,7 +251,10 @@ public:
 
       // 次のフレームの取得を待つ
       captured = false;
+      return true;
     }
+
+    return false;
   }
 
   ///

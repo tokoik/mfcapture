@@ -202,6 +202,7 @@ set(PROJECT_SOURCES
     Menu.cpp
     Preference.cpp
     Texture.cpp
+    Undistortion.cpp
     gg.cpp
     main.cpp
     mfcapture.cpp
@@ -216,7 +217,7 @@ set(PROJECT_SOURCES
 set(PROJECT_HEADERS
     Buffer.h CamCv.h Camera.h CamImage.h CamMf.h Capture.h
     Config.h Expand.h Framebuffer.h GgApp.h Intrinsics.h Menu.h Mesh.h
-    Preference.h Texture.h gg.h opencv_link.h parseconfig.h
+    Preference.h Texture.h Undistortion.h gg.h opencv_link.h parseconfig.h
 )
 
 file(GLOB SHADER_FILES CONFIGURE_DEPENDS

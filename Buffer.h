@@ -18,7 +18,7 @@ using namespace gg;
 ///
 /// バッファクラス
 ///
-/// @description
+/// @details
 /// フレームを格納するピクセルバッファオブジェクト
 ///
 class Buffer
@@ -107,7 +107,7 @@ public:
   ///
   /// コピーコンストラクタ
   ///
-  /// @param texture コピー元のバッファ
+  /// @param buffer コピー元のバッファ
   ///
   Buffer(const Buffer& buffer)
   {
@@ -117,7 +117,7 @@ public:
   ///
   /// ムーブコンストラクタ
   ///
-  /// @param texture ムーブ元のバッファ
+  /// @param buffer ムーブ元のバッファ
   ///
   Buffer(Buffer&& buffer) noexcept
     : bufferSize{ buffer.bufferSize }
@@ -194,7 +194,6 @@ public:
   /// オブジェクトが保持するフレームのサイズを引数に指定したオブジェクトと同じにする
   ///
   /// @param buffer サイズの基準に用いるオブジェクト
-  /// @param pixels 作成するオブジェクトに格納するフレームのデータのポインタ
   ///
   /// @note
   /// このオブジェクトのサイズが引数で指定したオブジェクトのサイズと異なれば、

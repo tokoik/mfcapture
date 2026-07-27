@@ -14,6 +14,9 @@
 // キャプチャデバイス
 #include "Capture.h"
 
+// レンズ歪み補正
+#include "Undistortion.h"
+
 ///
 /// メニューの描画
 ///
@@ -80,6 +83,12 @@ class Menu
 
   /// キャプチャデバイス
   Capture& capture;
+
+  /// 較正パラメータと補正処理
+  Undistortion& undistortion;
+
+  /// 選択中の補正方法
+  UndistortionMode undistortionMode;
 
   /// 選択しているキャプチャデバイスの番号
   int deviceNumber;
@@ -166,6 +175,14 @@ class Menu
   void saveConfig() const;
 
   ///
+  /// calib が作成した較正パラメータファイルを読み込む
+  ///
+  /// @details NFD のファイルダイアログで JSON を選択し、読み込みに失敗した場合は
+  /// 補正を無効にしてエラーダイアログを表示する。
+  ///
+  void loadCalibration();
+
+  ///
   /// 指定した番号の構成を調べる
   ///
   /// @param i 構成の番号
@@ -190,8 +207,9 @@ public:
   ///
   /// @param config 構成データ
   /// @param capture 入力フレームを取得するキャプチャデバイス
+  /// @param undistortion 較正パラメータと歪み補正処理
   ///
-  Menu(const Config& config, Capture& capture);
+  Menu(const Config& config, Capture& capture, Undistortion& undistortion);
 
   ///
   /// コピーコンストラクタは使用しない
@@ -265,6 +283,16 @@ public:
   /// 格子点数は画角 aspect と展開用メッシュのサンプル点数 samples から求める。
   ///
   std::array<GLsizei, 2> setup(GLfloat aspect) const;
+
+  ///
+  /// UI で選択されている歪み補正方法を得る
+  ///
+  /// @return 現在の歪み補正方法
+  ///
+  UndistortionMode getUndistortionMode() const
+  {
+    return undistortionMode;
+  }
 
   ///
   /// メニューを描画する

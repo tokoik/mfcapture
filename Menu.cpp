@@ -331,12 +331,34 @@ void Menu::saveConfig() const
 }
 
 //
+// calib が作成した較正パラメータファイルを読み込む
+//
+void Menu::loadCalibration()
+{
+  // 他のファイル操作と同じ NFD ダイアログで JSON ファイルを選択する。
+  nfdchar_t* filepath;
+  if (NFD_OpenDialog(&filepath, jsonFilter, 1, NULL) == NFD_OKAY)
+  {
+    // 必須のカメラ行列または歪み係数を読めなければ、誤った補正を防ぐため無効にする。
+    if (!undistortion.load(filepath))
+    {
+      errorMessage = u8"較正ファイルが読み込めません";
+      undistortionMode = UndistortionMode::None;
+    }
+    // NFD が確保したパス文字列を、成否にかかわらず解放する。
+    NFD_FreePath(filepath);
+  }
+}
+
+//
 // コンストラクタ
 //
-Menu::Menu(const Config& config, Capture& capture)
+Menu::Menu(const Config& config, Capture& capture, Undistortion& undistortion)
   : config{ config }
   , settings{ config.settings }
   , capture{ capture }
+  , undistortion{ undistortion }
+  , undistortionMode{ UndistortionMode::None }
   , deviceNumber{ 0 }
 #if defined(_WIN32)
   , formatNumber{ 0 }
@@ -472,9 +494,17 @@ void Menu::updateFormatDropdowns()
 //
 std::array<GLsizei, 2> Menu::setup(GLfloat aspect) const
 {
-  // シェーダを設定する
-  return config.preferenceList[preferenceNumber].getShader().setup(settings.samples, aspect,
-    pose, intrinsics.fov, intrinsics.center, settings.getFocal(), config.background);
+  // 現在の投影設定から、通常表示用と歪み補正用のどちらを使うか選択する。
+  const auto& preference{ config.preferenceList[preferenceNumber] };
+  const auto& shader{ undistortionMode == UndistortionMode::OpenGL
+    ? preference.getUndistortionShader() : preference.getShader() };
+
+  // 通常シェーダと補正シェーダを同じ入口から設定する。
+  // 補正用でない uniform は location=-1 となるため OpenGL 側で無視される。
+  return shader.setup(settings.samples, aspect, pose, intrinsics.fov,
+    intrinsics.center, settings.getFocal(), config.background,
+    undistortion.getCameraParameters(),
+    undistortion.getDistortionParameters(), intrinsics.size);
 }
 
 //
@@ -499,6 +529,9 @@ void Menu::draw()
 
       // 構成ファイルを保存する
       if (ImGui::MenuItem(u8"構成ファイルを保存")) saveConfig();
+
+      // calib で作成した較正パラメータを読み込む
+      if (ImGui::MenuItem(u8"較正ファイルを開く")) loadCalibration();
 
       // 終了
       quit = ImGui::MenuItem(u8"終了");
@@ -535,6 +568,35 @@ void Menu::draw()
     ImGui::SetNextWindowSize(ImVec2(231, 517), ImGuiCond_Once);
 #endif
     ImGui::Begin(u8"入力", &showInputPanel);
+
+    // 3種類の処理経路をラジオボタンで排他的に選択する。
+    ImGui::TextUnformatted(u8"歪み補正");
+
+    // 「なし」は較正ファイルの有無に関係なく選択できる。
+    if (ImGui::RadioButton(u8"なし",
+      undistortionMode == UndistortionMode::None))
+      undistortionMode = UndistortionMode::None;
+    ImGui::SameLine();
+    // OpenCV方式はCPU上で処理するので、有効な較正値がある場合だけ選択を許可する。
+    if (ImGui::RadioButton("OpenCV",
+      undistortionMode == UndistortionMode::OpenCV))
+    {
+      if (undistortion.ready())
+        undistortionMode = UndistortionMode::OpenCV;
+      else
+        errorMessage = u8"先に較正ファイルを読み込んでください";
+    }
+    ImGui::SameLine();
+    // OpenGL方式も同じ較正値をuniformへ渡すため、先にファイルを要求する。
+    if (ImGui::RadioButton("OpenGL",
+      undistortionMode == UndistortionMode::OpenGL))
+    {
+      if (undistortion.ready())
+        undistortionMode = UndistortionMode::OpenGL;
+      else
+        errorMessage = u8"先に較正ファイルを読み込んでください";
+    }
+    ImGui::Separator();
 
     // 投影方式の選択
     if (ImGui::BeginCombo(u8"投影方式", getPreference().getDescription().c_str()))

@@ -18,7 +18,13 @@ Expand::Expand(const std::string& vert, const std::string& frag)
   , circleLoc{ glGetUniformLocation(program, "circle") }
   , borderLoc{ glGetUniformLocation(program, "border") }
   , gapLoc{ glGetUniformLocation(program, "gap") }
+  , cameraLoc{ glGetUniformLocation(program, "camera") }
+  , distortionLoc{ glGetUniformLocation(program, "distortion[0]") }
+  , resolutionLoc{ glGetUniformLocation(program, "resolution") }
 {
+  // 通常シェーダには補正用 uniform が存在しないため、その location は -1 になる。
+  // OpenGL は location=-1 の glUniform 呼び出しを無視するので同じクラスで両方を扱える。
+
   // プログラムオブジェクトが作れなかったら落とす
   if (program == 0) throw std::runtime_error("Cannot create one of the expand shader.");
 }
@@ -36,7 +42,9 @@ Expand::~Expand()
 ///
 std::array<int, 2> Expand::setup(int samples, GLfloat aspect, const gg::GgMatrix& pose,
   const std::array<GLfloat, 2>& fov, const std::array<GLfloat, 2>& center, GLfloat focal,
-  const std::array<GLfloat, 4>& border, int unit) const
+  const std::array<GLfloat, 4>& border, const std::array<GLfloat, 4>& camera,
+  const std::array<GLfloat, 5>& distortion, const std::array<GLsizei, 2>& resolution,
+  int unit) const
 {
   // プログラムオブジェクトの指定
   glUseProgram(program);
@@ -63,6 +71,13 @@ std::array<int, 2> Expand::setup(int samples, GLfloat aspect, const gg::GgMatrix
 
   // 背景に対する視線の回転行列
   glUniformMatrix4fv(rotationLoc, 1, GL_FALSE, pose.get());
+
+  // OpenGL 補正シェーダが OpenCV と同じ数式を使えるよう、内部パラメータを渡す。
+  // 通常シェーダでは location が -1 なので、以下の設定は自動的に無視される。
+  glUniform4fv(cameraLoc, 1, camera.data());
+  glUniform1fv(distortionLoc, static_cast<GLsizei>(distortion.size()), distortion.data());
+  glUniform2f(resolutionLoc, static_cast<GLfloat>(resolution[0]),
+    static_cast<GLfloat>(resolution[1]));
 
   // メッシュの横の格子点数
   //   標本点の数 (頂点数) samples = w * h とするとき、これに縦横比

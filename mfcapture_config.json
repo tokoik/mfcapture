@@ -24,6 +24,10 @@
       "shader": [
         "orthographic.vert",
         "normal.frag"
+      ],
+      "undistortion": [
+        "undistortion.vert",
+        "undistortion.frag"
       ]
     }
   ],

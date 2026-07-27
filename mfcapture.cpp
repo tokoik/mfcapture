@@ -41,8 +41,11 @@ int GgApp::main(int argc, const char* const* argv)
   // キャプチャデバイスを作る
   Capture capture;
 
+  // calib が出力したカメラ内部パラメータと歪み係数
+  Undistortion undistortion;
+
   // メニューを作る
-  Menu menu{ config, capture };
+  Menu menu{ config, capture, undistortion };
 
   // キャプチャデバイスで初期画像を開く
   if (!capture.openImage(config.getInitialImage())) throw std::runtime_error("Cannot open initial image.");
@@ -53,6 +56,10 @@ int GgApp::main(int argc, const char* const* argv)
   // キャプチャしたフレームを保持するテクスチャ
   Texture frame;
 
+  // OpenCV 補正時に使用する CPU フレーム
+  cv::Mat sourceFrame;
+  cv::Mat correctedFrame;
+
   // 画像の展開に用いるフレームバッファオブジェクトのサイズを初期ウィンドウに合わせる
   Framebuffer framebuffer{ config.getWidth(), config.getHeight() };
 
@@ -62,11 +69,25 @@ int GgApp::main(int argc, const char* const* argv)
     // メニューを表示して設定を更新する
     menu.draw();
 
-    // 選択しているキャプチャデバイスから１フレーム取得する
-    capture.retrieve(frame);
+    if (menu.getUndistortionMode() == UndistortionMode::OpenCV)
+    {
+      // OpenCV方式では、GPUへ送る前のフレームをCPUメモリへ取得する。
+      // この位置で補正すれば、テクスチャをGPUから読み戻す余分な転送が発生しない。
+      if (capture.retrieve(sourceFrame))
+      {
+        // 較正値から作成した座標マップでレンズ歪みを補正する。
+        undistortion.apply(sourceFrame, correctedFrame);
 
-    // ピクセルバッファオブジェクトの内容をテクスチャに転送する
-    frame.drawPixels();
+        // 補正済みのCPU画像を表示用テクスチャへアップロードする。
+        frame.drawPixels(correctedFrame.cols, correctedFrame.rows,
+          correctedFrame.channels(), correctedFrame.data);
+      }
+    }
+    else
+    {
+      // 補正なし／OpenGL方式ではCPU処理が不要なので、高速なPBO経路を維持する。
+      if (capture.retrieve(frame)) frame.drawPixels();
+    }
 
     // フレームバッファオブジェクトのサイズをキャプチャしたフレームに合わせる
     framebuffer.resize(frame);

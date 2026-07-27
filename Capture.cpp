@@ -203,15 +203,25 @@ double Capture::getFps() const
 //
 // フレームを取得する
 //
-void Capture::retrieve(Buffer& buffer)
+bool Capture::retrieve(Buffer& buffer)
 {
-  // キャプチャデバイスが有効なら
+  // GPU へ効率よく送る通常経路では、カメラのフレームを PBO に直接転送する。
   if (camera)
   {
-    // バッファのサイズを取得したフレームのサイズに合わせて
+    // フォーマット変更時だけ PBO を再確保し、通常フレームでは既存領域を再利用する。
     buffer.create(camera->getWidth(), camera->getHeight(), camera->getChannels());
 
-    // バッファのピクセルバッファオブジェクトにフレームを転送する
-    camera->transmit(buffer.getBufferName());
+    // ロックを取得して新しいフレームを転送できたか、そのまま呼び出し元へ返す。
+    return camera->transmit(buffer.getBufferName());
   }
+  return false;
+}
+
+//
+// OpenCV で処理するため、新しいフレームを CPU メモリへ取得する
+//
+bool Capture::retrieve(cv::Mat& frame)
+{
+  // OpenCV 補正を選んだときだけ使用し、PBO へ送る前の画像を cv::Mat として得る。
+  return camera && camera->transmit(frame);
 }

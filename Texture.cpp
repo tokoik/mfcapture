@@ -269,5 +269,25 @@ void Texture::drawPixels(
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+void Texture::drawPixels(GLsizei width, GLsizei height, int channels, const void* pixels)
+{
+  // 空画像や不正なサイズでは OpenGL を呼ばず、現在のテクスチャを維持する。
+  if (!pixels || width <= 0 || height <= 0 || channels <= 0) return;
+
+  // OpenCV 補正後の画像サイズに合わせる。サイズが同じなら再確保は行われない。
+  create(width, height, channels);
+
+  // cv::Mat の連続したCPU画素を、現在のテクスチャへ直接アップロードする。
+  glBindTexture(GL_TEXTURE_2D, textureName);
+
+  // 3チャンネル画像など、1行のバイト数が4の倍数でない場合にも対応する。
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height,
+    channelsToFormat(channels), GL_UNSIGNED_BYTE, pixels);
+
+  // 後続描画へ意図しないテクスチャ結合状態を残さない。
+  glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 // 展開に用いるメッシュの頂点配列オブジェクト
 std::shared_ptr<Mesh> Texture::mesh;

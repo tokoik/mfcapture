@@ -24,9 +24,12 @@ Preference::Preference(const std::string& description,
   const Intrinsics& intrinsics)
   : description{ description }
   , source{ vert, frag }
+  , undistortionSource{ "undistortion.vert", "undistortion.frag" }
   , intrinsics{ intrinsics }
   , shader{ nullptr }
+  , undistortionShader{ nullptr }
 {
+  // 構成に undistortion ノードがない場合も、標準補正シェーダを使用できるようにする。
 }
 
 //
@@ -34,14 +37,19 @@ Preference::Preference(const std::string& description,
 // キャプチャデバイスの構成データのコンストラクタ
 //
 Preference::Preference(const picojson::object& object)
-  : intrinsics{ object }
+  : undistortionSource{ "undistortion.vert", "undistortion.frag" }
+  , intrinsics{ object }
   , shader{ nullptr }
+  , undistortionShader{ nullptr }
 {
   // 説明の文字列
   getString(object, "description", description);
 
   // 展開用シェーダのファイル名
   getString(object, "shader", source);
+
+  // undistortion ノードがあれば、既定の補正シェーダ名を構成値で置き換える。
+  getString(object, "undistortion", undistortionSource);
 }
 
 //
@@ -51,6 +59,7 @@ Preference::~Preference()
 {
   // static メンバにしている std::map の中身を先に消去しておく
   shaderList.clear();
+  undistortionShaderList.clear();
 }
 
 //
@@ -63,6 +72,15 @@ void Preference::buildShader()
 
   // キーがシェーダリストに無ければシェーダを構築して追加する
   shader = &shaderList.try_emplace(key, source[0], source[1]).first->second;
+
+  // 同じ組み合わせの補正シェーダを構成ごとに重複コンパイルしないよう、
+  // 2つのファイル名をキーにして共有キャッシュを検索する。
+  const auto undistortionKey{
+    undistortionSource[0] + "\t" + undistortionSource[1] };
+
+  // 未作成の場合だけコンパイルし、この構成が参照するシェーダを記録する。
+  undistortionShader = &undistortionShaderList.try_emplace(undistortionKey,
+    undistortionSource[0], undistortionSource[1]).first->second;
 }
 
 //
@@ -87,7 +105,11 @@ void Preference::setPreference(picojson::object& object) const
 
   // 展開用シェーダのファイル名
   setString(object, "shader", source);
+
+  // 保存後も同じ補正シェーダを再構築できるよう、2つのソース名を書き出す。
+  setString(object, "undistortion", undistortionSource);
 }
 
 // すべての構成のシェーダーのリスト
 std::map<std::string, Expand> Preference::shaderList;
+std::map<std::string, Expand> Preference::undistortionShaderList;

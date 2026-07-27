@@ -74,7 +74,7 @@ public:
   ///
   /// 画像ファイルを開く
   ///
-  /// @param 開く画像ファイル名
+  /// @param filename 開く画像ファイル名
   /// @return 開くことができたら true
   ///
   bool openImage(const std::string& filename);
@@ -199,6 +199,15 @@ public:
   /// フレームを取得する
   ///
   /// @param buffer 取得したフレームを格納するバッファ
+  /// @return 新しいフレームを取得できたら true
   ///
-  void retrieve(Buffer& buffer);
+  bool retrieve(Buffer& buffer);
+
+  ///
+  /// 新しいフレームを CPU メモリへ取得する
+  ///
+  /// @param frame 取得したフレーム
+  /// @return 新しいフレームを取得できたら true
+  ///
+  bool retrieve(cv::Mat& frame);
 };

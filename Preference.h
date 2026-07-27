@@ -29,14 +29,23 @@ class Preference
   /// このキャプチャデバイスの入力画像の平面展開用のシェーダのソースファイル名
   std::array<std::string, 2> source;
 
+  /// OpenGL 歪み補正用のバーテックス／フラグメントシェーダ名
+  std::array<std::string, 2> undistortionSource;
+
   /// このキャプチャデバイス固有のパラメータ
   const Intrinsics intrinsics;
 
   /// このキャプチャデバイスの入力画像の平面展開用のシェーダへのポインタ
   const Expand* shader;
 
+  /// この構成で使用する OpenGL 歪み補正用シェーダへのポインタ
+  const Expand* undistortionShader;
+
   /// すべてのキャプチャデバイスの平面展開用のシェーダのリスト
   static std::map<std::string, Expand> shaderList;
+
+  /// 全構成で共有する歪み補正用シェーダのキャッシュ
+  static std::map<std::string, Expand> undistortionShaderList;
 
 public:
 
@@ -104,6 +113,16 @@ public:
   const auto& getShader() const
   {
     return *shader;
+  }
+
+  ///
+  /// OpenGL 歪み補正用シェーダを取り出す
+  ///
+  /// @return この構成で指定された歪み補正用シェーダへの参照
+  ///
+  const auto& getUndistortionShader() const
+  {
+    return *undistortionShader;
   }
 
   ///

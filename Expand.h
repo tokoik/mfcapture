@@ -40,6 +40,15 @@ class Expand
   /// スクリーンの格子間隔の uniform 変数の場所
   const GLint gapLoc;
 
+  /// 較正済みカメラ行列 (fx, fy, cx, cy)
+  const GLint cameraLoc;
+
+  /// 歪み係数 (k1, k2, p1, p2, k3)
+  const GLint distortionLoc;
+
+  /// 入力画像の解像度
+  const GLint resolutionLoc;
+
 public:
 
   ///
@@ -88,8 +97,11 @@ public:
   /// @param pose サンプリングに用いるカメラの姿勢
   /// @param fov サンプリングに用いるカメラの相対画角 (単位は度)
   /// @param center サンプリングに用いるカメラの撮像面上の中心 (主点) 位置
-  /// @oaram focal サンプリングに用いるカメラの主点とスクリーンの距離
+  /// @param focal サンプリングに用いるカメラの主点とスクリーンの距離
   /// @param border 展開後のフレームの境界色
+  /// @param camera 較正済みカメラ行列の (fx, fy, cx, cy)
+  /// @param distortion 歪み係数 (k1, k2, p1, p2, k3)
+  /// @param resolution 入力画像の幅と高さ
   /// @param unit テクスチャユニット番号
   /// @return 描画すべきメッシュの横と縦の格子点数
   ///
@@ -99,5 +111,9 @@ public:
   ///
   std::array<GLsizei, 2> setup(int samples, GLfloat aspect,  const gg::GgMatrix& pose,
     const std::array<GLfloat, 2>& fov, const std::array<GLfloat, 2>& center, GLfloat focal,
-    const std::array<GLfloat, 4>& border, int unit = 0) const;
+    const std::array<GLfloat, 4>& border,
+    const std::array<GLfloat, 4>& camera = {},
+    const std::array<GLfloat, 5>& distortion = {},
+    const std::array<GLsizei, 2>& resolution = {},
+    int unit = 0) const;
 };
