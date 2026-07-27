@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>実践カメラキャリブレーション & レンズ歪み補正 講義・実習ハンドブック</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- KaTeX for math equations -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <!-- Mermaid for diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --primary: #0284c7;
+            --primary-gradient: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+            --accent: #06b6d4;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.05);
+            --code-bg: #0f172a;
+            --code-text: #f8fafc;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            line-height: 1.7;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 290px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            padding: 32px 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sidebar-brand {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.3;
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 8px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: #f0f9ff;
+            color: var(--primary);
+        }
+
+        /* Main Content Container */
+        .main-content {
+            margin-left: 290px;
+            flex: 1;
+            max-width: 1020px;
+            padding: 48px 56px;
+        }
+
+        /* Document Header Hero */
+        .doc-header {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .doc-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: var(--primary-gradient);
+        }
+
+        .doc-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .doc-meta {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Content Sections & Cards */
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 36px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 24px 0 12px 0;
+            color: var(--text-dark);
+        }
+
+        h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 18px 0 8px 0;
+            color: #0284c7;
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: #334155;
+        }
+
+        .arch-img-box {
+            text-align: center;
+            margin: 24px 0;
+        }
+
+        .arch-img-box img {
+            max-width: 100%;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: #0284c7;
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.92rem;
+        }
+
+        tr:hover td {
+            background: #f0f9ff;
+        }
+
+        /* Code Blocks */
+        pre {
+            margin: 20px 0;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 18px 22px;
+            display: block;
+            overflow-x: auto;
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+
+        p code, li code {
+            display: inline;
+            padding: 3px 8px;
+            background: #e0f2fe;
+            color: #0369a1;
+            border-radius: 4px;
+            font-size: 0.88em;
+            font-weight: 600;
+        }
+
+        /* Note Cards & Alerts */
+        .callout {
+            padding: 20px 24px;
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+            background: #f0f9ff;
+        }
+
+        .callout-title {
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 6px;
+        }
+
+        /* Math Display */
+        .katex-display {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; position: static; height: auto; }
+            .main-content { margin-left: 0; padding: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            カメラキャリブレーション<br>ハンドブック
+        </div>
+        <ul class="nav-list">
+            <li><a href="#ch1" class="nav-link">第1章 開発環境とプロジェクト規約</a></li>
+            <li><a href="#ch2" class="nav-link">第2章 カメラモデリングと歪みの数理</a></li>
+            <li><a href="#ch3" class="nav-link">第3章 ChArUco Board 原理</a></li>
+            <li><a href="#ch3-3" class="nav-link" style="padding-left: 20px;">3.3～3.10 実装ステップ</a></li>
+            <li><a href="#ch4" class="nav-link">第4章 設計とアーキテクチャ</a></li>
+            <li><a href="#ch4-4" class="nav-link" style="padding-left: 20px;">4.4 逆写像と座標系</a></li>
+            <li><a href="#ch5" class="nav-link">第5章 実習1: calib-wom-msmf</a></li>
+            <li><a href="#ch6" class="nav-link">第6章 実習2: mfcapture 補正</a></li>
+            <li><a href="#ch6-4" class="nav-link" style="padding-left: 20px;">6.4 ハンズオン A & B</a></li>
+            <li><a href="#ch7" class="nav-link">第7章 トラブルシューティング</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Document Header Hero -->
+        <header class="doc-header">
+            <h1 class="doc-title">実践カメラキャリブレーション &<br>レンズ歪み補正 講義ハンドブック</h1>
+            <div class="doc-meta">
+                <span>対象: C++ / OpenCV エンジニア</span>
+                <span>OS: Windows (VS2022 / C++17)</span>
+                <span>キャプチャ: Media Foundation (MSMF)</span>
+            </div>
+        </header>
+
+        <!-- Chapter 1 -->
+        <section id="ch1" class="section">
+            <h2>第1章 開発環境とプロジェクト規約</h2>
+            
+            <h3>1.1 開発環境要件</h3>
+            <p>本勉強会で使用する開発環境およびツール群は以下の通りです。</p>
+            <ul>
+                <li><strong>OS</strong>: Windows 11 / 10 (64bit / x64)</li>
+                <li><strong>IDE</strong>: Visual Studio 2022 以降 (`/std:c++17`)</li>
+                <li><strong>ツール</strong>: PowerShell, Git, CMake 3.13+, Python</li>
+            </ul>
+
+            <h3>1.2 ソースコード文字コード規約</h3>
+            <div class="callout">
+                <div class="callout-title">重要: 文字コード規約の理由</div>
+                MSVC コンパイラと GLSL シェーダーコンパイラの動作差分に留意し、以下のエンコーディングを厳格に保持してください。
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ファイル種別</th>
+                        <th>拡張子</th>
+                        <th>文字コード</th>
+                        <th>BOMの有無</th>
+                        <th>理由</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>C++ ソース/ヘッダ</td>
+                        <td><code>.h</code>, <code>.cpp</code></td>
+                        <td>UTF-8</td>
+                        <td><strong>BOM あり</strong></td>
+                        <td>MSVC (`cl.exe`) で日本語コメントが含まれる場合の文字化け・エラーを防止</td>
+                    </tr>
+                    <tr>
+                        <td>GLSL シェーダー</td>
+                        <td><code>.vert</code>, <code>.frag</code>, <code>.comp</code></td>
+                        <td>UTF-8</td>
+                        <td><strong>BOM なし</strong></td>
+                        <td>OpenGL の GLSL コンパイラ (`glCompileShader`) が BOM プレフィックスを構文エラーとするのを防ぐ</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>1.3 外部ライブラリおよびバージョン</h3>
+            <ul>
+                <li><strong>OpenCV 4.13.0</strong>: 動画入力、画像処理、ChArUco Board キャリブレーション機能に使用</li>
+                <li><strong>GLFW 3.4</strong>: ウィンドウ作成、OpenGL コンテキスト管理、入力イベント制御</li>
+                <li><strong>Dear ImGui v1.92.8</strong>: GUI フロントエンド (GLFW + OpenGL3 バックエンド実装を直接リンク)</li>
+                <li><strong>Native File Dialog Extended (nfd)</strong>: OS 標準のファイル選択ダイアログ</li>
+            </ul>
+        </section>
+
+        <!-- Chapter 2 -->
+        <section id="ch2" class="section">
+            <h2>第2章 カメラモデリングとレンズ歪みの数理</h2>
+            
+            <h3>2.1 ピンホールカメラモデルとカメラ行列</h3>
+            <p>ピンホールカメラモデルでは、3次元空間の点 $P = (X_w, Y_w, Z_w)^T$ がカメラの光学中心を通り、画像平面上の点 $p = (u, v)^T$ に投影されます。</p>
+            
+            $$s \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = K \begin{bmatrix} R & t \end{bmatrix} \begin{bmatrix} X_w \\ Y_w \\ Z_w \\ 1 \end{bmatrix}$$
+
+            <p>カメラ内部行列 $K$ の定義：</p>
+            $$K = \begin{bmatrix} f_x & 0 & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{bmatrix}$$
+
+            <h3>2.2 レンズ歪みモデル</h3>
+            <p><strong>1. 放射歪み (Radial Distortion):</strong></p>
+            $$x_{\text{radial}} = x (1 + k_1 r^2 + k_2 r^4 + k_3 r^6)$$
+            $$y_{\text{radial}} = y (1 + k_1 r^2 + k_2 r^4 + k_3 r^6)$$
+
+            <p><strong>2. 接線歪み (Tangential Distortion):</strong></p>
+            $$\delta x = 2 p_1 x y + p_2 (r^2 + 2 x^2)$$
+            $$\delta y = p_1 (r^2 + 2 y^2) + 2 p_2 x y$$
+        </section>
+
+        <!-- Chapter 3 -->
+        <section id="ch3" class="section">
+            <h2>第3章 ChArUco Board によるキャリブレーション原理</h2>
+            <p>ChArUco Board はチェスボードと ArUco マーカーを融合させたハイブリッドパターンです。</p>
+
+            <div class="callout">
+                <div class="callout-title">ChArUco Board の特長</div>
+                チェスボードのサブピクセル交点検出精度と、ArUco マーカーによる個別交点識別能力を両立。ボードの一部が画面外や物体の陰に隠れていても高精度に較正が可能です。
+            </div>
+
+            <div id="ch3-3">
+                <h3>3.3 キャリブレーション処理の入力と出力</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>データ</th>
+                            <th>型の例</th>
+                            <th>寿命</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>現フレームの ChArUco コーナー</td>
+                            <td><code>vector&lt;Point2f&gt;</code></td>
+                            <td>次の検出まで</td>
+                        </tr>
+                        <tr>
+                            <td>現フレームのコーナー ID</td>
+                            <td><code>vector&lt;int&gt;</code></td>
+                            <td>次の検出まで</td>
+                        </tr>
+                        <tr>
+                            <td>ボード上の既知座標</td>
+                            <td><code>vector&lt;Point3f&gt;</code></td>
+                            <td>標本として保存</td>
+                        </tr>
+                        <tr>
+                            <td>画像上の観測座標</td>
+                            <td><code>vector&lt;Point2f&gt;</code></td>
+                            <td>標本として保存</td>
+                        </tr>
+                        <tr>
+                            <td>全標本</td>
+                            <td><code>vector&lt;vector&lt;...&gt;&gt;</code></td>
+                            <td>較正を実行するまで</td>
+                        </tr>
+                        <tr>
+                            <td>カメラ行列・歪み係数</td>
+                            <td><code>cv::Mat</code></td>
+                            <td>較正結果として保存</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="mermaid" style="text-align: center;">
+                    flowchart TD
+                        F["入力フレーム"] --> D["CharucoDetector::detectBoard"]
+                        D --> C["charucoCorners + charucoIds"]
+                        C -->|"取得操作"| M["CharucoBoard::matchImagePoints"]
+                        M --> O["objectPoints: ボード座標"]
+                        M --> I["imagePoints: 画素座標"]
+                        O --> A["全標本へ追加"]
+                        I --> A
+                        A --> K["cv::calibrateCamera"]
+                        K --> R["K, distortion, 各標本の R,t, RMS"]
+                </div>
+            </div>
+
+            <h3>3.4 C++ 実装手順1：辞書、ボード、検出器を作る</h3>
+            <pre><code>cv::aruco::Dictionary dictionary =
+  cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
+
+constexpr int squaresX = 10;
+constexpr int squaresY = 7;
+constexpr float squareLength = 0.030f;  // 30 mmをmで表す
+constexpr float markerLength = 0.022f;  // 22 mmをmで表す
+
+cv::aruco::CharucoBoard board{
+  cv::Size{squaresX, squaresY}, squareLength, markerLength, dictionary
+};
+cv::aruco::CharucoDetector boardDetector{board};</code></pre>
+
+            <h3>3.5 C++ 実装手順2：印刷用画像を生成する</h3>
+            <pre><code>cv::Mat boardImage;
+board.generateImage(cv::Size{1400, 980}, boardImage, 20, 1);
+cv::imwrite("ChArUcoBoard.png", boardImage);</code></pre>
+
+            <h3>3.6 C++ 実装手順3：毎フレーム検出する</h3>
+            <pre><code>std::vector&lt;cv::Point2f&gt; charucoCorners;
+std::vector&lt;int&gt; charucoIds;
+
+void detectCharuco(const cv::Mat& input) {
+  cv::Mat bgr;
+  if (input.channels() == 4)
+    cv::cvtColor(input, bgr, cv::COLOR_BGRA2BGR);
+  else
+    bgr = input;
+
+  boardDetector.detectBoard(bgr, charucoCorners, charucoIds);
+  if (!charucoCorners.empty()) {
+    cv::aruco::drawDetectedCornersCharuco(
+      bgr, charucoCorners, charucoIds, cv::Scalar{0, 0, 255});
+  }
+}</code></pre>
+
+            <h3>3.7 C++ 実装手順4：利用者の操作で標本を保存する</h3>
+            <pre><code>std::vector&lt;std::vector&lt;cv::Point3f&gt;&gt; allObjectPoints;
+std::vector&lt;std::vector&lt;cv::Point2f&gt;&gt; allImagePoints;
+
+bool recordSample() {
+  if (charucoCorners.size() &lt; 4) return false;
+
+  std::vector&lt;cv::Point3f&gt; objectPoints;
+  std::vector&lt;cv::Point2f&gt; imagePoints;
+  board.matchImagePoints(charucoCorners, charucoIds, objectPoints, imagePoints);
+
+  if (objectPoints.size() != imagePoints.size() || objectPoints.size() &lt; 4)
+    return false;
+
+  allObjectPoints.push_back(std::move(objectPoints));
+  allImagePoints.push_back(std::move(imagePoints));
+  return true;
+}</code></pre>
+
+            <h3>3.8 C++ 実装手順5：内部パラメータを推定する</h3>
+            <pre><code>cv::Mat cameraMatrix, distCoeffs;
+std::vector&lt;cv::Mat&gt; rvecs, tvecs;
+
+double rms = cv::calibrateCamera(
+  allObjectPoints, allImagePoints, imageSize,
+  cameraMatrix, distCoeffs, rvecs, tvecs,
+  cv::noArray(), cv::noArray(), cv::noArray(), 0
+);</code></pre>
+
+            <h3>3.9 C++ 実装手順6：標本ごとの誤差を調べる</h3>
+            <pre><code>std::vector&lt;double&gt; perViewError(allObjectPoints.size());
+
+for (size_t i = 0; i &lt; allObjectPoints.size(); ++i) {
+  std::vector&lt;cv::Point2f&gt; projected;
+  cv::projectPoints(
+    allObjectPoints[i], rvecs[i], tvecs[i],
+    cameraMatrix, distCoeffs, projected);
+
+  const double l2 = cv::norm(allImagePoints[i], projected, cv::NORM_L2);
+  perViewError[i] = std::sqrt((l2 * l2) / projected.size());
+}</code></pre>
+
+            <h3>3.10 パラメータの保存</h3>
+            <pre><code>{
+  "camera matrix": [
+    [1000.0, 0.0, 960.0],
+    [0.0, 1000.0, 540.0],
+    [0.0, 0.0, 1.0]
+  ],
+  "distortion": [
+    [-0.25], [0.08], [0.001], [-0.0005], [-0.01]
+  ],
+  "error": 0.31
+}</code></pre>
+        </section>
+
+        <!-- Chapter 4 -->
+        <section id="ch4" class="section">
+            <h2>第4章 プログラム設計とアーキテクチャ</h2>
+            
+            <div class="arch-img-box">
+                <img src="system_architecture_1785127549276.jpg" alt="全体システムアーキテクチャ図">
+            </div>
+
+            <div id="ch4-4">
+                <h3>4.4 補正は「出力から入力を引く」逆写像</h3>
+                <div class="mermaid" style="text-align: center;">
+                    flowchart LR
+                        A["補正後の画素<br/>(u, v)"] --> B["正規化<br/>x = (u - cx) / fx"]
+                        B --> C["歪みモデル<br/>radial + tangential"]
+                        C --> D["歪んだ入力画素<br/>ud = fx * xd + cx"]
+                        D --> E["双線形補間<br/>サンプル"]
+                        E --> F["出力画素の色"]
+                </div>
+                <p>順写像では穴やピクセルの衝突が発生しますが、逆写像（Backward mapping）により、すべての出力画素について参照元が一意に決まり、<code>cv::remap()</code> と GLSL <code>texture()</code> を破綻なく実行できます。</p>
+
+                <h3>4.5 座標変換を数値例で追う</h3>
+                <p>1920×1080, $f_x=f_y=1000$, $(c_x,c_y)=(960,540)$ で補正後画素 $(1460,790)$ の場合：</p>
+                <ol style="margin-left: 20px;">
+                    <li>正規化座標: $x=0.5, y=0.25 \implies r^2 = 0.3125$</li>
+                    <li>$k_1=-0.2 \implies \text{radial} = 1 - 0.2 \times 0.3125 = 0.9375$</li>
+                    <li>歪み座標: $x_d=0.46875, y_d=0.234375$</li>
+                    <li>入力画素: $u_d=1428.75, v_d=774.375$</li>
+                </ol>
+
+                <h3>4.6 解像度変更時の内部パラメータ</h3>
+                <p>解像度を半分にする場合、$f'_x = 0.5 f_x, c'_x = 0.5 c_x$ とスケールします。歪み係数は正規化座標に作用するため変更不要です。</p>
+            </div>
+        </section>
+
+        <!-- Chapter 5 -->
+        <section id="ch5" class="section">
+            <h2>第5章 実習1: calib-wom-msmf でのキャリブレーション</h2>
+            
+            <h3>ビルドコマンド</h3>
+            <pre><code># PowerShell
+cd d:\Users\tokoi\Documents\Projects\worktrees\calib-wom-msmf
+cmake -S . -B build
+cmake --build build --config Release</code></pre>
+
+            <h3>操作手順</h3>
+            <ol style="margin-left: 20px;">
+                <li><code>build/Release/calib.exe</code> を起動</li>
+                <li>カメラ装置と解像度（例: 1920x1080 30fps MJPG）を選択し「開始」</li>
+                <li>ChArUco ボードを様々な角度から撮影し、標本（8〜15枚）を追加</li>
+                <li>「較正実行」ボタンで RMS 再投影誤差を確認し JSON に保存</li>
+            </ol>
+        </section>
+
+        <!-- Chapter 6 -->
+        <section id="ch6" class="section">
+            <h2>第6章 実習2: mfcapture によるリアルタイム歪み補正</h2>
+            
+            <h3>GLSL 歪み補正シェーダー (undistortion.frag)</h3>
+            <pre><code>#version 150 core
+in vec2 v_texcoord;
+out vec4 fragment;
+
+uniform sampler2D image;
+uniform vec2 focal;
+uniform vec2 center;
+uniform vec4 dist_k;
+uniform float dist_k3;
+uniform vec2 size;
+
+void main() {
+    vec2 p = (v_texcoord * size - center) / focal;
+    float r2 = dot(p, p);
+    float radial = 1.0 + dist_k.x * r2 + dist_k.y * r2 * r2 + dist_k3 * r2 * r2 * r2;
+    vec2 tangential = vec2(
+        2.0 * dist_k.z * p.x * p.y + dist_k.w * (r2 + 2.0 * p.x * p.x),
+        dist_k.z * (r2 + 2.0 * p.y * p.y) + 2.0 * dist_k.w * p.x * p.y
+    );
+    vec2 pd = p * radial + tangential;
+    vec2 uv = (pd * focal + center) / size;
+    fragment = texture(image, uv);
+}</code></pre>
+
+            <div id="ch6-4">
+                <h3>6.4 ハンズオン A：標本の「多様性」を体験</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>データセット</th>
+                            <th>RMS</th>
+                            <th>$f_x, f_y$</th>
+                            <th>$c_x, c_y$</th>
+                            <th>四隅の直線性評価</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>正面・中央だけ 8 枚</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>四隅・距離・傾きを分散 12 枚</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>6.5 ハンズオン B：CPUとGPUを同条件で比較</h3>
+                <ol style="margin-left: 20px;">
+                    <li>同じカメラ、解像度、較正 JSON を使用</li>
+                    <li>「なし」で歪みの位置を観察</li>
+                    <li>「OpenCV」で直線性と CPU 使用率を記録</li>
+                    <li>「OpenGL」で同じ箇所と CPU 使用率を記録</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Chapter 7 -->
+        <section id="ch7" class="section">
+            <h2>第7章 トラブルシューティング</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>症状</th>
+                        <th>原因と対処</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>MSVC コンパイル文字化け</td>
+                        <td>C++ ソースに BOM がありません。UTF-8 with BOM で保存してください。</td>
+                    </tr>
+                    <tr>
+                        <td>GLSL コンパイルエラー</td>
+                        <td>シェーダーファイルに BOM が含まれています。UTF-8 (BOMなし) で保存してください。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false
+            });
+
+            mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+        });
+    </script>
+</body>
+</html>
