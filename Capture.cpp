@@ -8,7 +8,7 @@
 #include "Capture.h"
 
 #if defined(_WIN32)
-/// 空のビデオフォーマットのリスト
+/// フォーマットを提供できない場合に返す空のリスト
 const std::vector<CaptureFormat> Capture::emptyFormatList;
 #endif
 
@@ -100,25 +100,33 @@ bool Capture::select(int index)
 
 void Capture::updateFormatList(int deviceNumber)
 {
-  CamMf tempCam;
-  if (tempCam.open(deviceNumber, false))
+  // 実際の入力状態を変更せずに選択肢だけ取得する一時カメラ
+  CamMf temp;
+
+  // デバイスを遅延初期化で開く
+  if (temp.open(deviceNumber, false))
   {
-    deviceFormatList = tempCam.getFormatList();
-    tempCam.close();
+  	// 開けたら列挙されたフォーマットリストを保存する
+    deviceFormatList = temp.getFormatList();
+    temp.close();
   }
   else
   {
+  	// 開けなかったらフォーマットリストを空にする
     deviceFormatList.clear();
   }
 }
 
-#if defined(_WIN32)
+//
+// フォーマットリストを取り出す
+//
 const std::vector<CaptureFormat>& Capture::getFormatList() const
 {
+  // 開いている Media Foundation カメラを優先し、なければ事前取得した一覧を返す
   auto camMf{ dynamic_cast<const CamMf*>(camera.get()) };
   return camMf ? camMf->getFormatList() : deviceFormatList;
 }
-#endif
+
 #else
 //
 // デバイスを開く (Windows以外用: OpenCV)
@@ -201,24 +209,26 @@ double Capture::getFps() const
 }
 
 //
-// フレームを取得する
+// 新しいフレームを GPU の PBO に取得する
 //
 bool Capture::retrieve(Buffer& buffer)
 {
-  // GPU へ効率よく送る通常経路では、カメラのフレームを PBO に直接転送する。
+  // キャプチャデバイスが有効なら
   if (camera)
   {
-    // フォーマット変更時だけ PBO を再確保し、通常フレームでは既存領域を再利用する。
+    // バッファのサイズを取得したフレームのサイズに合わせて
     buffer.create(camera->getWidth(), camera->getHeight(), camera->getChannels());
 
-    // ロックを取得して新しいフレームを転送できたか、そのまま呼び出し元へ返す。
+    // 取得したフレームをフレームを転送する
     return camera->transmit(buffer.getBufferName());
   }
+
+  // 転送失敗
   return false;
 }
 
 //
-// OpenCV で処理するため、新しいフレームを CPU メモリへ取得する
+// 新しいフレームを CPU のメモリに取得する
 //
 bool Capture::retrieve(cv::Mat& frame)
 {

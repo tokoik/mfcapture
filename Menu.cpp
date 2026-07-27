@@ -566,9 +566,9 @@ void Menu::draw()
     // ウィンドウの位置とサイズ
     ImGui::SetNextWindowPos(ImVec2(2.0f, 2.0f + menubarHeight), ImGuiCond_Once);
 #if defined(_WIN32)
-    ImGui::SetNextWindowSize(ImVec2(231, 487), ImGuiCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(262, 546), ImGuiCond_Once);
 #else
-    ImGui::SetNextWindowSize(ImVec2(231, 517), ImGuiCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(262, 576), ImGuiCond_Once);
 #endif
     ImGui::Begin(u8"入力", &showInputPanel);
 
@@ -794,7 +794,7 @@ void Menu::draw()
             if (ImGui::Button(u8"開始") && deviceNumber >= 0)
             {
               // もしすでにデバイスが開いていないか、画像が開かれているなら openDevice を呼ぶ
-              if (!capture.isOpend() || capture.isImage())
+              if (!capture.isOpened() || capture.isImage())
               {
                 capture.openDevice(deviceNumber);
               }
@@ -946,7 +946,7 @@ void Menu::draw()
   {
     // ウィンドウの位置・サイズとタイトル
     ImGui::SetNextWindowPos(ImVec2(60, 60), ImGuiCond_Once);
-    ImGui::SetNextWindowSize(ImVec2(240, 92), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(272, 92), ImGuiCond_Always);
 
     // ウィンドウを表示するとき true
     bool status{ true };

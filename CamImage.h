@@ -34,6 +34,9 @@ public:
   ///
   /// 画像ファイルを開いて読み込むコンストラクタ
   ///
+  /// @param filename 画像ファイル名
+  /// @param flip 上下を反転するときは true
+  ///
   CamImage(std::string& filename, bool flip = false)
   {
     open(filename, flip);
@@ -76,6 +79,9 @@ public:
       image.resize(size);
       memcpy(image.data(), cvImage.data, size);
     }
+
+    // 静止画像は表示方式を切り替えた後も同じフレームを再利用する
+    reusableFrame = true;
 
     // 画像が読み込まれたことを記録する
     captured = true;

@@ -21,6 +21,11 @@
 ///
 /// キャプチャデバイスが対応するビデオフォーマットの表示・選択情報
 ///
+/// @details
+/// バックエンド固有のメディア型を UI が解釈し直さなくて済むよう、
+/// 解像度、フレームレート、コーデックを表示用文字列として保持する。
+/// index はバックエンドが保持する実フォーマットの選択に使用する。
+///
 struct CaptureFormat
 {
   std::string resolution; ///< 解像度の表示文字列（例: "1920 x 1080"）
@@ -28,6 +33,14 @@ struct CaptureFormat
   std::string codec;      ///< コーデックの表示文字列（例: "NV12"）
   int index{ 0 };         ///< バックエンドのフォーマットリストにおける選択番号
 
+  ///
+  /// コンストラクタ
+  ///
+  /// @param resolution 解像度の表示文字列（例: "1920 x 1080"）
+  /// @param fps フレームレートの表示文字列（例: "30.00"）
+  /// @param codec コーデックの表示文字列（例: "NV12"）
+  /// @param index バックエンドのフォーマットリストにおける選択番号
+  ///
   CaptureFormat(const std::string& resolution, const std::string& fps,
     const std::string& codec, int index)
     : resolution{ resolution }
@@ -46,19 +59,19 @@ class Camera
 protected:
 
   /// ムービーファイルの総フレーム数
-  double total;
+  double total{ -1.0 };
 
   /// キャプチャした画像のフレーム間隔
-  double interval;
+  double interval{ 10.0 };
 
   /// 解像度（幅）
-  int width;
+  int width{ 0 };
 
   /// 解像度（高さ）
-  int height;
+  int height{ 0 };
 
   /// チャンネル数
-  int channels;
+  int channels{ 0 };
 
   /// キャプチャデバイスから取得したフレーム
   std::vector<GLubyte> frame;
@@ -67,10 +80,13 @@ protected:
   std::vector<GLubyte> image;
 
   /// レイテンシを優先するなら true
-  std::atomic<bool> prioritizeLatency;
+  std::atomic<bool> prioritizeLatency{ false };
 
   /// 新しいフレームが取得されたら true
-  std::atomic<bool> captured;
+  std::atomic<bool> captured{ false };
+
+  /// 転送後も同じフレームを再利用するなら true
+  bool reusableFrame{ false };
 
   /// キャプチャを非同期に行うためのスレッド
   std::thread thr;
@@ -79,7 +95,7 @@ protected:
   std::mutex mtx;
 
   /// キャプチャスレッドが実行中なら true
-  std::atomic<bool> running;
+  std::atomic<bool> running{ false };
 
   ///
   /// フレームをキャプチャする
@@ -96,27 +112,15 @@ protected:
 public:
 
   /// ムービーファイルのインポイント
-  double in;
+  double in{ -1.0 };
 
   /// ムービーファイルのアウトポイント
-  double out;
+  double out{ -1.0 };
 
   ///
   /// コンストラクタ
   ///
-  Camera()
-    : total{ -1.0 }
-    , interval{ 10.0 }
-    , width{ 0 }
-    , height{ 0 }
-    , channels{ 0 }
-    , prioritizeLatency{ false }
-    , captured{ false }
-    , running{ false }
-    , in{ -1.0 }
-    , out{ -1.0 }
-  {
-  }
+  Camera() = default;
 
   ///
   /// コピーコンストラクタは使用しない
@@ -197,11 +201,13 @@ public:
       glBufferSubData(GL_PIXEL_PACK_BUFFER, 0, length, image.data());
       glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 
-       // 次のフレームの取得を待つ
-      captured = false;
+      // 動画・カメラ入力では次のフレームを待つ。静止画像は表示方式を
+      // 切り替えた後も同じ内容を再転送できるよう取得済みの状態を維持する。
+      if (!reusableFrame) captured = false;
       return true;
     }
 
+    // カメラがロックできなかった
     return false;
   }
 
@@ -225,8 +231,8 @@ public:
       // フレームを呼び出し元にコピーして
       memcpy(buffer.data(), image.data(), length);
 
-      // 次のフレームの取得を待つ
-      captured = false;
+      // 静止画像でなければ次のフレームの取得を待つ
+      if (!reusableFrame) captured = false;
     }
   }
 
@@ -249,11 +255,12 @@ public:
       const auto expected_length{ static_cast<size_t>(width) * height * channels };
       memcpy(buffer.data, image.data(), std::min(image.size(), expected_length));
 
-      // 次のフレームの取得を待つ
-      captured = false;
+      // 静止画像でなければ次のフレームの取得を待つ
+      if (!reusableFrame) captured = false;
       return true;
     }
 
+    // カメラがロックできなかった
     return false;
   }
 

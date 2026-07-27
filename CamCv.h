@@ -29,10 +29,10 @@ class CamCv : public Camera
   cv::Mat cvImage;
 
   /// 現在のフレームの時刻
-  double elapsedTime;
+  double elapsedTime{ 0.0 };
 
   /// 露出と利得
-  int exposure, gain;
+  int exposure{ 0 }, gain{ 0 };
 
   ///
   /// キャプチャデバイスを初期化する
@@ -190,11 +190,7 @@ public:
   ///
   /// コンストラクタ
   ///
-  CamCv()
-    : elapsedTime{ 0.0 }
-    , exposure{ 0 }
-    , gain{ 0 }
-  {}
+  CamCv() = default;
 
   ///
   /// デストラクタ
@@ -211,7 +207,7 @@ public:
   /// @param height キャプチャデバイスを開く際に期待するフレームの縦の画素数, 0 ならお任せ
   /// @param fps キャプチャデバイスを開く際に期待するフレームフレームレート, 0 ならお任せ
   /// @param fourcc キャプチャデバイスを開く際に期待するコーデックの 4 文字, "" ならお任せ
-  /// @param pref 使用するビデオキャプチャ API
+  /// @param pref OpenCV が使用する VideoCapture バックエンド
   /// @return キャプチャデバイスが使用可能なら true
   ///
   auto open(int device, int width = 0, int height = 0, double fps = 0.0, const char* fourcc = "", int pref = cv::CAP_ANY)
@@ -233,14 +229,14 @@ public:
   }
 
   ///
-  /// ファイル / ネットワーク / GStreamer から入力する
+  /// ファイルまたはネットワークから入力する
   ///
-  /// @param file 入力するファイルの名前
+  /// @param file 入力するファイルまたはネットワーク URL
   /// @param width 入力するファイルを開く際に期待するフレームの横の画素数, 0 ならお任せ
   /// @param height 入力するファイルを開く際に期待するフレームの縦の画素数, 0 ならお任せ
   /// @param fps 入力するファイルを開く際に期待するフレームフレームレート, 0 ならお任せ
   /// @param fourcc 入力するファイルを開く際に期待するコーデックの 4 文字, "" ならお任せ
-  /// @param pref 使用するビデオキャプチャ API
+  /// @param pref OpenCV が使用する VideoCapture バックエンド
   /// @return 入力するファイルが使用可能なら true
   ///
   auto open(const std::string& file, int width = 0, int height = 0, double fps = 0.0, const char* fourcc = "", int pref = cv::CAP_ANY)

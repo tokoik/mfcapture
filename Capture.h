@@ -28,7 +28,7 @@
 class Capture
 {
   /// 選択しているキャプチャデバイスのポインタ
-  std::unique_ptr<Camera> camera;
+  std::unique_ptr<Camera> camera{};
 
 #if defined(_WIN32)
   /// 一時取得したキャプチャデバイスのビデオフォーマットのリスト
@@ -43,12 +43,7 @@ public:
   ///
   /// キャプチャーオブジェクトのデフォルトコンストラクタ
   ///
-  Capture()
-#if defined(_WIN32)
-    : camera{ nullptr }
-#endif
-  {
-  }
+  Capture() = default;
 
   ///
   /// キャプチャするファイルを指定するコンストラクタ
@@ -56,9 +51,6 @@ public:
   /// @param filename キャプチャするファイルのパス名
   ///
   Capture(const std::string& filename)
-#if defined(_WIN32)
-    : camera{ nullptr }
-#endif
   {
     openImage(filename);
   }
@@ -105,8 +97,9 @@ public:
   ///
   /// 使用可能なビデオフォーマットの表示名のリストを得る
   ///
-  /// @return 使用可能なビデオフォーマットの表示名のリストへの参照
-  /// @note カメラが有効な場合はそのフォーマットリスト、無効な場合は一時的に取得したデバイスフォーマットリストを動的に返します。
+  /// @return 使用可能なビデオフォーマット情報のリストへの参照
+  /// @note カメラが開いている場合はそのカメラのリストを返し、開いていない場合は
+  /// updateFormatList() で一時取得したリストを返す。
   ///
   const std::vector<CaptureFormat>& getFormatList() const;
 
@@ -121,6 +114,8 @@ public:
   /// キャプチャデバイスのビデオフォーマットの表示名のリストを一時的に更新する
   ///
   /// @param deviceNumber 一時的に開くデバイス番号
+  /// @note 開始前の UI に選択肢を表示するため、対象デバイスを一時的に開いて
+  /// フォーマットを列挙し、列挙後はデバイスを閉じる。
   ///
   void updateFormatList(int deviceNumber);
 #else
@@ -168,7 +163,7 @@ public:
   ///
   /// キャプチャデバイスが有効かどうか
   ///
-  bool isOpend() const
+  bool isOpened() const
   {
     return bool(camera);
   }
@@ -196,7 +191,7 @@ public:
   double getFps() const;
 
   ///
-  /// フレームを取得する
+  /// 新しいフレームを GPU の PBO に取得する
   ///
   /// @param buffer 取得したフレームを格納するバッファ
   /// @return 新しいフレームを取得できたら true
@@ -204,10 +199,31 @@ public:
   bool retrieve(Buffer& buffer);
 
   ///
-  /// 新しいフレームを CPU メモリへ取得する
+  /// 新しいフレームを CPU のメモリに取得する
   ///
   /// @param frame 取得したフレーム
   /// @return 新しいフレームを取得できたら true
+  /// @note OpenCV で処理する場合。
   ///
   bool retrieve(cv::Mat& frame);
+
+  ///
+  /// レイテンシ優先モードを設定する
+  ///
+  /// @param mode レイテンシを優先する場合は true
+  ///
+  void setPrioritizeLatency(bool mode)
+  {
+    if (camera) camera->setPrioritizeLatency(mode);
+  }
+
+  ///
+  /// レイテンシ優先モードかどうか調べる
+  ///
+  /// @return レイテンシを優先する場合は true
+  ///
+  bool getPrioritizeLatency() const
+  {
+    return camera ? camera->getPrioritizeLatency() : false;
+  }
 };
