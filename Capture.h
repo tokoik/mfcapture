@@ -31,11 +31,11 @@ class Capture
   std::unique_ptr<Camera> camera;
 
 #if defined(_WIN32)
-  /// 一時取得したキャプチャデバイスのビデオフォーマットの表示名のリスト
-  std::vector<std::string> deviceFormatList;
+  /// 一時取得したキャプチャデバイスのビデオフォーマットのリスト
+  std::vector<CaptureFormat> deviceFormatList;
 
-  /// 空のビデオフォーマットの表示名のリスト
-  static const std::vector<std::string> emptyFormatList;
+  /// 空のビデオフォーマットのリスト
+  static const std::vector<CaptureFormat> emptyFormatList;
 #endif
 
 public:
@@ -108,7 +108,7 @@ public:
   /// @return 使用可能なビデオフォーマットの表示名のリストへの参照
   /// @note カメラが有効な場合はそのフォーマットリスト、無効な場合は一時的に取得したデバイスフォーマットリストを動的に返します。
   ///
-  const std::vector<std::string>& getFormatList() const;
+  const std::vector<CaptureFormat>& getFormatList() const;
 
   ///
   /// ビデオフォーマット選択

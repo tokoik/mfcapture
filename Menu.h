@@ -14,9 +14,6 @@
 // キャプチャデバイス
 #include "Capture.h"
 
-// 較正オブジェクト
-#include "Calibration.h"
-
 ///
 /// メニューの描画
 ///
@@ -84,9 +81,6 @@ class Menu
   /// キャプチャデバイス
   Capture& capture;
 
-  /// 較正オブジェクト
-  Calibration& calibration;
-
   /// 選択しているキャプチャデバイスの番号
   int deviceNumber;
 
@@ -94,17 +88,8 @@ class Menu
   /// 選択しているビデオフォーマットの番号
   int formatNumber;
 
-  /// ビデオフォーマットの詳細を保持する構造体
-  struct FormatInfo
-  {
-    std::string resolution; // "640 x 480"
-    std::string fps;        // "30.00"
-    std::string codec;      // "NV12"
-    int index;              // formatList のインデックス
-  };
-
-  /// パースされたビデオフォーマットのリスト
-  std::vector<FormatInfo> parsedFormats;
+  /// 使用可能なビデオフォーマットのリスト
+  std::vector<CaptureFormat> availableFormats;
 
   /// 重複のない解像度のリスト
   std::vector<std::string> uniqueResolutions;
@@ -149,9 +134,6 @@ class Menu
   /// 入力パネルの表示
   bool showInputPanel;
 
-  /// 較正パネルの表示
-  bool showCalibrationPanel;
-
   /// 終了するなら true
   bool quit;
 
@@ -184,26 +166,6 @@ class Menu
   void saveConfig() const;
 
   ///
-  /// 較正ファイルを読み込む
-  ///
-  void loadParameters() const;
-
-  ///
-  /// 較正ファイルを保存する
-  ///
-  void saveParameters() const;
-
-  ///
-  /// 較正用の画像ファイルを取得する (複数選択)
-  ///
-  void recordFileCorners() const;
-
-  ///
-  /// 較正用の ChArUco Board を作成する
-  ///
-  void createCharuco() const;
-
-  ///
   /// 指定した番号の構成を調べる
   ///
   /// @param i 構成の番号
@@ -223,20 +185,13 @@ class Menu
 
 public:
 
-  /// ArUco Marker を検出するなら true
-  bool detectMarker;
-
-  /// ChArUco Board を検出するなら true
-  bool detectBoard;
-
   ///
   /// コンストラクタ
   ///
   /// @param config 構成データ
   /// @param capture 入力フレームを取得するキャプチャデバイス
-  /// @param calibration 較正オブジェクト
   ///
-  Menu(const Config& config, Capture& capture, Calibration& calibration);
+  Menu(const Config& config, Capture& capture);
 
   ///
   /// コピーコンストラクタは使用しない
@@ -301,26 +256,6 @@ public:
   void setSize(const std::array<int, 2>& size);
 
   ///
-  /// 検出する ChArUco Board のマス目の一辺の長さと ArUco Marker の一辺の長さを得る
-  ///
-  /// @return 検出する ChArUco Board のマス目の一辺の長さと ArUco Marker の一辺の長さ
-  ///
-  const auto& getCheckerLength() const
-  {
-    return settings.checkerLength;
-  }
-
-  ///
-  /// 検出する ArUco Marker の一辺の長さを得る
-  ///
-  /// @return 検出する ArUco Marker の一辺の長さ
-  ///
-  auto getMarkerLength() const
-  {
-    return settings.markerLength;
-  }
-
-  ///
   /// シェーダを設定する
   ///
   /// @param aspect 表示領域の縦横比
@@ -336,11 +271,4 @@ public:
   ///
   void draw();
 
-  ///
-  /// 画像の保存
-  ///
-  /// @param image 保存する画像データ
-  /// @param filename 保存する画像ファイル名のテンプレート
-  ///
-  void saveImage(const cv::Mat& image, const std::string& filename = "*.jpg") const;
 };

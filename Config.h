@@ -37,26 +37,14 @@ struct Settings
   /// 描画時の焦点距離の範囲のデフォルト値
   static constexpr decltype(focalRange) defaultFocalRange{ 10.0f, 200.0f };
 
-  /// 使用中の ArUco Marker 辞書名
-  std::string dictionaryName;
-
-  /// 検出する ChArUco Board のマス目一辺の長さと ArUco Marker の一辺の長さ (単位 cm)
-  std::array<float, 2> checkerLength;
-
-  /// 検出する ArUco Marker の一辺の長さ (単位 cm)
-  float markerLength;
-
   ///
   /// コンストラクタ
   ///
-  Settings(const std::string& dictionaryName)
+  Settings()
     : samples{ 57600 }
     , euler{ defaultEuler }
     , focal{ defaultFocal }
     , focalRange{ defaultFocalRange }
-    , dictionaryName{ dictionaryName }
-    , checkerLength{ 4.0f, 2.0f }
-    , markerLength{ 5.0f }
   {}
 
   ///
@@ -184,36 +172,6 @@ public:
   const auto& getInitialImage() const
   {
     return initialImage;
-  }
-
-  ///
-  /// 使用中の ArUco Marker の辞書名を得る
-  ///
-  /// @return 使用中の ArUco Marker の辞書名
-  ///
-  const auto& getDictionaryName() const
-  {
-    return settings.dictionaryName;
-  }
-
-  ///
-  /// 検出する ChArUco Board のマス目の一辺の長さと ArUco Marker の一辺の長さを得る
-  ///
-  /// @return 検出する ChArUco Board のマス目の一辺の長さと ArUco Marker の一辺の長さ
-  ///
-  const auto& getCheckerLength() const
-  {
-    return settings.checkerLength;
-  }
-
-  ///
-  /// 検出する ArUco Marker の一辺の長さを得る
-  ///
-  /// @return 検出する ArUco Marker の一辺の長さ
-  ///
-  auto getMarkerLength() const
-  {
-    return settings.markerLength;
   }
 
 #if defined(_WIN32)

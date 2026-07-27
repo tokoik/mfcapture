@@ -64,19 +64,19 @@ class CamMf : public Camera
     static ComInitializer instance;
 
     /// メディアソースのリスト
-    IMFActivate** ppSourceActivate;
+    IMFActivate** ppSourceActivate{ nullptr };
 
     /// メディアソースの数
-    UINT32 cSourceActivate;
+    UINT32 cSourceActivate{ 0 };
 
     /// ビデオキャプチャデバイスの表示名のリスト
     std::vector<std::string> deviceList;
 
     /// COM ライブラリが初期化されていれば true
-    bool coInitialized;
+    bool coInitialized{ false };
 
     /// Media Foundation が起動されていれば true
-    bool mfStarted;
+    bool mfStarted{ false };
 
     ///
     /// COM ライブラリの初期化と終了を行うクラスのコンストラクタ
@@ -128,28 +128,28 @@ class CamMf : public Camera
   };
 
   /// メディアソースのポインタ
-  IMFMediaSource* pMediaSource;
+  IMFMediaSource* pMediaSource{ nullptr };
 
   /// メディアソースのリーダーへのポインタ
-  IMFSourceReader* pSourceReader;
+  IMFSourceReader* pSourceReader{ nullptr };
 
   /// MFT デコーダへのポインタ (MJPG, H264 等デコード用)
-  IMFTransform* pDecoder;
+  IMFTransform* pDecoder{ nullptr };
 
   /// MFT デコーダの出力フレームを保持するバッファ
-  IMFMediaBuffer* pDecoderBuffer;
+  IMFMediaBuffer* pDecoderBuffer{ nullptr };
 
   /// MFT カラーコンバータへのポインタ (RGB32 変換用)
-  IMFTransform* pConverter;
+  IMFTransform* pConverter{ nullptr };
 
   /// MFT カラーコンバータの出力フレームを保持するバッファ
-  IMFMediaBuffer* pConverterBuffer;
+  IMFMediaBuffer* pConverterBuffer{ nullptr };
 
   /// 使用可能なビデオフォーマットのリスト
   std::vector<VideoFormat> availableFormats;
 
-  /// 使用可能なビデオフォーマットの表示名のリスト
-  std::vector<std::string> formatList;
+  /// 使用可能なビデオフォーマットの表示情報のリスト
+  std::vector<CaptureFormat> formatList;
 
   ///
   /// 使用可能な解像度、フレームレート、コーデックのリストを作成する
@@ -221,15 +221,7 @@ public:
   ///
   /// コンストラクタ
   ///
-  CamMf()
-    : pMediaSource{ nullptr }
-    , pSourceReader{ nullptr }
-    , pDecoder{ nullptr }
-    , pDecoderBuffer{ nullptr }
-    , pConverter{ nullptr }
-    , pConverterBuffer{ nullptr }
-  {
-  }
+  CamMf() = default;
 
   ///
   /// デストラクタ
@@ -260,9 +252,9 @@ public:
   bool open(int device, bool setupFormat = true);
 
   ///
-  /// 使用可能なビデオフォーマットの表示名のリストを返す
+  /// 使用可能なビデオフォーマットの表示・選択情報を返す
   ///
-  /// @return フォーマット名のリスト
+  /// @return enumerateFormats() で作成した構造化フォーマットのリスト
   ///
   const auto& getFormatList() const
   {

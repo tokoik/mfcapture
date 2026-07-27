@@ -8,8 +8,8 @@
 #include "Capture.h"
 
 #if defined(_WIN32)
-/// 空のビデオフォーマットの表示名のリスト
-const std::vector<std::string> Capture::emptyFormatList;
+/// 空のビデオフォーマットのリスト
+const std::vector<CaptureFormat> Capture::emptyFormatList;
 #endif
 
 //
@@ -113,7 +113,7 @@ void Capture::updateFormatList(int deviceNumber)
 }
 
 #if defined(_WIN32)
-const std::vector<std::string>& Capture::getFormatList() const
+const std::vector<CaptureFormat>& Capture::getFormatList() const
 {
   auto camMf{ dynamic_cast<const CamMf*>(camera.get()) };
   return camMf ? camMf->getFormatList() : deviceFormatList;

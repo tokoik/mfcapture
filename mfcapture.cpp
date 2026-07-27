@@ -41,11 +41,8 @@ int GgApp::main(int argc, const char* const* argv)
   // キャプチャデバイスを作る
   Capture capture;
 
-  // 較正オブジェクトを作成する
-  Calibration calibration{ config.getDictionaryName(), config.getCheckerLength() };
-
   // メニューを作る
-  Menu menu{ config, capture, calibration };
+  Menu menu{ config, capture };
 
   // キャプチャデバイスで初期画像を開く
   if (!capture.openImage(config.getInitialImage())) throw std::runtime_error("Cannot open initial image.");

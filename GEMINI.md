@@ -34,9 +34,9 @@ RICOH THETA V などの H.264 出力Webカメラにおいて、OpenCV の `cv::V
 3. **Media Foundation バックエンド (`CamMf`)**:
    - 内部のフレームバッファ処理において `cv::Mat` のアロケーションや `copyTo()` の呼び出しを排除し、Media Foundation のメモリバッファから `std::vector` へ直接 `memcpy` することで、デコードデータの転送を最適化します。
 
-4. **OpenCV 依存バックエンド (`CamCv`, `CamImage`, `Calibration`) とリンク設定の分離**:
+4. **OpenCV 依存バックエンド (`CamCv`, `CamImage`) とリンク設定の分離**:
    - これら OpenCV 依存のモジュールについては、自動リンク設定 (`#pragma comment`) や C4819 警告抑制などを一括管理するための共通ヘッダ `opencv_link.h` を新設してインクルードします。
    - これにより、`Camera.h` および `CamMf` から OpenCV への結合を完全に切断（Pure Media Foundation キャプチャ化）しつつ、他の OpenCV 依存部での設定の重複を防ぎ、メンテナンス性を向上させます。
 
 5. **ビルド構成**:
-   - ビルド時の OpenCV リンク構成や他の OpenCV 依存モジュール（Calibration等）はそのまま維持します。
+   - OpenCV は画像・動画入力バックエンドのために使用し、キャリブレーション機能は含めません。

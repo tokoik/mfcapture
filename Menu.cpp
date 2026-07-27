@@ -28,9 +28,7 @@ constexpr nfdfilteritem_t movieFilter[]{ "Movies", "mp4,m4v,mpg,mov,avi,ogg,mkv"
 std::string Config::initialImage{ "initial.jpg" };
 
 // 標準ライブラリ
-#include <iomanip>
 #include <sstream>
-#include <chrono>
 
 #if !defined(_WIN32)
 // バックエンドのリスト
@@ -333,135 +331,12 @@ void Menu::saveConfig() const
 }
 
 //
-// 較正ファイルを読み込む
-//
-void Menu::loadParameters() const
-{
-  // ファイルダイアログから得るパス
-  nfdchar_t* filepath;
-
-  // ファイルダイアログを開く
-  if (NFD_OpenDialog(&filepath, jsonFilter, 1, NULL) == NFD_OKAY)
-  {
-    // 現在のキャリブレーションパラメータを較正ファイルの内容にする
-    if (!calibration.loadParameters(filepath))
-    {
-      // 読み込めなかった
-      errorMessage = u8"較正ファイルが読み込めません";
-    }
-
-    // ファイルパスの取り出しに使ったメモリを開放する
-    NFD_FreePath(filepath);
-  }
-}
-
-//
-// 較正ファイルを保存する
-//
-void Menu::saveParameters() const
-{
-  // キャリブレーションが完了していなければ戻る
-  if (!calibration.finished()) return;
-
-  // 現在時刻の取得
-  const auto now{ std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) };
-  const std::tm* const localTime{ std::localtime(&now) };
-
-  // 時刻を文字列に変換
-  const auto timeString{ std::put_time(localTime, "cal_%Y%m%d_%H%M%S.json") };
-  const auto pathString{ static_cast<std::ostringstream&&>(std::ostringstream() << timeString).str() };
-
-  // ファイルダイアログから得るパス
-  nfdchar_t* filepath;
-
-  // ファイルダイアログを開く
-  if (NFD_SaveDialog(&filepath, jsonFilter, 1, NULL, pathString.c_str()) == NFD_OKAY)
-  {
-    // 現在のキャリブレーションパラメータを構成ファイルに保存する
-    if (!calibration.saveParameters(filepath))
-    {
-      // 保存できなかった
-      errorMessage = u8"較正ファイルが保存できません";
-    }
-
-    // ファイルパスの取り出しに使ったメモリを開放する
-    NFD_FreePath(filepath);
-  }
-}
-
-//
-// 較正用の画像ファイルを取得する (複数選択)
-//
-void Menu::recordFileCorners() const
-{
-  // ファイルダイアログから得るパス
-  const nfdpathset_t* outPaths;
-
-  // ファイルダイアログを開く
-  if (NFD_OpenDialogMultiple(&outPaths, imageFilter, 1, NULL) == NFD_OKAY)
-  {
-    // ファイルパスの一覧を得る
-    nfdpathsetenum_t enumerator;
-    NFD_PathSet_GetEnum(outPaths, &enumerator);
-
-    // ファイルパスの一覧からファイルパスを一つずつ取り出して
-    for (nfdchar_t* path = NULL; NFD_PathSet_EnumNext(&enumerator, &path) && path;)
-    {
-      // 画像の読み出し
-      CamImage image;
-
-      // 画像ファイルが読み出せたら
-      if (image.open(path))
-      {
-        // データのコピー先
-        cv::Mat frame;
-
-        // データをコピーして
-        image.transmit(frame);
-
-        // ボードを検出して
-        calibration.detectBoard(frame);
-
-        // コーナーを記録する
-        calibration.recordCorners();
-
-        // 画像の読み出しを終わる
-        image.close();
-      }
-
-      // ファイルパスの取り出しに使ったメモリを開放する
-      NFD_PathSet_FreePath(path);
-    }
-
-    // ファイルパスの一覧に使ったメモリを開放する
-    NFD_PathSet_FreeEnum(&enumerator);
-
-    // フォルダのパスに使ったメモリを開放する
-    NFD_PathSet_Free(outPaths);
-  }
-}
-
-//
-// 較正用の ChArUco Board を作成する
-//
-void Menu::createCharuco() const
-{
-  // ChArUco Board の画像を作成する
-  cv::Mat boardImage;
-  calibration.drawBoard(boardImage, 980, 692);
-
-  // ファイルに保存する
-  saveImage(boardImage, "ChArUcoBoard.png");
-}
-
-//
 // コンストラクタ
 //
-Menu::Menu(const Config& config, Capture& capture, Calibration& calibration)
+Menu::Menu(const Config& config, Capture& capture)
   : config{ config }
   , settings{ config.settings }
   , capture{ capture }
-  , calibration{ calibration }
   , deviceNumber{ 0 }
 #if defined(_WIN32)
   , formatNumber{ 0 }
@@ -474,11 +349,8 @@ Menu::Menu(const Config& config, Capture& capture, Calibration& calibration)
   , pose{ ggIdentity() }
   , menubarHeight{ 0 }
   , showInputPanel{ true }
-  , showCalibrationPanel{ true }
   , quit{ false }
   , errorMessage{ nullptr }
-  , detectMarker{ false }
-  , detectBoard{ false }
 {
   // ファイルダイアログ (Native File Dialog Extended) を初期化する
   NFD_Init();
@@ -560,42 +432,30 @@ void Menu::updateFormatDropdowns()
 {
   const auto& formatList{ capture.getFormatList() };
 
-  parsedFormats.clear();
+  availableFormats = formatList;
   uniqueResolutions.clear();
   uniqueFpsList.clear();
   uniqueCodecs.clear();
 
-  // 各フォーマット文字列をパースする
-  for (int i = 0; i < static_cast<int>(formatList.size()); ++i)
+  // 構造化されたフォーマット情報から選択肢を作成する
+  for (const auto& info : availableFormats)
   {
-    const std::string& fmt = formatList[i];
-    size_t at_pos = fmt.find(" @ ");
-    size_t fps_pos = fmt.find(" fps (");
-    size_t close_pos = fmt.find(")");
-    if (at_pos != std::string::npos && fps_pos != std::string::npos && close_pos != std::string::npos)
-    {
-      FormatInfo info;
-      info.resolution = fmt.substr(0, at_pos);
-      info.fps = fmt.substr(at_pos + 3, fps_pos - (at_pos + 3));
-      info.codec = fmt.substr(fps_pos + 6, close_pos - (fps_pos + 6));
-      info.index = i;
-      parsedFormats.push_back(info);
-
-      if (std::find(uniqueResolutions.begin(), uniqueResolutions.end(), info.resolution) == uniqueResolutions.end())
-        uniqueResolutions.push_back(info.resolution);
-      if (std::find(uniqueFpsList.begin(), uniqueFpsList.end(), info.fps) == uniqueFpsList.end())
-        uniqueFpsList.push_back(info.fps);
-      if (std::find(uniqueCodecs.begin(), uniqueCodecs.end(), info.codec) == uniqueCodecs.end())
-        uniqueCodecs.push_back(info.codec);
-    }
+    if (std::find(uniqueResolutions.begin(), uniqueResolutions.end(), info.resolution) == uniqueResolutions.end())
+      uniqueResolutions.push_back(info.resolution);
+    if (std::find(uniqueFpsList.begin(), uniqueFpsList.end(), info.fps) == uniqueFpsList.end())
+      uniqueFpsList.push_back(info.fps);
+    if (std::find(uniqueCodecs.begin(), uniqueCodecs.end(), info.codec) == uniqueCodecs.end())
+      uniqueCodecs.push_back(info.codec);
   }
 
   // 現在の formatNumber のフォーマットに同期する
-  if (formatNumber >= 0 && formatNumber < static_cast<int>(parsedFormats.size()))
+  const auto selected{ std::find_if(availableFormats.begin(), availableFormats.end(),
+    [this](const CaptureFormat& info) { return info.index == formatNumber; }) };
+  if (selected != availableFormats.end())
   {
-    currentRes = parsedFormats[formatNumber].resolution;
-    currentFps = parsedFormats[formatNumber].fps;
-    currentCodec = parsedFormats[formatNumber].codec;
+    currentRes = selected->resolution;
+    currentFps = selected->fps;
+    currentCodec = selected->codec;
   }
   else
   {
@@ -640,18 +500,6 @@ void Menu::draw()
       // 構成ファイルを保存する
       if (ImGui::MenuItem(u8"構成ファイルを保存")) saveConfig();
 
-      // キャリブレーションパラメータファイルを開く
-      if (ImGui::MenuItem(u8"較正ファイルを開く")) loadParameters();
-
-      // キャリブレーションパラメータファイルを保存する
-      if (ImGui::MenuItem(u8"較正ファイルを保存")) saveParameters();
-
-      // フォルダ内の画像ファイルを使って較正する
-      if (ImGui::MenuItem(u8"較正用画像から取得")) recordFileCorners();
-
-      // ChArUco Board の作成
-      if (ImGui::MenuItem(u8"ChArUco 画像作成")) createCharuco();
-
       // 終了
       quit = ImGui::MenuItem(u8"終了");
 
@@ -664,9 +512,6 @@ void Menu::draw()
     {
       // 入力パネルの表示
       ImGui::MenuItem(u8"入力", NULL, &showInputPanel);
-
-      // 較正パネルの表示
-      ImGui::MenuItem(u8"較正", NULL, &showCalibrationPanel);
 
       // File メニュー修了
       ImGui::EndMenu();
@@ -800,7 +645,7 @@ void Menu::draw()
       if (!formatList.empty())
       {
         // 必要な場合（デバイス番号の不一致やリスト未作成時）にリストを更新する
-        if (lastDeviceNumber != deviceNumber || parsedFormats.empty())
+        if (lastDeviceNumber != deviceNumber || availableFormats.empty())
         {
           updateFormatDropdowns();
         }
@@ -846,9 +691,9 @@ void Menu::draw()
           ImGui::EndCombo();
         }
 
-        // 選択された組み合わせが parsedFormats に存在するか探す
+        // 選択された組み合わせが availableFormats に存在するか探す
         int foundIndex = -1;
-        for (const auto& info : parsedFormats)
+        for (const auto& info : availableFormats)
         {
           if (info.resolution == currentRes && info.fps == currentFps && info.codec == currentCodec)
           {
@@ -1031,111 +876,6 @@ void Menu::draw()
     ImGui::End();
   }
 
-  // 較正パネル
-  if (showCalibrationPanel)
-  {
-    // ウィンドウの位置とサイズ
-    ImGui::SetNextWindowPos(ImVec2(235.0f, 2.0f + menubarHeight), ImGuiCond_Once);
-    ImGui::SetNextWindowSize(ImVec2(218, 329), ImGuiCond_Once);
-    ImGui::Begin(u8"較正", &showCalibrationPanel);
-
-    // 辞書の選択
-    if (ImGui::BeginCombo(u8"辞書", settings.dictionaryName.c_str()))
-    {
-      // すべての辞書について
-      for (auto d = calibration.dictionaryList.begin(); d != calibration.dictionaryList.end(); ++d)
-      {
-        // その設定が現在選択されている設定なら真
-        const bool selected(d->first == settings.dictionaryName);
-
-        // 設定を（それが現在の設定ならハイライトして）コンボボックスに表示する
-        if (ImGui::Selectable(d->first.c_str(), d->first == settings.dictionaryName))
-        {
-          // 表示した設定が選択されていたらそれを現在の選択とする
-          settings.dictionaryName = d->first;
-
-          // 選択した ArUco Marker の辞書を設定する
-          calibration.setDictionary(settings.dictionaryName, settings.checkerLength);
-        }
-
-        // この選択を次にコンボボックスを開いたときのデフォルトにしておく
-        if (selected) ImGui::SetItemDefaultFocus();
-      }
-      ImGui::EndCombo();
-    }
-
-    ImGui::Separator();
-
-    // ArUco Marker の検出
-    if (ImGui::Checkbox(u8"ArUco Marker 検出", &detectMarker) && detectMarker) detectBoard = false;
-
-    // ArUco Marker の大きさ
-    ImGui::InputFloat(u8"マーカ長", &settings.markerLength, 0.0f, 0.0f, "%.2f cm");
-
-    ImGui::Separator();
-
-    // 較正
-    if (ImGui::Checkbox(u8"ChArUco Board 検出", &detectBoard) && detectBoard) detectMarker = false;
-
-    // ChArUco Board の大きさ
-    if (ImGui::InputFloat2(u8"升目長", settings.checkerLength.data(), "%.2f cm"))
-    {
-      // ChArUco Board を作り直す
-      calibration.createBoard(settings.checkerLength);
-    }
-
-    // 「取得」ボタンをクリックしたとき ChArUco Board の検出中なら
-    if (ImGui::Button(u8"取得") && detectBoard)
-    {
-      // 検出したコーナーを記録する
-      calibration.recordCorners();
-    }
-
-    // １つでも標本を取得していれば
-    if (calibration.getSampleCount() > 0)
-    {
-      // 標本の「消去」ボタンを表示する
-      ImGui::SameLine();
-      if (ImGui::Button(u8"消去")) calibration.discardCorners();
-
-      // 標本を６つ以上取得していれば
-      if (calibration.getSampleCount() >= 6)
-      {
-        // 「較正」ボタンを表示する
-        ImGui::SameLine();
-        if (ImGui::Button(u8"較正") && !calibration.calibrate())
-        {
-          // 較正失敗
-          errorMessage = u8"較正に失敗しました";
-        }
-
-        // 較正が完了していれば
-        if (calibration.finished())
-        {
-          // 「完了」を表示する
-          ImGui::SameLine();
-          ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.0f, 1.0f), "%s", u8"完了");
-        }
-      }
-    }
-
-    ImGui::Separator();
-
-    // フレームレートの表示
-    ImGui::Text(u8"フレームレート: %6.2f fps", ImGui::GetIO().Framerate);
-
-    // 検出数の表示
-    ImGui::Text(u8"コーナー検出数: %d", calibration.getCornersCount());
-
-    // 標本数の表示
-    ImGui::Text(u8"サンプル取得数: %d (%d)", calibration.getSampleCount(), calibration.getTotalCount());
-
-    // 再投影誤差の表示
-    ImGui::Text(u8"再投影誤差: %.4f", calibration.getReprojectionError());
-
-    ImGui::End();
-  }
-
   // エラーメッセージが設定されていたら
   if (errorMessage)
   {
@@ -1161,32 +901,4 @@ void Menu::draw()
     ImGui::End();
   }
 
-  // ChArUco Board の検出中にスペースバーをタイプしたなら
-  if (detectBoard && ImGui::IsKeyPressed(ImGuiKey_Space))
-  {
-    // 検出したコーナーを記録する
-    calibration.recordCorners();
-  }
-}
-
-//
-// 画像の保存
-//
-void Menu::saveImage(const cv::Mat& image, const std::string& filename) const
-{
-  // 画像ファイル名のフィルタ
-  constexpr nfdfilteritem_t imageFilter[]{ "Images", "png,jpg,jpeg,jfif,bmp,dib" };
-
-  // ファイルダイアログから得るパス
-  nfdchar_t* filepath;
-
-  // ファイルダイアログを開く
-  if (NFD_SaveDialog(&filepath, imageFilter, 1, NULL, filename.c_str()) == NFD_OKAY)
-  {
-    // ファイルに保存する
-    if (!CamImage::save(filepath, image)) errorMessage = u8"ファイルが保存できませんでした";
-
-    // ファイルパスの取り出しに使ったメモリを開放する
-    NFD_FreePath(filepath);
-  }
 }

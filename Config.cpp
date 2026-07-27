@@ -27,7 +27,7 @@ Config::Config(const std::string& filename)
   : title{ PROJECT_NAME }
   , windowSize{ 1280, 720 }
   , background{ 0.2f, 0.3f, 0.4f, 1.0f }
-  , settings{ "DICT_4X4_50" }
+  , settings{}
   , menuFont{ "Mplus1-Regular.ttf" }
   , menuFontSize{ 20.0f }
 #if defined(_WIN32)
@@ -124,9 +124,6 @@ bool Config::load(const pathString& filename)
   // 描画時の焦点距離の範囲
   getValue(object, "range", settings.focalRange);
 
-  // ArUco Marker の辞書名
-  getString(object, "dictionary", settings.dictionaryName);
-
   // 初期表示画像
   getString(object, "initial", initialImage);
 
@@ -182,9 +179,6 @@ bool Config::save(const pathString& filename) const
 
   // 描画時の焦点距離の範囲
   setValue(object, "range", settings.focalRange);
-
-  // ArUco Marker 辞書名
-  setString(object, "dictionary", settings.dictionaryName);
 
   // 初期表示画像
   setString(object, "initial", initialImage);

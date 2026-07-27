@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 ///
 /// キャプチャデバイス関連の基底クラスの定義
@@ -17,6 +17,26 @@
 #include <mutex>
 #include <atomic>
 #include <algorithm>
+
+///
+/// キャプチャデバイスが対応するビデオフォーマットの表示・選択情報
+///
+struct CaptureFormat
+{
+  std::string resolution; ///< 解像度の表示文字列（例: "1920 x 1080"）
+  std::string fps;        ///< フレームレートの表示文字列（例: "30.00"）
+  std::string codec;      ///< コーデックの表示文字列（例: "NV12"）
+  int index{ 0 };         ///< バックエンドのフォーマットリストにおける選択番号
+
+  CaptureFormat(const std::string& resolution, const std::string& fps,
+    const std::string& codec, int index)
+    : resolution{ resolution }
+    , fps{ fps }
+    , codec{ codec }
+    , index{ index }
+  {
+  }
+};
 
 ///
 /// キャプチャデバイス関連の基底クラス
