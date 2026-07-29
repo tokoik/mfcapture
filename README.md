@@ -153,4 +153,21 @@ cmake --build build --config Release
 - C++ ソースは `UTF-8 with BOM`、GLSL ソースは `UTF-8 without BOM` の文字コード規約を厳守すること。
 - コメントと Doxygen を実装変更と同時に更新すること。
 
-詳細な開発方針は `GEMINI.md`、依頼と対応の履歴は `REQUESTS.md` を参照してください。
+## ドキュメント・関連資料
+
+本プロジェクトには、設計方針や勉強会用のプレゼンテーション・資料が用意されています。
+
+### 開発・管理ドキュメント
+- [GEMINI.md](GEMINI.md): プロジェクト開発方針と環境定義
+- [REQUESTS.md](REQUESTS.md): 開発依頼および変更対応履歴
+
+### モジュール解説ドキュメント
+- [CamMf.md](CamMf.md): Windows Media Foundation ビデオキャプチャクラス `CamMf` の実装詳細および Win32 / MF API リファレンス
+- [CamMf.html](CamMf.html): `CamMf` の構造とデータパイプラインを解説した勉強会用スライド (HTML)
+
+### 勉強会プレゼンテーション・ハンドブック
+- [presentation.md](presentation.md): カメラキャリブレーション & レンズ歪み補正プレゼンテーション概要
+- [presentation.html](presentation.html): カメラキャリブレーション & レンズ歪み補正勉強会用スライド (HTML)
+- [workshop_handbook.md](workshop_handbook.md): 勉強会ハンズオン用ハンドブック
+- [workshop_handbook.html](workshop_handbook.html): 勉強会ハンズオン用ハンドブック (HTML)
+
