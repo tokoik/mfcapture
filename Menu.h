@@ -22,8 +22,8 @@
 ///
 class Menu
 {
-  /// オリジナルの構成データの参照
-  const Config& config;
+  /// 読み込み・保存の対象となる構成データへの参照
+  Config& config;
 
   /// 設定データのコピー
   Settings settings;
@@ -88,14 +88,14 @@ class Menu
   Undistortion& undistortion;
 
   /// 選択中の補正方法
-  UndistortionMode undistortionMode;
+  UndistortionMode undistortionMode{ UndistortionMode::None };
 
   /// 選択しているキャプチャデバイスの番号
-  int deviceNumber;
+  int deviceNumber{ 0 };
 
 #if defined(_WIN32)
   /// 選択しているビデオフォーマットの番号
-  int formatNumber;
+  int formatNumber{ 0 };
 
   /// 使用可能なビデオフォーマットのリスト
   std::vector<CaptureFormat> availableFormats;
@@ -119,39 +119,42 @@ class Menu
   std::string currentCodec;
 
   /// 最後に処理したデバイスの番号
-  int lastDeviceNumber;
+  int lastDeviceNumber{ -1 };
 
-  /// 解像度、フレームレート、コーデックの選択リストを更新する
+  ///
+  /// 構造化フォーマットから解像度、フレームレート、コーデックの選択肢を更新する
+  ///
   void updateFormatDropdowns();
 #else
   /// 選択しているコーデックの番号
-  int codecNumber;
+  int codecNumber{ 0 };
 
   /// デバイスプリファレンス
-  cv::VideoCaptureAPIs backend;
+  cv::VideoCaptureAPIs backend{ cv::CAP_ANY };
 #endif
 
   /// 使用中の構成の番号
-  int preferenceNumber;
+  int preferenceNumber{ 0 };
 
   /// キャプチャデバイスの姿勢
-  GgMatrix pose;
+  GgMatrix pose{ ggIdentity() };
 
   /// メニューバーの高さ
-  GLsizei menubarHeight;
+  GLsizei menubarHeight{ 0 };
 
   /// 入力パネルの表示
-  bool showInputPanel;
+  bool showInputPanel{ true };
 
   /// 終了するなら true
-  bool quit;
+  bool quit{ false };
 
   /// エラーが無ければ nullptr
-  mutable const char* errorMessage;
+  mutable const char* errorMessage{ nullptr };
 
   ///
   /// キャプチャデバイスを開く
   ///
+  /// @return 選択中のデバイスとフォーマットを適用できたら true
   bool openDevice();
 
   ///
@@ -189,7 +192,7 @@ class Menu
   ///
   const auto& getPreference(int i) const
   {
-    return config.preferenceList[i];
+    return config.getPreferences()[i];
   }
 
   ///
@@ -209,7 +212,7 @@ public:
   /// @param capture 入力フレームを取得するキャプチャデバイス
   /// @param undistortion 較正パラメータと歪み補正処理
   ///
-  Menu(const Config& config, Capture& capture, Undistortion& undistortion);
+  Menu(Config& config, Capture& capture, Undistortion& undistortion);
 
   ///
   /// コピーコンストラクタは使用しない

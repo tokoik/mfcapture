@@ -273,6 +273,18 @@
             margin-bottom: 6px;
         }
 
+        .param-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            margin: 12px 0;
+        }
+
+        .param-card strong {
+            color: #0369a1;
+        }
+
         /* Math Display */
         .katex-display {
             background: #f8fafc;
@@ -302,13 +314,13 @@
             <li><a href="#ch1" class="nav-link">第1章 開発環境とプロジェクト規約</a></li>
             <li><a href="#ch2" class="nav-link">第2章 カメラモデリングと歪みの数理</a></li>
             <li><a href="#ch3" class="nav-link">第3章 ChArUco Board 原理</a></li>
-            <li><a href="#ch3-3" class="nav-link" style="padding-left: 20px;">3.3～3.10 実装ステップ</a></li>
+            <li><a href="#ch3-3" class="nav-link" style="padding-left: 20px;">3.3～3.10 実装と関数構造</a></li>
             <li><a href="#ch4" class="nav-link">第4章 設計とアーキテクチャ</a></li>
             <li><a href="#ch4-4" class="nav-link" style="padding-left: 20px;">4.4 逆写像と座標系</a></li>
             <li><a href="#ch5" class="nav-link">第5章 実習1: calib-wom-msmf</a></li>
             <li><a href="#ch6" class="nav-link">第6章 実習2: mfcapture 補正</a></li>
             <li><a href="#ch6-4" class="nav-link" style="padding-left: 20px;">6.4 ハンズオン A & B</a></li>
-            <li><a href="#ch7" class="nav-link">第7章 トラブルシューティング</a></li>
+            <li><a href="#ch7" class="nav-link">第7章 低遅延キャプチャ & FAQ</a></li>
         </ul>
     </nav>
 
@@ -384,13 +396,22 @@
         <section id="ch2" class="section">
             <h2>第2章 カメラモデリングとレンズ歪みの数理</h2>
             
-            <h3>2.1 ピンホールカメラモデルとカメラ行列</h3>
-            <p>ピンホールカメラモデルでは、3次元空間の点 $P = (X_w, Y_w, Z_w)^T$ がカメラの光学中心を通り、画像平面上の点 $p = (u, v)^T$ に投影されます。</p>
+            <h3>2.1 ピンホールカメラモデル・内部パラメータ・外部パラメータ</h3>
+            <p>ピンホールカメラモデルでは、3次元空間の世界座標点 $P_w = (X_w, Y_w, Z_w)^T$ がカメラの光学中心を通り、画像平面上の点 $p = (u, v)^T$ に投影されます。この関係は**透視投影 (Perspective Projection)** 方程式として次のように記述されます。</p>
             
             $$s \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = K \begin{bmatrix} R & t \end{bmatrix} \begin{bmatrix} X_w \\ Y_w \\ Z_w \\ 1 \end{bmatrix}$$
 
-            <p>カメラ内部行列 $K$ の定義：</p>
+            <h4>カメラ内部行列 (Camera Matrix $K$)</h4>
             $$K = \begin{bmatrix} f_x & 0 & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{bmatrix}$$
+            <p>カメラ固有の幾何パラメータを表します。$f_x, f_y$ は画素単位の焦点距離、$c_x, c_y$ は主点（光学中心の画素座標）です。</p>
+
+            <h4>カメラ外部パラメータ (Extrinsic Parameters $[R | t]$)</h4>
+            <p>世界座標系からカメラ座標系への剛体変換 $P_c = R P_w + t$ を定めます。</p>
+            <ul>
+                <li><strong>回転行列 $R$ ($3 \times 3$):</strong> 世界座標系に対するカメラの向き（回転）を表す直交行列。</li>
+                <li><strong>並進ベクトル $t$ ($3 \times 1$):</strong> 世界座標系原点に対するカメラの位置オフセット。</li>
+            </ul>
+            <p>※ 内部行列 $K$ はカメラとレンズが固定されている限り一定ですが、外部パラメータ $[R | t]$ は撮影する標本（ボードとカメラの相対位置関係）ごとに毎回変化します。</p>
 
             <h3>2.2 レンズ歪みモデル</h3>
             <p><strong>1. 放射歪み (Radial Distortion):</strong></p>
@@ -407,9 +428,13 @@
             <h2>第3章 ChArUco Board によるキャリブレーション原理</h2>
             <p>ChArUco Board はチェスボードと ArUco マーカーを融合させたハイブリッドパターンです。</p>
 
+            <div class="arch-img-box">
+                <img src="images/charuco_board.png" alt="ChArUco Board パターン" style="max-width: 60%;">
+            </div>
+
             <div class="callout">
-                <div class="callout-title">ChArUco Board の特長</div>
-                チェスボードのサブピクセル交点検出精度と、ArUco マーカーによる個別交点識別能力を両立。ボードの一部が画面外や物体の陰に隠れていても高精度に較正が可能です。
+                <div class="callout-title">ChArUco Board の特長（OpenCV 公式チュートリアル準拠）</div>
+                チェスボードのサブピクセル交点検出精度と、ArUco マーカーによる個別交点識別能力を両立。黒マス内に固有 ID の ArUco マーカーが交互配置されており、マーカーの ID 識別によって「各交点がボード上のどの位置か」が一意特定できるため、<strong>ボードの一部が画面外や物体の陰に隠れていても高精度に較正が可能</strong>です。
             </div>
 
             <div id="ch3-3">
@@ -479,6 +504,7 @@ constexpr int squaresY = 7;
 constexpr float squareLength = 0.030f;  // 30 mmをmで表す
 constexpr float markerLength = 0.022f;  // 22 mmをmで表す
 
+// CharucoBoard コンストラクタ
 cv::aruco::CharucoBoard board{
   cv::Size{squaresX, squaresY}, squareLength, markerLength, dictionary
 };
@@ -500,22 +526,27 @@ void detectCharuco(const cv::Mat& input) {
   else
     bgr = input;
 
+  // ボードの自動検出
   boardDetector.detectBoard(bgr, charucoCorners, charucoIds);
+
   if (!charucoCorners.empty()) {
     cv::aruco::drawDetectedCornersCharuco(
       bgr, charucoCorners, charucoIds, cv::Scalar{0, 0, 255});
   }
 }</code></pre>
 
-            <h3>3.7 C++ 実装手順4：利用者の操作で標本を保存する</h3>
+            <h3>3.7 C++ 実装手順4：標本データ（3D-2D点対）の抽出と保存</h3>
             <pre><code>std::vector&lt;std::vector&lt;cv::Point3f&gt;&gt; allObjectPoints;
 std::vector&lt;std::vector&lt;cv::Point2f&gt;&gt; allImagePoints;
 
 bool recordSample() {
+  // 幾何学的に最低 4 点の対応点が必要なため判定
   if (charucoCorners.size() &lt; 4) return false;
 
   std::vector&lt;cv::Point3f&gt; objectPoints;
   std::vector&lt;cv::Point2f&gt; imagePoints;
+
+  // 検出された ID から理論 3D 座標と観測 2D 座標のペアを抽出
   board.matchImagePoints(charucoCorners, charucoIds, objectPoints, imagePoints);
 
   if (objectPoints.size() != imagePoints.size() || objectPoints.size() &lt; 4)
@@ -526,15 +557,44 @@ bool recordSample() {
   return true;
 }</code></pre>
 
-            <h3>3.8 C++ 実装手順5：内部パラメータを推定する</h3>
+            <div class="param-card">
+                <strong>`charucoCorners.size() >= 4` を判定している理由：</strong><br>
+                平面上の 3D 点と 2D 画像との間の姿勢変換（透視投影・PnP 問題 / ホモグラフィ行列）を決定するには、幾何学的に<strong>最低 4 点の対応点が必要</strong>となるためです。交点が 4 点未満の場合は拘束条件が不足して 3D-2D の姿勢が一意に定まらないため、処理を中断してスキップします。
+            </div>
+
+            <div class="param-card">
+                <strong>`board.matchImagePoints()` の役割と引数解説:</strong><br>
+                ・<code>charucoCorners</code> / <code>charucoIds</code>: 検出された交点座標および ID 配列（入力）<br>
+                ・<code>objectPoints</code>: ID に対応するボード上の理論 3D 座標 $(X, Y, 0)$ 配列（出力）<br>
+                ・<code>imagePoints</code>: `objectPoints` と 1 対 1 に対応する観測 2D 画素座標配列（出力）
+            </div>
+
+            <h3>3.8 C++ 実装手順5：内部パラメータを推定する (`cv::calibrateCamera`)</h3>
             <pre><code>cv::Mat cameraMatrix, distCoeffs;
 std::vector&lt;cv::Mat&gt; rvecs, tvecs;
 
 double rms = cv::calibrateCamera(
-  allObjectPoints, allImagePoints, imageSize,
-  cameraMatrix, distCoeffs, rvecs, tvecs,
+  allObjectPoints,  // 全標本の 3D ボード座標点群
+  allImagePoints,   // 全標本の 2D 画素座標点群
+  imageSize,        // キャリブレーション画像サイズ
+  cameraMatrix,     // 推定カメラ内部行列 K (出力)
+  distCoeffs,       // 推定歪み係数 d (出力)
+  rvecs, tvecs,     // 各標本の回転・並進 [R|t] (出力)
   cv::noArray(), cv::noArray(), cv::noArray(), 0
 );</code></pre>
+
+            <div class="param-card">
+                <strong>「最適化計算」の意味（アルゴリズム解説）：</strong><br>
+                実測された 2D 画素座標 $p_{ij}$ と、推定パラメータ $(K, d, R_i, t_i)$ で 3D ボード点を画像上へ再投影した計算座標 $\hat{p}_{ij}$ との差（**再投影誤差 Reprojection Error**）の自乗和を最小化する非線形最小二乗問題です。**Levenberg-Marquardt (LM) 法**による反復計算によって、全標本のデータから内部行列 $K$、歪み係数 $d$、各標本のカメラ姿勢 $[R_i | t_i]$ を一括して同時に最適推定します。
+            </div>
+
+            <div class="param-card">
+                <strong>`cv::calibrateCamera()` 引数解説:</strong><br>
+                ・<code>objectPoints</code> / <code>imagePoints</code>: 収集した全標本（複数画像分）の 3D 点群 `vector<vector<Point3f>>` および 2D 観測点群 `vector<vector<Point2f>>`<br>
+                ・<code>imageSize</code> (`cv::Size`): 入力画像の解像度<br>
+                ・<code>cameraMatrix</code> ($K$) / <code>distCoeffs</code> ($d$): 計算された 3x3 内部行列および 5 歪み係数（出力）<br>
+                ・<code>rvecs</code> / <code>tvecs</code>: 各標本フレームの回転ベクトル $r_i$ および並進ベクトル $t_i$（出力）
+            </div>
 
             <h3>3.9 C++ 実装手順6：標本ごとの誤差を調べる</h3>
             <pre><code>std::vector&lt;double&gt; perViewError(allObjectPoints.size());
@@ -568,7 +628,7 @@ for (size_t i = 0; i &lt; allObjectPoints.size(); ++i) {
             <h2>第4章 プログラム設計とアーキテクチャ</h2>
             
             <div class="arch-img-box">
-                <img src="system_architecture_1785127549276.jpg" alt="全体システムアーキテクチャ図">
+                <img src="images/system_architecture.jpg" alt="全体システムアーキテクチャ図">
             </div>
 
             <div id="ch4-4">
@@ -620,7 +680,37 @@ cmake --build build --config Release</code></pre>
         <section id="ch6" class="section">
             <h2>第6章 実習2: mfcapture によるリアルタイム歪み補正</h2>
             
-            <h3>GLSL 歪み補正シェーダー (undistortion.frag)</h3>
+            <h3>6.1 OpenCV (CPU) による C++ 歪み補正 (`initUndistortRectifyMap` & `remap`)</h3>
+            <pre><code>// 1. 歪み補正ルックアップテーブルの事前生成（解像度変更時のみ一度実行）
+cv::Mat map1, map2;
+cv::initUndistortRectifyMap(
+    cameraMatrix, distCoeffs,
+    cv::Mat(),       // 補正回転 R (単位行列)
+    cameraMatrix,    // 新しいカメラ行列 New K
+    imageSize,       // 画像サイズ
+    CV_32FC1,        // マップデータの型
+    map1, map2       // 出力マップ
+);
+
+// 2. 毎フレームの補正実行 (CPU)
+cv::Mat srcFrame, dstFrame;
+cv::remap(
+    srcFrame, dstFrame,
+    map1, map2,
+    cv::INTER_LINEAR  // 双線形補間
+);</code></pre>
+
+            <div class="param-card">
+                <strong>`cv::initUndistortRectifyMap` 引数解説:</strong><br>
+                ・`cameraMatrix` / `distCoeffs`: キャリブレーションで得た内部行列 $K$ および歪み係数 $d$<br>
+                ・`R`: 補正用回転行列（単一カメラ歪み補正では空 `Mat()` または単位行列）<br>
+                ・`newCameraMatrix`: 補正後画像で使用するカメラ行列（通常は $K$ をそのまま指定）<br>
+                ・`size`: 入力画像サイズ<br>
+                ・`m1type`: 出力マップの型（`CV_32FC1` または `CV_16SC2`）<br>
+                ・`map1`, `map2`: 補正後画像ピクセルに対する参照座標マップ (出力)
+            </div>
+
+            <h3>6.2 GLSL 歪み補正シェーダー (undistortion.frag)</h3>
             <pre><code>#version 150 core
 in vec2 v_texcoord;
 out vec4 fragment;
@@ -687,7 +777,12 @@ void main() {
 
         <!-- Chapter 7 -->
         <section id="ch7" class="section">
-            <h2>第7章 トラブルシューティング</h2>
+            <h2>第7章 低遅延キャプチャ & トラブルシューティング</h2>
+            
+            <h3>7.1 Media Foundation (MSMF) による低遅延設計</h3>
+            <p>`CamMf` クラスでは Microsoft Media Foundation を用いて MFT デコーダに対し `CODECAPI_AVLowLatencyMode` を設定し、内部バッファリングを排してレイテンシを最小化しています。</p>
+
+            <h3>7.2 FAQ・トラブルシューティング</h3>
             <table>
                 <thead>
                     <tr>

@@ -1,452 +1,264 @@
-# 実践カメラキャリブレーション & レンズ歪み補正
+# 実践カメラキャリブレーション & レンズ歪み補正 スライド構成
 
-## ChArUco Board と OpenGL/GLSL によるリアルタイム画像補正技術
+ChArUco Board と OpenGL/GLSL によるリアルタイム高精度画像補正技術
 
 ---
 
 ## 1. アジェンダ
 
-1. **イントロダクション・目的**
-2. **カメラモデリングの基礎原理**（ピンホールカメラモデルとカメラ行列）
-3. **レンズ歪みの数理モデル**（放射歪み・接線歪み）
-4. **ChArUco Board によるキャリブレーション原理**
-5. **全体システムアーキテクチャ** (`calib-wom-msmf` & `mfcapture`)
-6. **Windows Media Foundation (MSMF) による低遅延キャプチャ**
-7. **歪み補正処理の比較**（OpenCV CPU 補正 vs GLSL GPU 補正）
-8. **ビルド環境と開発規約** (VS2022 / C++17 / CMake / BOM規約)
-9. **ハンズオン実習の流れ**
-10. **まとめ & Q&A**
+### 前半: 理論と基礎
+- カメラモデリングの基礎（ピンホールモデル・透視投影・内部/外部パラメータ）
+- レンズ歪みの数理（放射歪み・接線歪み）
+- ChArUco Board 原理と特徴（チェスボード＋ArUco）
+- C++ OpenCV 実装の詳細関数と引数構造 (`CharucoBoard`, `detectBoard`, `matchImagePoints`, `calibrateCamera`)
+- 全体システム構成 (`calib-wom-msmf` & `mfcapture`)
+
+### 後半: 実装とハンズオン
+- CPU (OpenCV `remap`) vs GPU (GLSL) 補正パイプライン
+- C++ CPU 補正の画像マップ生成実装 (`initUndistortRectifyMap`)
+- `undistortion.frag` シェーダー解読
+- 逆写像 (Backward Mapping) の座標変換
+- Windows Media Foundation (MSMF) 低遅延キャプチャ設計
+- Windows / VS2022 実習ハンズオン A / B
 
 ---
 
 ## 2. カメラモデリングの基礎原理
 
-### ピンホールカメラモデル (Pinhole Camera Model)
+### ピンホールモデルと透視投影 (Perspective Projection)
+3次元世界座標系 $(X_w, Y_w, Z_w)$ から2次元画像平面 $(u, v)$ への透視投影方程式：
 
-3次元世界座標系 $(X_w, Y_w, Z_w)$ から2次元画像座標系 $(u, v)$ への遠近投影変換。
+$$s \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = K \begin{bmatrix} R & t \end{bmatrix} \begin{bmatrix} X_w \\ Y_w \\ Z_w \\ 1 \end{bmatrix}$$
 
-$$
-s \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = K \begin{bmatrix} R & t \end{bmatrix} \begin{bmatrix} X_w \\ Y_w \\ Z_w \\ 1 \end{bmatrix}
-$$
+- **カメラ内部行列 (Camera Matrix $K$):**
+  $$K = \begin{bmatrix} f_x & 0 & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{bmatrix}$$
+  $f_x, f_y$: 画素単位の焦点距離、$c_x, c_y$: 主点（光学中心）
 
-### カメラ内部パラメータ行列 (Camera Matrix) $K$
-
-$$
-K = \begin{bmatrix} f_x & 0 & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{bmatrix}
-$$
-
-- $f_x, f_y$: 画素単位の焦点距離 (Focal Length)
-- $c_x, c_y$: 主点 (Principal Point: 光軸と画像平面の交点座標)
+- **カメラ外部行列 (Extrinsic Parameters $[R | t]$):**
+  - **回転行列 $R$ ($3 \times 3$):** 世界座標系に対するカメラの向き（回転）を表す直交行列。
+  - **並進ベクトル $t$ ($3 \times 1$):** 世界座標系原点に対するカメラの位置オフセット。
+  - 姿勢変換式: $P_c = R P_w + t$
 
 ---
 
 ## 3. レンズ歪みの数理モデル
 
-広角レンズや魚眼レンズでは、光線が歪曲するため直線が曲線として撮影されます。
+### 1. 放射歪み (Radial Distortion)
+$$x_{\text{distorted}} = x(1 + k_1 r^2 + k_2 r^4 + k_3 r^6)$$
+$$y_{\text{distorted}} = y(1 + k_1 r^2 + k_2 r^4 + k_3 r^6)$$
 
-```text
-       [ 補正前 (歪みあり) ]             [ 補正後 (理想的) ]
-         +---------------+                 +---------------+
-         |  /----+----\  |                 |  |---------|  |
-         | |     |     | |                 |  |         |  |
-         | |-----+-----| |       ===>      |  |---------|  |
-         | |     |     | |                 |  |         |  |
-         |  \----+----/  |                 |  |---------|  |
-         +---------------+                 +---------------+
-```
+### 2. 接線歪み (Tangential Distortion)
+$$\delta x = 2 p_1 x y + p_2(r^2 + 2x^2)$$
+$$\delta y = p_1(r^2 + 2y^2) + 2 p_2 x y$$
 
-### 補正計算式（正規化画像座標 $(x, y) = (X/Z, Y/Z)$ に適用）
-
-1. 距離 $r = \sqrt{x^2 + y^2}$
-2. **放射歪み (Radial Distortion)**: レンズ形状に起因する樽型・糸巻き型歪み
-   $$x_{\text{distorted}} = x (1 + k_1 r^2 + k_2 r^4 + k_3 r^6)$$
-   $$y_{\text{distorted}} = y (1 + k_1 r^2 + k_2 r^4 + k_3 r^6)$$
-3. **接線歪み (Tangential Distortion)**: レンズとセンサーの平行度ズレ
-   $$\delta x = 2 p_1 x y + p_2 (r^2 + 2 x^2)$$
-   $$\delta y = p_1 (r^2 + 2 y^2) + 2 p_2 x y$$
-4. 最終歪み座標: $x' = x_{\text{distorted}} + \delta x$, $y' = y_{\text{distorted}} + \delta y$
-5. 画素座標への変換: $u = f_x x' + c_x$, $v = f_y y' + c_y$
+本システムでは $[k_1, k_2, p_1, p_2, k_3]$ の 5 係数モデルを使用。
 
 ---
 
 ## 4. ChArUco Board によるキャリブレーション
 
-### なぜ ChArUco なのか？
-
-| 方式 | 特長 | 課題 |
-| :--- | :--- | :--- |
-| **チェスボード** | サブピクセル精度のコーナー検出が可能 | 一部でも隠れると全体が検出不能 |
-| **ArUco マーカー** | 個別マーカー識別が可能、オクルージョンに強い | コーナー位置の検出精度がやや低い |
-| **ChArUco Board** | **両者のハイブリッド**。マーカーで個々の交点を一意特定し、チェスボード交点で超高精度検出 | マーカー検出とボード構成の処理コスト |
-
-```text
-+---+---+---+---+
-|M1 |   |M2 |   |  ChArUco Board:
-+---+---+---+---+  ArUcoマーカー(M1, M2...)でチェスボードの
-|   |M3 |   |M4 |  各交点を一意に特定！
-+---+---+---+---+  ボードの一部が欠けていても正確にキャリブレーション可能。
-```
+- **チェスボード**: サブピクセル精度の交点検出。ただしパターン一部遮蔽で検出不能。
+- **ArUco マーカー**: 個別 ID によるオクルージョン耐性。
+- **ChArUco Board**: ArUco で交点 ID を特定し、チェスボード交点で超高精度検出。
 
 ---
 
 ## 4.1 キャリブレーションで推定するもの
 
-1 枚の画像だけでは、レンズの歪みとボード姿勢の影響を分離できません。異なる姿勢の
-標本を集め、全画像で同じ内部パラメータを共有する最適化問題として解きます。
-
 ```mermaid
-flowchart LR
-    A["既知の3D点<br/>ボード上 (X,Y,0)"] --> C["投影モデル<br/>K, distortion, Rᵢ, tᵢ"]
-    B["検出した2D点<br/>(u,v)"] --> D["再投影誤差"]
+flowchart TD
+    A["既知の3D点 (X,Y,0)"] --> C["投影モデル K, d, R, t"]
+    B["検出2D点 (u,v)"] --> D["再投影誤差 (Reprojection Error)"]
     C --> D
-    D -->|"全標本で最小化"| E["K = fx,fy,cx,cy<br/>d = k1,k2,p1,p2,k3"]
+    D -->|"全標本でLM法最小化"| E["カメラ行列 K & 歪み係数 d"]
 ```
 
-- **全画像で共通**: $K$、歪み係数 $d$
-- **画像ごとに異なる**: ボード姿勢 $R_i,t_i$
-- **観測値**: ChArUco コーナーの画素座標
-- **既知量**: ボード上のコーナー座標
+- **全画像共通**: カメラ内部行列 $K$, 歪み係数 $d$
+- **画像ごと（標本ごと）**: 外部パラメータ $R_i, t_i$
+- **観測量**: 検出 2D 画素座標 $(u, v)$
+- **既知量**: 設計 3D ボード座標 $(X, Y, 0)$
 
 ---
 
-## 4.2 C++ 実装：ボードと検出器
+## 4.2 C++ 実装：ChArUco Board の定義と構成
 
 ```cpp
 cv::aruco::Dictionary dictionary =
   cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
 
-// squaresX, squaresY, squareLength[m], markerLength[m]
+// CharucoBoard コンストラクタ呼び出し
 cv::aruco::CharucoBoard board{
-  cv::Size{10, 7}, 0.030f, 0.022f, dictionary
+  cv::Size{10, 7},   // size (横マス数, 縦マス数)
+  0.030f,            // squareLength [m]
+  0.022f,            // markerLength [m]
+  dictionary         // ArUco 辞書
 };
-cv::aruco::CharucoDetector detector{board};
 
-cv::Mat boardImage;
-board.generateImage(cv::Size{1400, 980}, boardImage, 20, 1);
-cv::imwrite("charuco.png", boardImage);
+cv::aruco::CharucoDetector detector{board};
 ```
 
-重要なのは、印刷後の `squareLength` と `markerLength` を実測し、プログラムへ同じ単位で
-設定することです。寸法を誤ると内部パラメータへの影響は小さくても、姿勢推定の
-並進量が誤った尺度になります。
+![ChArUco Board](images/charuco_board.png)
+
+### ChArUco Board とは (OpenCV チュートリアル準拠)
+チェスボードの「高精度交点検出」と ArUco の「個体識別・遮蔽耐性」を組み合わせたハイブリッドパターン。黒マス内に固有 ID マーカーが交互配置され、**ボードの一部が画面外や物体の陰に隠れていても交点座標と位置関係を正確に決定可能**。
+
+### `cv::aruco::CharucoBoard` 引数解説
+- `size` (`cv::Size`): チェスボードのマス数 (横, 縦)
+- `squareLength` (`float`): マス目一辺の物理長 [m]
+- `markerLength` (`float`): 内包 ArUco マーカー一辺の物理長 [m] (`markerLength < squareLength`)
+- `dictionary`: マーカー識別用辞書パターン
 
 ---
 
-## 4.3 C++ 実装：検出と標本化
+## 4.3 C++ 実装：検出と標本座標マッチング
 
 ```cpp
 std::vector<cv::Point2f> charucoCorners;
 std::vector<int> charucoIds;
+
+// 1. ボード交点検出
 detector.detectBoard(frame, charucoCorners, charucoIds);
 
 if (charucoCorners.size() >= 4) {
   std::vector<cv::Point3f> objectPoints;
   std::vector<cv::Point2f> imagePoints;
+
+  // 2. 3D-2D 対応点の抽出
   board.matchImagePoints(
-    charucoCorners, charucoIds, objectPoints, imagePoints);
+    charucoCorners, charucoIds,
+    objectPoints, imagePoints);
 
   allObjectPoints.push_back(std::move(objectPoints));
   allImagePoints.push_back(std::move(imagePoints));
 }
 ```
 
-標本数だけでなく、**画面の中央・四隅、近距離・遠距離、上下左右への傾き**を含めます。
-ほぼ同じ姿勢を何十枚追加しても、未知量を拘束する情報はあまり増えません。
+### 処理概略と `corners.size() >= 4` の理由
+平面オブジェクトと 2D 画像との間の姿勢変換 (PnP / ホモグラフィ) を幾何学的に決定するには**最低 4 点の対応点が必要**となるためです。4点未満では自由度が不足するため処理をスキップします。
+
+### 関数の引数解説
+- `detector.detectBoard(image, corners, ids)`:
+  - `image`: 入力画像 (`cv::Mat`)
+  - `corners`: 検出された交点の 2D 画素座標（出力）
+  - `ids`: 検出された交点 ID 配列（出力）
+- `board.matchImagePoints(cCorners, cIds, objPts, imgPts)`:
+  - `cCorners` / `cIds`: 検出交点座標および ID 配列（入力）
+  - `objPts`: 対応する理論 3D ボード座標 $(X, Y, 0)$（出力）
+  - `imgPts`: `objPts` と 1 対 1 対応する 2D 観測画素座標（出力）
 
 ---
 
-## 4.4 C++ 実装：最適化と検証
+## 4.4 C++ 実装：最適化計算 (`calibrateCamera`)
 
 ```cpp
 cv::Mat K, distortion;
 std::vector<cv::Mat> rvecs, tvecs;
 
 double rms = cv::calibrateCamera(
-  allObjectPoints, allImagePoints, imageSize,
-  K, distortion, rvecs, tvecs);
+  allObjectPoints,  // 全標本の 3D 点群
+  allImagePoints,   // 全標本の 2D 画素点群
+  imageSize,        // 画像サイズ
+  K,                // カメラ内部行列 (出力)
+  distortion,       // 歪み係数 (出力)
+  rvecs, tvecs,     // 各標本の姿勢 [R|t] (出力)
+  cv::noArray(), cv::noArray(), cv::noArray(),
+  0                 // 較正オプションフラグ
+);
 ```
 
-結果を採用する前に確認します。
-
-- `K` が 3×3、`distortion` が少なくとも 5 要素か
-- $f_x,f_y>0$、主点が画像付近にあるか
-- RMS だけでなく、標本ごとの再投影誤差に外れ値がないか
-- 補正後に直線が直線になり、四隅が不自然に引き伸ばされていないか
-
-RMS の合格値は解像度、レンズ、印刷精度で変わります。「0.5 px 以下」を絶対条件に
-せず、外れ値と実画像の見え方を併せて判断します。
+### 「最適化計算」の意味
+実測された 2D 画素座標 $p$ と、推定パラメータ $(K, d, R_i, t_i)$ で 3D 点を画像上に再投影した座標 $\hat{p}$ との差（**再投影誤差 Reprojection Error**）の自乗和を最小化する非線形最小二乗問題です。**Levenberg-Marquardt (LM) 法**による反復計算により内部行列 $K$、歪み係数 $d$、各標本姿勢 $[R_i | t_i]$ を同時一括推定します。
 
 ---
 
 ## 5. 全体システムアーキテクチャ
 
-本勉強会で使用する2つのアプリケーション `calib-wom-msmf` と `mfcapture` の連携およびパイプラインの全体図です。
-
-```mermaid
-graph TD
-    A[カメラ/動画/画像入力] -->|キャプチャ| B(calib-wom-msmf)
-    B -->|ChArUco検出 & 最適化| C[カメラ内部パラメータ JSON]
-    C -->|読込| D(mfcapture)
-    A -->|キャプチャ| D
-    D -->|CPU 補正: cv::remap| E[画面表示]
-    D -->|GPU 補正: undistortion.frag| E
-```
-
-1. **`calib-wom-msmf`**:
-   - ChArUco Board の検出と標本収集
-   - カメラ行列 $K$ および歪み係数 $[k_1, k_2, p_1, p_2, k_3]$ の算出
-   - JSON 形式での較正データの出力
-2. **`mfcapture`**:
-   - 較正 JSON データの読み込み
-   - リアルタイム入力の歪み補正（CPU / GPU）および OpenGL/GLSL による描画表示
+![全体システムアーキテクチャ](images/system_architecture.jpg)
 
 ---
 
-## 6. Windows Media Foundation (MSMF) による低遅延キャプチャ
+## 6. 歪み補正パイプラインの比較 (CPU vs GPU)
 
-OpenCV の `cv::VideoCapture` (MSMF バックエンド) では内部バッファリングにより遅延（レイテンシ）が発生することがあります。
-
-### `CamMf` の工夫と低遅延設計
-
-- **MFT (Media Foundation Transform)** デコーダを直接制御
-- `CODECAPI_AVLowLatencyMode` を有効化し、MFT 内部バッファリングを最小化
-- **フレーム処理モードの動的切り替え**:
-  - **レイテンシ優先**: 古いフレームをスキップし、常に最新のフレームをバッファに反映
-  - **全フレーム処理**: フレームの取りこぼしなく順次処理
-- **Lazy Initialization (遅延初期化)**: フォーマット一覧取得時には重いデコーダ初期化を行わず、キャプチャ開始時に初期化
-
----
-
-## 7. `calib-wom-msmf` の処理フロー
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User
-    participant Menu as UI (ImGui)
-    participant Capture as Capture / CamMf
-    participant FBO as OpenGL Framebuffer
-    participant Calib as Calibration
-
-    User->>Menu: キャプチャ開始 / ChArUco検出 ON
-    Menu->>Capture: startCapture()
-    loop 毎フレーム
-        Capture->>FBO: フレーム取得 & OpenGLテクスチャ転送
-        FBO->>Calib: 展開画像をCPU側へ読み戻し
-        Calib->>Calib: ArUco / ChArUco コーナー検出
-        User->>Menu: 標本追加 (6標本以上)
-        User->>Menu: 「較正実行」ボタン押下
-        Calib->>Calib: cv::calibrateCameraCharuco()
-        Calib-->>User: Reprojection Error 表示 & JSON 保存
-    end
-```
-
----
-
-## 8. キャリブレーションデータの JSON 構造
-
-`calib-wom-msmf` が出力する構成データのフォーマット：
-
-```json
-{
-  "camera matrix": [
-    [1000.0, 0.0, 960.0],
-    [0.0, 1000.0, 540.0],
-    [0.0, 0.0, 1.0]
-  ],
-  "distortion": [
-    [-0.25, 0.08, 0.001, -0.0005, -0.01]
-  ]
-}
-```
-
-- `camera matrix`: 3×3 のカメラ行列 $K$
-- `distortion`: 5×1 の歪み係数配列 $[k_1, k_2, p_1, p_2, k_3]$
-
----
-
-## 9. 歪み補正パイプラインの比較 (CPU vs GPU)
-
-`mfcapture` では2種類の補正方式を選択・比較できます。
-
-```text
-[ 入力フレーム ] ---> ( CPU 補正: OpenCV ) ---> [ GPU テクスチャ転送 ] ---> [ 画面表示 ]
-                       └ cv::remap()
-
-[ 入力フレーム ] --------------------------------> [ GPU テクスチャ転送 ] ---> ( GPU 補正: GLSL ) ---> [ 画面表示 ]
-                                                                                └ undistortion.frag
-```
-
-| 項目 | OpenCV 補正 (CPU) | OpenGL 補正 (GPU / GLSL) |
+| 評価項目 | OpenCV 歪み補正 (CPU) | OpenGL 歪み補正 (GPU / GLSL) |
 | :--- | :--- | :--- |
-| **実行場所** | CPU (`cv::remap`) | GPU (`undistortion.frag`) |
-| **事前処理** | `cv::initUndistortRectifyMap` | なし (Uniform 設定のみ) |
-| **パイプライン位置**| GPU テクスチャ転送前に CPU 上で実行 | シェーダー描画時にピクセル単位で実行 |
-| **CPU 負荷** | 解像度に比例して高負荷 | ほぼゼロ |
-| **柔軟性** | 安定した OpenCV 実装 | リアルタイムシェーダーで高速処理 |
+| **実行エンジン** | CPU (`cv::remap`) | GPU (`undistortion.frag`) |
+| **パイプライン位置** | キャプチャ直後、OpenGL 転送前に実行 | OpenGL テクスチャ描画時にシェーダーで実行 |
+| **CPU 負荷** | 解像度に比例して高い | **ほぼゼロ** |
+| **事前準備** | `cv::initUndistortRectifyMap` でマップ構築 | Uniform へ焦点距離・主点・係数を転送 |
 
 ---
 
-## 10. GLSL による GPU 歪み補正の原理
+## 7. OpenCV (CPU) による C++ 歪み補正処理
 
-フラグメントシェーダー `undistortion.frag` で逆変換を計算します。
+```cpp
+// 1. 初期化・マップ作成（解像度変更時のみ1回実行）
+cv::Mat map1, map2;
+cv::initUndistortRectifyMap(
+    cameraMatrix, distCoeffs,
+    cv::Mat(),       // 補正回転 R (単位行列)
+    cameraMatrix,    // 新しいカメラ行列 New K
+    imageSize,       // 画像サイズ
+    CV_32FC1,        // マップの型
+    map1, map2       // 出力参照座標マップ
+);
 
-### 処理アルゴリズム (フラグメント単位)
-
-1. **正規化スクリーン座標** $(u, v)$ から正規化カメラ座標 $(x_u, y_u)$ へ変換:
-   $$x_u = \frac{u - c_x}{f_x}, \quad y_u = \frac{v - c_y}{f_y}$$
-2. **歪みモデルの計算** ($x_u, y_u$ を用いて歪み後の座標 $x_d, y_d$ を計算):
-   $$r^2 = x_u^2 + y_u^2$$
-   $$\text{radial} = 1 + k_1 r^2 + k_2 r^4 + k_3 r^6$$
-   $$x_d = x_u \cdot \text{radial} + 2 p_1 x_u y_u + p_2 (r^2 + 2 x_u^2)$$
-   $$y_d = y_u \cdot \text{radial} + p_1 (r^2 + 2 y_u^2) + 2 p_2 x_u y_u$$
-3. **テクスチャ参照座標への変換**:
-   $$u_{\text{tex}} = \frac{f_x x_d + c_x}{W}, \quad v_{\text{tex}} = \frac{f_y y_d + c_y}{H}$$
-4. テクスチャサンプル: `texture(image, vec2(u_tex, v_tex))`
+// 2. 毎フレームの補正実行 (CPU)
+cv::Mat srcFrame, dstFrame;
+cv::remap(
+    srcFrame, dstFrame,
+    map1, map2,
+    cv::INTER_LINEAR  // 双線形補間
+);
+```
 
 ---
 
-## 10.1 なぜ「逆向き」に座標を求めるのか
+## 8. GLSL 歪み補正シェーダー (`undistortion.frag`)
 
-出力画素を一つずつ埋める **逆写像（backward mapping）** を使います。
+```glsl
+// 理想的な正規化座標 p = (x, y) の算出
+vec2 p = (v_texcoord * size - center) / focal;
+
+// 放射歪み & 接線歪みモデル適用
+float r2 = dot(p, p);
+float radial = 1.0 + dist_k.x * r2 + dist_k.y * r2 * r2 + dist_k3 * r2 * r2 * r2;
+vec2 tangential = vec2(
+    2.0 * dist_k.z * p.x * p.y + dist_k.w * (r2 + 2.0 * p.x * p.x),
+    dist_k.z * (r2 + 2.0 * p.y * p.y) + 2.0 * dist_k.w * p.x * p.y
+);
+vec2 pd = p * radial + tangential;
+
+// 歪んだ位置の UV 座標でテクスチャ参照
+vec2 uv = (pd * focal + center) / size;
+fragment = texture(image, uv);
+```
+
+---
+
+## 9. なぜ「逆向き」に座標を求めるのか (逆写像)
 
 ```mermaid
-flowchart LR
-    O["補正後の出力画素<br/>(uᵤ,vᵤ)"] --> N["K⁻¹<br/>正規化座標 (xᵤ,yᵤ)"]
-    N --> M["歪みモデル d<br/>(xᵈ,yᵈ)"]
-    M --> P["K<br/>入力画素 (uᵈ,vᵈ)"]
-    P --> S["入力画像を補間サンプル"]
+flowchart TD
+    O["補正後出力画素 (u, v)"] --> N["K⁻¹ 正規化座標 (x, y)"]
+    N --> M["歪みモデル (xd, yd)"]
+    M --> P["K 入力画素 (ud, vd)"]
+    P --> S["入力画像をサンプル"]
     S --> O2["出力色"]
 ```
 
-入力画素を補正後の位置へ「押し出す」順写像では、複数画素の衝突や穴が発生します。
-逆写像なら、すべての出力画素について参照元が一つ決まり、OpenCV の `remap()` と
-GLSL の `texture()` の両方で同じ考え方を使えます。
+---
+
+## 10. Windows Media Foundation (MSMF) による低遅延キャプチャ
+
+- `CamMf` クラスによる MSMF 直接操作
+- `CODECAPI_AVLowLatencyMode` で MFT 内部バッファリングを排除
+- レイテンシ優先モード (`prioritizeLatency == true`)
 
 ---
 
-## 10.2 座標系を混ぜない
+## 11. まとめ
 
-```text
-補正後UV [0,1] ─×(W,H)→ 補正後画素 [px]
-      ─(画素−主点)/焦点→ 正規化カメラ座標
-      ─歪み式→ 歪んだ正規化座標
-      ─×焦点＋主点→ 入力画素 [px]
-      ─/(W,H)→ 入力UV [0,1] ─texture→ 色
-```
-
-- $f_x,f_y,c_x,c_y$ は **画素単位**
-- GLSL の UV は **0～1**
-- OpenCV の画像原点は左上。OpenGL 側の上下方向との対応を頂点シェーダーで確認
-- 較正時と補正時の解像度が異なるなら、内部パラメータも同じ比率でスケール
-
----
-
-## 11. 開発環境とビルド構成規約
-
-### 開発環境
-
-- **OS**: Windows 11 / 10
-- **IDE**: Visual Studio 2022
-- **Language**: C++17 (`/std:c++17`)
-- **Shell**: PowerShell
-
-### ソースコード規約
-
-- **C++ ソースファイル (`.h`, `.cpp`)**: `UTF-8 with BOM`
-- **GLSL ソースファイル (`.vert`, `.frag`, `.comp`)**: `UTF-8 without BOM`
-
-### CMake / ソリューション構成
-
-- `CMakeLists.txt` により依存ライブラリ (OpenCV 4.13, GLFW 3.4, Dear ImGui v1.92.8) を自動取得
-- ソリューションエクスプローラのフィルタ構成:
-  - Header Files フィルタ: `.h` ファイル
-  - Shader Files フィルタ: `.vert`, `.frag`, `.comp` ファイル
-
----
-
-## 12. ハンズオン実習の手順
-
-### Step 1: プロジェクトのビルド
-
-```powershell
-# calib-wom-msmf のビルド
-cd path/to/calib-wom-msmf
-cmake -S . -B build
-cmake --build build --config Release
-
-# mfcapture のビルド
-cd path/to/mfcapture
-cmake -S . -B build
-cmake --build build --config Release
-```
-
-### Step 2: `calib-wom-msmf` でキャリブレーション
-
-1. カメラ選択 & 「開始」
-2. ChArUco Board をカメラに向けて様々な角度・位置で標本収集（8〜12枚）
-3. 「較正実行」を押下し、Reprojection Error を確認
-4. 較正結果を JSON ファイルに保存
-
-### Step 3: `mfcapture` で歪み補正の比較
-
-1. 保存した JSON ファイルを読み込み
-2. 「歪み補正」メニューで「なし」「OpenCV」「OpenGL」を切り替え
-3. 画質・直線性の改善度合いおよび CPU/GPU 負荷の違いを体感
-
----
-
-## 12.1 ハンズオンA：標本の「多様性」を体験
-
-同じカメラで2種類のデータセットを作ります。
-
-1. **悪い標本**: 正面・中央だけを8枚
-2. **良い標本**: 四隅、距離、傾きを変えて12枚
-3. それぞれで較正し、JSON と RMS を保存
-4. 同じ格子・建物・机の縁を補正して比較
-
-記録するもの：
-
-| データセット | RMS | $f_x,f_y$ | $c_x,c_y$ | 四隅の直線性 |
-|---|---:|---|---|---|
-| 正面だけ | | | | |
-| 姿勢を分散 | | | | |
-
-**問い**: 標本数より姿勢の分散が重要なのはなぜでしょうか。
-
----
-
-## 12.2 ハンズオンB：CPUとGPUを同条件で比較
-
-1. 同じカメラ、解像度、較正 JSON を使用
-2. 「なし」で歪みの位置を観察
-3. 「OpenCV」で直線性と CPU 使用率を記録
-4. 「OpenGL」で同じ箇所と CPU 使用率を記録
-5. ウィンドウを拡大し、境界の黒領域と補間差を観察
-
-コード探索：
-
-- `mfcapture.cpp`: CPU 補正を GPU 転送前に行う位置
-- `Undistortion.cpp`: マップを画像サイズ変更時だけ作る条件
-- `Menu.cpp`: 通常／補正シェーダーの切り替え
-- `undistortion.frag`: 一画素の逆写像
-
-**発展課題**: `GL_NEAREST` 相当と線形補間の見え方、または解像度を半分にしたときの
-内部パラメータのスケーリングを実験します。
-
----
-
-## 13. まとめ
-
-- **ChArUco Board**: マーカーとチェスボードの強みを兼ね備え、高精度かつロバストなキャリブレーションを実現
-- **Windows Media Foundation**: 独自実装 `CamMf` により低遅延キャプチャを実現
-- **CPU vs GPU 歪み補正**:
-  - CPU (OpenCV `remap`): 手軽で確実だが CPU 負荷が高い
-  - GPU (GLSL): シェーダー内で座標逆変換を行うことで CPU 負荷ゼロの高速表示が可能
-- **モダン C++ & CMake 運用**: 依存ライブラリの自動展開とソリューションフィルタの自動生成で再現性の高い開発環境を維持
-
----
-
-## 14. Q&A
-
-ご質問・ご意見をお待ちしております！
+- ChArUco Board による高精度な交点認識
+- 透視投影モデルと内部 $K$・外部 $[R|t]$ パラメータの最適化
+- CPU 補正 (OpenCV `remap`) と GPU 補正 (GLSL シェーダー) の実装構造
+- MSMF による超低遅延映像処理

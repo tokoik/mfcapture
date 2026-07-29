@@ -1,55 +1,65 @@
-# CMake build trees and generated files
-/build/
-/cmake-build-*/
-/CMakeFiles/
-/CMakeCache.txt
-/cmake_install.cmake
-/Makefile
-/compile_commands.json
-
-# Downloaded third-party dependencies
-/libs/
-
-# IDE and editor state
-/.vs/
-/.vscode/
-/.idea/
-*.user
-*.suo
-*.VC.db
-*.VC.opendb
-*.code-workspace
-
-# Compiler and linker outputs
-/Debug/
-/Release/
-/RelWithDebInfo/
-/MinSizeRel/
-/Win32/
-/x64/
-/ipch/
-*.o
-*.obj
-*.dep
-*.pdb
-*.ilk
-*.idb
-*.exp
-*.lib
-*.dll
-*.exe
-*.app
-*.dSYM/
-
-# Runtime and operating-system files
+#
+# for Linux
+#
 /mfcapture
 /core
-/imgui.ini
+a.out
+*.o
+*.dep
+#
+# for Mac
+#
+/DerivedData/
+xcuserdata
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+!default.pbxuser
+!default.mode1v3
+!default.mode2v3
+!default.perspectivev3
+*.moved-aside
+*.xcuserstate
+*.xccheckout
 .DS_Store
+#
+# for Windows
+#
+.vs/
+[Dd]ebug/
+[Rr]elease/
+/[Ww][Ii][Nn]32/
+/x64/
+/ipch/
+/packages/
+*.com
+*.exe
+*.ncb
+*.suo
+*.sdf
+*.opensdf
+*.opendb
+*.userosscache
+*.sln.docstates
+*.VC.opendb
+*.VC.db
+*.aps
+*.msi
 Thumbs.db
-
-# Temporary files
+#
+# anothre stuff
+#
 *~
 *.bak
 *.tmp
 *.swp
+*.aps
+/build*/
+.vscode/
+imgui.ini
+/docs/pdf/*
+!/docs/pdf/refman.pdf
+/libs
+/libs/*
+*.zip

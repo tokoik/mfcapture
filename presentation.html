@@ -67,7 +67,7 @@
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border-light);
-            padding: 40px 48px;
+            padding: 36px 44px;
             flex-direction: column;
             position: relative;
             animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
@@ -88,14 +88,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 18px;
             border-bottom: 2px solid #f1f5f9;
-            padding-bottom: 14px;
+            padding-bottom: 10px;
         }
 
         .slide-title {
             font-family: 'Outfit', sans-serif;
-            font-size: 2.1rem;
+            font-size: 2.0rem;
             font-weight: 800;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
@@ -118,8 +118,8 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 18px;
-            font-size: 1.05rem;
+            gap: 16px;
+            font-size: 1.0rem;
             line-height: 1.6;
             color: var(--text-dark);
         }
@@ -186,7 +186,7 @@
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: var(--radius-md);
-            padding: 20px 24px;
+            padding: 18px 22px;
             box-shadow: var(--shadow-md);
             transition: all 0.2s ease;
         }
@@ -198,28 +198,60 @@
 
         .card-title {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 700;
             color: #0369a1;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        /* Image Box */
+        .param-desc {
+            font-size: 0.90rem;
+            background: #ffffff;
+            border-left: 3px solid #0284c7;
+            padding: 6px 10px;
+            border-radius: 4px;
+            margin-top: 6px;
+            line-height: 1.5;
+        }
+
+        .param-desc strong {
+            color: #0369a1;
+        }
+
+        /* Image Box - Large Architecture Display */
         .arch-img-container {
             width: 100%;
-            text-align: center;
-            margin-bottom: 12px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 6px 0;
         }
 
         .arch-img-container img {
-            max-width: 75%;
-            max-height: 250px;
+            max-width: 100%;
+            max-height: calc(100vh - 220px);
+            width: auto;
+            height: auto;
             border-radius: var(--radius-md);
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-lg);
             border: 1px solid var(--border-light);
+            object-fit: contain;
+        }
+
+        /* Enriched 2x Size for ChArUco Board Image in Slide 7 */
+        .board-img-inline {
+            width: 100%;
+            max-height: 280px; /* 以前の140pxから2倍に拡大 */
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            margin: 12px 0 6px 0;
+            box-shadow: var(--shadow-md);
         }
 
         /* Lists & Tables */
@@ -227,12 +259,12 @@
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         ul.custom-list li {
             position: relative;
-            padding-left: 26px;
+            padding-left: 24px;
             font-weight: 500;
         }
 
@@ -278,12 +310,12 @@
             font-family: 'JetBrains Mono', monospace;
             background: var(--code-bg);
             color: var(--code-text);
-            padding: 16px 20px;
+            padding: 14px 18px;
             border-radius: var(--radius-md);
             display: block;
             overflow-x: auto;
-            font-size: 0.88rem;
-            line-height: 1.5;
+            font-size: 0.84rem;
+            line-height: 1.45;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
         }
 
@@ -379,25 +411,28 @@
                 <div class="card">
                     <div class="card-title">前半: 理論と基礎</div>
                     <ul class="custom-list">
-                        <li>カメラモデリングの基礎（ピンホールモデル）</li>
+                        <li>カメラモデリングの基礎（ピンホールモデル・透視投影・内部/外部パラメータ）</li>
                         <li>レンズ歪みの数理（放射歪み・接線歪み）</li>
-                        <li>ChArUco Board によるキャリブレーション原理</li>
-                        <li>システム構成 (`calib-wom-msmf` & `mfcapture`)</li>
+                        <li>ChArUco Board 原理と特徴（チェスボード＋ArUco）</li>
+                        <li>C++ OpenCV 実装の詳細関数と引数構造 (`CharucoBoard`, `detectBoard`, `matchImagePoints`, `calibrateCamera`)</li>
+                        <li>全体システム構成 (`calib-wom-msmf` & `mfcapture`)</li>
                     </ul>
                 </div>
                 <div class="card">
                     <div class="card-title">後半: 実装とハンズオン</div>
                     <ul class="custom-list">
-                        <li>Media Foundation (MSMF) 低遅延キャプチャ</li>
-                        <li>CPU (OpenCV) vs GPU (GLSL) 補正パイプライン</li>
+                        <li>CPU (OpenCV `remap`) vs GPU (GLSL) 補正パイプライン</li>
+                        <li>C++ CPU 補正の画像マップ生成実装 (`initUndistortRectifyMap`)</li>
                         <li>`undistortion.frag` シェーダー解読</li>
-                        <li>Windows / VS2022 / CMake 実習デモ</li>
+                        <li>逆写像 (Backward Mapping) の座標変換</li>
+                        <li>Media Foundation (MSMF) 低遅延キャプチャ設計</li>
+                        <li>Windows / VS2022 実習ハンズオン A / B</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 3: Pinhole Model -->
+        <!-- Slide 3: Pinhole Model & Extrinsics -->
         <div class="slide">
             <div class="slide-header">
                 <h2 class="slide-title">2. カメラモデリングの基礎原理</h2>
@@ -405,18 +440,27 @@
             </div>
             <div class="slide-body grid-2">
                 <div class="card">
-                    <div class="card-title">ピンホールカメラモデル (Pinhole Model)</div>
-                    <p>3次元世界座標系 $(X_w, Y_w, Z_w)$ から2次元画像平面 $(u, v)$ への遠近投影。</p>
-                    <br>
+                    <div class="card-title">ピンホールモデルと透視投影</div>
+                    <p>3次元世界座標系 $(X_w, Y_w, Z_w)$ から2次元画像平面 $(u, v)$ への<strong>透視投影 (Perspective Projection)</strong> 方程式：</p>
                     $$s \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = K \begin{bmatrix} R & t \end{bmatrix} \begin{bmatrix} X_w \\ Y_w \\ Z_w \\ 1 \end{bmatrix}$$
+                    <div class="param-desc">
+                        <strong>カメラ内部行列 (Camera Matrix $K$):</strong>
+                        $$K = \begin{bmatrix} f_x & 0 & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{bmatrix}$$
+                        $f_x, f_y$: 画素単位の焦点距離、$c_x, c_y$: 主点（光学中心）
+                    </div>
                 </div>
                 <div class="card">
-                    <div class="card-title">カメラ内部行列 (Camera Matrix $K$)</div>
-                    $$K = \begin{bmatrix} f_x & 0 & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{bmatrix}$$
-                    <ul class="custom-list" style="margin-top:14px;">
-                        <li><strong>$f_x, f_y$</strong>: 画素単位の焦点距離 (Focal Length)</li>
-                        <li><strong>$c_x, c_y$</strong>: 光軸と画像平面の交点（主点 Principal Point）</li>
-                    </ul>
+                    <div class="card-title">カメラ外部行列 (Extrinsic Parameters $[R | t]$)</div>
+                    <p>世界座標系からカメラ座標系への剛体変換 $P_c = R P_w + t$ を表します。</p>
+                    <div class="param-desc">
+                        <strong>回転行列 (Rotation Matrix $R$):</strong><br>
+                        3×3 の直交行列。カメラの向き（回転）を表します。
+                    </div>
+                    <div class="param-desc" style="margin-top:8px;">
+                        <strong>並進ベクトル (Translation Vector $t$):</strong><br>
+                        3×1 の位置ベクトル。世界座標系原点に対するカメラの 3D 位置オフセットを表します。
+                    </div>
+                    <small style="color:var(--text-muted);display:block;margin-top:8px;">※ 内部行列 $K$ はカメラ固有ですが、外部パラメータ $[R | t]$ は撮影フレーム（ボード位置）ごとに変化します。</small>
                 </div>
             </div>
         </div>
@@ -492,47 +536,59 @@
                     <div class="card-title">最適化フロー</div>
                     <div class="mermaid">
                         flowchart TD
-                            A["既知の3D点<br/>(X, Y, 0)"] --> C["投影モデル<br/>K, d, R, t"]
-                            B["検出した2D点<br/>(u, v)"] --> D["再投影誤差"]
+                            A["既知の3D点 (X,Y,0)"] --> C["投影モデル K, d, R, t"]
+                            B["検出2D点 (u,v)"] --> D["再投影誤差 (Reprojection Error)"]
                             C --> D
-                            D -->|"全標本で最小化"| E["カメラ行列 K<br/>歪み係数 d"]
+                            D -->|"全標本でLM法最小化"| E["カメラ行列 K & 歪み係数 d"]
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-title">推定対象パラメータ</div>
                     <ul class="custom-list">
-                        <li><strong>全画像で共通</strong>: カメラ行列 $K$、歪み係数 $d$</li>
-                        <li><strong>画像ごとに異なる</strong>: ボード姿勢 $R_i, t_i$</li>
-                        <li><strong>観測値</strong>: ChArUco コーナーの画素座標</li>
-                        <li><strong>既知量</strong>: ボード上の 3D コーナー座標</li>
+                        <li><strong>全画像で共通 (内部)</strong>: カメラ行列 $K$ ($f_x, f_y, c_x, c_y$)、歪み係数 $d$ ($k_1..k_3, p_1..p_2$)</li>
+                        <li><strong>画像ごとに異なる (外部)</strong>: ボード姿勢 $R_i, t_i$</li>
+                        <li><strong>観測値 (2D)</strong>: 画像から検出した ChArUco 交点画素座標 $(u, v)$</li>
+                        <li><strong>既知量 (3D)</strong>: ボード設計寸法に基づく 3D 交点座標 $(X, Y, 0)$</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 7: 4.2 Board & Detector C++ -->
+        <!-- Slide 7: 4.2 Board Definition & What is ChArUco (2x Image Size) -->
         <div class="slide">
             <div class="slide-header">
-                <h2 class="slide-title">4.2 C++ 実装：ボードと検出器</h2>
+                <h2 class="slide-title">4.2 C++ 実装：ChArUco Board の定義と構成</h2>
                 <span class="slide-badge">C++ Code</span>
             </div>
             <div class="slide-body grid-2">
-                <pre><code>cv::aruco::Dictionary dictionary =
+                <div>
+                    <pre><code>cv::aruco::Dictionary dictionary =
   cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
 
-// squaresX, squaresY, squareLength[m], markerLength[m]
+// CharucoBoard コンストラクタ呼び出し
 cv::aruco::CharucoBoard board{
-  cv::Size{10, 7}, 0.030f, 0.022f, dictionary
+  cv::Size{10, 7},   // squaresX, squaresY
+  0.030f,            // squareLength [m]
+  0.022f,            // markerLength [m]
+  dictionary         // ArUco 辞書
 };
-cv::aruco::CharucoDetector detector{board};
 
-cv::Mat boardImage;
-board.generateImage(cv::Size{1400, 980}, boardImage, 20, 1);
-cv::imwrite("charuco.png", boardImage);</code></pre>
+cv::aruco::CharucoDetector detector{board};</code></pre>
+                    <img src="images/charuco_board.png" alt="ChArUco Board パターン" class="board-img-inline">
+                </div>
                 <div class="card">
-                    <div class="card-title">実物寸法の重要性</div>
-                    <p>印刷後の <code>squareLength</code> と <code>markerLength</code> を実測し、プログラムへ同じ単位で設定することが極めて重要です。</p>
-                    <p>寸法を誤ると内部パラメータへの影響は小さくても、姿勢推定の並進量が誤ったスケールになります。</p>
+                    <div class="card-title">ChArUco Board とは</div>
+                    <p style="font-size:0.88rem;margin-bottom:6px;">
+                        チェスボードの「高精度交点検出」と ArUco マーカーの「個体識別・遮蔽耐性」を組み合わせたハイブリッドパターンです（OpenCV チュートリアル準拠）。
+                        黒マス内に固有 ID マーカーが交互配置され、<strong>ボードの一部が画面外や物体の陰に隠れていても交点座標と位置関係を正確に決定できます。</strong>
+                    </p>
+                    <div class="param-desc">
+                        <strong>`cv::aruco::CharucoBoard` 引数解説:</strong><br>
+                        ・<code>size</code> (`cv::Size`): 横・縦のマス数 (10, 7)<br>
+                        ・<code>squareLength</code> (`float`): マスの物理長 [m] (例: 0.030f = 3cm)<br>
+                        ・<code>markerLength</code> (`float`): マーカーの物理長 [m] (`markerLength < squareLength`)<br>
+                        ・<code>dictionary</code>: マーカー生成・識別用辞書パターン
+                    </div>
                 </div>
             </div>
         </div>
@@ -540,29 +596,48 @@ cv::imwrite("charuco.png", boardImage);</code></pre>
         <!-- Slide 8: 4.3 Detection & Sampling -->
         <div class="slide">
             <div class="slide-header">
-                <h2 class="slide-title">4.3 C++ 実装：検出と標本化</h2>
+                <h2 class="slide-title">4.3 C++ 実装：検出と標本座標マッチング</h2>
                 <span class="slide-badge">C++ Code</span>
             </div>
             <div class="slide-body grid-2">
-                <pre><code>std::vector&lt;cv::Point2f&gt; charucoCorners;
+                <div>
+                    <pre><code>std::vector&lt;cv::Point2f&gt; charucoCorners;
 std::vector&lt;int&gt; charucoIds;
+
+// 1. ボード交点検出
 detector.detectBoard(frame, charucoCorners, charucoIds);
 
 if (charucoCorners.size() &gt;= 4) {
   std::vector&lt;cv::Point3f&gt; objectPoints;
   std::vector&lt;cv::Point2f&gt; imagePoints;
+
+  // 2. 3D-2D 対応点の抽出
   board.matchImagePoints(
-    charucoCorners, charucoIds, objectPoints, imagePoints);
+    charucoCorners, charucoIds,
+    objectPoints, imagePoints);
 
   allObjectPoints.push_back(std::move(objectPoints));
   allImagePoints.push_back(std::move(imagePoints));
 }</code></pre>
+                </div>
                 <div class="card">
-                    <div class="card-title">標本収集のコツ</div>
-                    <ul class="custom-list">
-                        <li>単なる枚数ではなく、<strong>画面の中央・四隅、近距離・遠距離、上下左右への傾き</strong>を網羅する。</li>
-                        <li>ほぼ同じ姿勢の画像を何十枚追加しても未知量を拘束する情報は増えない。</li>
-                    </ul>
+                    <div class="card-title">処理概略と `corners.size() >= 4` の理由</div>
+                    <p style="font-size:0.88rem;margin-bottom:6px;">
+                        <strong>なぜ 4 点以上が必要か：</strong><br>
+                        平面オブジェクトの 3D 姿態・透視投影変換 (PnP 問題 / ホモグラフィ) を幾何学的に決定するには、<strong>最低 4 点の対応点が必要</strong>となるためです。交点が 4 点未満の場合は幾何学的拘束条件が成り立たないため処理をスキップします。
+                    </p>
+                    <div class="param-desc">
+                        <strong>`detectBoard(image, corners, ids)`:</strong><br>
+                        ・`image`: 入力画像 (`cv::Mat`)<br>
+                        ・`corners`: 検出された交点の 2D 画素座標（出力）<br>
+                        ・`ids`: 検出交点に対応する固有 ID 配列（出力）
+                    </div>
+                    <div class="param-desc" style="margin-top:4px;">
+                        <strong>`matchImagePoints(cCorners, cIds, objPts, imgPts)`:</strong><br>
+                        ・`cCorners` / `cIds`: 検出交点座標および ID 配列（入力）<br>
+                        ・`objPts`: ID に対応する理論 3D ボード座標 $(X, Y, 0)$（出力）<br>
+                        ・`imgPts`: `objPts` と 1 対 1 対応する観測 2D 画素座標（出力）
+                    </div>
                 </div>
             </div>
         </div>
@@ -570,29 +645,43 @@ if (charucoCorners.size() &gt;= 4) {
         <!-- Slide 9: 4.4 Optimization & Verification -->
         <div class="slide">
             <div class="slide-header">
-                <h2 class="slide-title">4.4 C++ 実装：最適化と検証</h2>
+                <h2 class="slide-title">4.4 C++ 実装：最適化計算 (`calibrateCamera`)</h2>
                 <span class="slide-badge">C++ Code</span>
             </div>
             <div class="slide-body grid-2">
-                <pre><code>cv::Mat K, distortion;
+                <div>
+                    <pre><code>cv::Mat K, distortion;
 std::vector&lt;cv::Mat&gt; rvecs, tvecs;
 
 double rms = cv::calibrateCamera(
-  allObjectPoints, allImagePoints, imageSize,
-  K, distortion, rvecs, tvecs);</code></pre>
+  allObjectPoints,  // 全標本の 3D 点群
+  allImagePoints,   // 全標本の 2D 画素点群
+  imageSize,        // 画像サイズ
+  K,                // カメラ内部行列 (出力)
+  distortion,       // 歪み係数 (出力)
+  rvecs, tvecs,     // 各標本の姿勢 [R|t] (出力)
+  cv::noArray(), cv::noArray(), cv::noArray(),
+  0                 // 較正オプションフラグ
+);</code></pre>
+                </div>
                 <div class="card">
-                    <div class="card-title">検証チェックリスト</div>
-                    <ul class="custom-list">
-                        <li>$K$ が 3×3、`distortion` が 5 要素以上存在するか</li>
-                        <li>$f_x, f_y > 0$、主点 $(c_x, c_y)$ が画像範囲内か</li>
-                        <li>RMS だけでなく、標本ごとの再投影誤差に外れ値がないか</li>
-                        <li>補正後に直線がまっすぐになり、四隅の引き伸ばしがないか</li>
-                    </ul>
+                    <div class="card-title">「最適化計算」の意味と `calibrateCamera`</div>
+                    <p style="font-size:0.88rem;margin-bottom:6px;">
+                        <strong>最適化計算 (Optimization) とは：</strong><br>
+                        実測された 2D 画素座標 $p$ と、推定パラメータ $(K, d, R_i, t_i)$ で 3D 点を画像上に再投影した座標 $\hat{p}$ との差（**再投影誤差 Reprojection Error**）の自乗和を最小化する非線形最小二乗問題です。**Levenberg-Marquardt (LM) 法**により内部行列 $K$、歪み係数 $d$、各標本のカメラ姿勢 $[R_i | t_i]$ を反復計算で同時に最適推定します。
+                    </p>
+                    <div class="param-desc">
+                        <strong>`calibrateCamera()` 主要引数:</strong><br>
+                        ・`objectPoints` / `imagePoints`: 全標本分（複数フレーム）の 3D ボード座標点群および 2D 観測画素点群<br>
+                        ・`imageSize`: 入力画像の解像度 (`cv::Size`)<br>
+                        ・`cameraMatrix` ($K$) / `distCoeffs` ($d$): 最適化された内部行列および 5 歪み係数 (出力)<br>
+                        ・`rvecs` / `tvecs`: 標本ごとの回転ベクトル $r_i$ および並進ベクトル $t_i$ (出力)
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 10: Architecture Overview -->
+        <!-- Slide 10: Architecture Overview (Updated Path: images/system_architecture.jpg) -->
         <div class="slide">
             <div class="slide-header">
                 <h2 class="slide-title">5. 全体システムアーキテクチャ</h2>
@@ -600,49 +689,12 @@ double rms = cv::calibrateCamera(
             </div>
             <div class="slide-body">
                 <div class="arch-img-container">
-                    <img src="system_architecture_1785127549276.jpg" alt="全体システムアーキテクチャ図">
-                </div>
-                <div class="mermaid" style="text-align: center;">
-                    graph LR
-                        A[カメラ/動画/画像] --> B(calib-wom-msmf)
-                        B -->|ChArUco検出 & 最適化| C[カメラ内部パラメータ JSON]
-                        C -->|JSON読み込み| D(mfcapture)
-                        A --> D
-                        D -->|CPU/GPU 歪み補正| E[歪み補正リアルタイム表示]
-                        style B fill:#e0f2fe,stroke:#0284c7,stroke-width:2px
-                        style D fill:#dbeefe,stroke:#2563eb,stroke-width:2px
-                        style C fill:#fef3c7,stroke:#d97706,stroke-width:2px
+                    <img src="images/system_architecture.jpg" alt="全体システムアーキテクチャ図">
                 </div>
             </div>
         </div>
 
-        <!-- Slide 11: MSMF Low Latency -->
-        <div class="slide">
-            <div class="slide-header">
-                <h2 class="slide-title">6. MSMF による低遅延キャプチャ</h2>
-                <span class="slide-badge">Performance</span>
-            </div>
-            <div class="slide-body grid-2">
-                <div class="card">
-                    <div class="card-title">`CamMf` クラスの独自設計</div>
-                    <ul class="custom-list">
-                        <li>Media Foundation Source Reader から直接圧縮フレーム取得</li>
-                        <li>`CODECAPI_AVLowLatencyMode` で MFT 内部バッファリングを防止</li>
-                        <li>RAII による堅牢な COM オブジェクト解放管理</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <div class="card-title">フレーム処理モード制御</div>
-                    <ul class="custom-list">
-                        <li><strong>レイテンシ優先 (Low Latency)</strong>: 古いフレームを破棄し常に最新フレームを提供</li>
-                        <li><strong>全フレーム処理 (Sequential)</strong>: フレーム落としなしに順番に処理</li>
-                        <li><strong>Lazy Initialization</strong>: キャプチャ開始時に適用</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 12: calib-wom-msmf Flow -->
+        <!-- Slide 11: calib-wom-msmf Flow -->
         <div class="slide">
             <div class="slide-header">
                 <h2 class="slide-title">7. calib-wom-msmf キャリブレーションフロー</h2>
@@ -669,7 +721,7 @@ double rms = cv::calibrateCamera(
             </div>
         </div>
 
-        <!-- Slide 13: JSON Data -->
+        <!-- Slide 12: JSON Data -->
         <div class="slide">
             <div class="slide-header">
                 <h2 class="slide-title">8. 較正データ JSON 構造</h2>
@@ -699,7 +751,7 @@ double rms = cv::calibrateCamera(
             </div>
         </div>
 
-        <!-- Slide 14: Pipelines CPU vs GPU -->
+        <!-- Slide 13: Pipelines CPU vs GPU -->
         <div class="slide">
             <div class="slide-header">
                 <h2 class="slide-title">9. 歪み補正パイプラインの比較 (CPU vs GPU)</h2>
@@ -740,10 +792,51 @@ double rms = cv::calibrateCamera(
             </div>
         </div>
 
+        <!-- Slide 14: OpenCV CPU Correction Code -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">10. OpenCV (CPU) による C++ 歪み補正処理</h2>
+                <span class="slide-badge">CPU Pipeline</span>
+            </div>
+            <div class="slide-body grid-2">
+                <div>
+                    <pre><code>// 1. 初期化・マップ作成（解像度変更時のみ1回実行）
+cv::Mat map1, map2;
+cv::initUndistortRectifyMap(
+    cameraMatrix, distCoeffs,
+    cv::Mat(),       // 補正回転 R (単位行列)
+    cameraMatrix,    // 新しいカメラ行列 New K
+    imageSize,       // 画像サイズ
+    CV_32FC1,        // マップの型
+    map1, map2       // 出力参照座標マップ
+);
+
+// 2. 毎フレームの補正実行 (CPU)
+cv::Mat srcFrame, dstFrame;
+cv::remap(
+    srcFrame, dstFrame,
+    map1, map2,
+    cv::INTER_LINEAR  // 双線形補間
+);</code></pre>
+                </div>
+                <div class="card">
+                    <div class="card-title">C++ CPU 補正のポイントと引数</div>
+                    <div class="param-desc">
+                        <strong>`cv::initUndistortRectifyMap()`:</strong><br>
+                        補正後画像の各ピクセルが撮影画像のどこを参照すべきかの座標ルックアップテーブル (`map1`, `map2`) を事前生成します。重い計算のため毎フレーム呼ばず**解像度変更時のみ呼び出す最適化**を行います。
+                    </div>
+                    <div class="param-desc" style="margin-top:8px;">
+                        <strong>`cv::remap()`:</strong><br>
+                        事前計算された `map1`, `map2` を用いて、`srcFrame` からピクセル値を取り出し `dstFrame` へ再配置します。`INTER_LINEAR` (双線形補間) により滑らかな画質が得られます。
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Slide 15: GLSL Shader Code -->
         <div class="slide">
             <div class="slide-header">
-                <h2 class="slide-title">10. GLSL 歪み補正シェーダー (`undistortion.frag`)</h2>
+                <h2 class="slide-title">11. GLSL 歪み補正シェーダー (`undistortion.frag`)</h2>
                 <span class="slide-badge">GLSL Code</span>
             </div>
             <div class="slide-body">
@@ -768,7 +861,7 @@ fragment = texture(image, uv);</code></pre>
         <!-- Slide 16: 10.1 Backward Mapping -->
         <div class="slide">
             <div class="slide-header">
-                <h2 class="slide-title">10.1 なぜ「逆向き」に座標を求めるのか</h2>
+                <h2 class="slide-title">12.1 なぜ「逆向き」に座標を求めるのか</h2>
                 <span class="slide-badge">Backward Mapping</span>
             </div>
             <div class="slide-body grid-2">
@@ -794,7 +887,7 @@ fragment = texture(image, uv);</code></pre>
         <!-- Slide 17: 10.2 Coordinate Systems -->
         <div class="slide">
             <div class="slide-header">
-                <h2 class="slide-title">10.2 座標系を混同しない注意点</h2>
+                <h2 class="slide-title">12.2 座標系を混同しない注意点</h2>
                 <span class="slide-badge">Coordinates</span>
             </div>
             <div class="slide-body grid-2">
@@ -821,7 +914,7 @@ fragment = texture(image, uv);</code></pre>
         <!-- Slide 18: Dev Rules & Encoding -->
         <div class="slide">
             <div class="slide-header">
-                <h2 class="slide-title">11. 開発環境とビルド構成規約</h2>
+                <h2 class="slide-title">13. 開発環境とビルド構成規約</h2>
                 <span class="slide-badge">Rules</span>
             </div>
             <div class="slide-body grid-2">
@@ -847,7 +940,7 @@ fragment = texture(image, uv);</code></pre>
         <!-- Slide 19: Hands-on Step 1-3 -->
         <div class="slide">
             <div class="slide-header">
-                <h2 class="slide-title">12. ハンズオン実習の手順 (Step 1-3)</h2>
+                <h2 class="slide-title">14. ハンズオン実習の手順 (Step 1-3)</h2>
                 <span class="slide-badge">Practice</span>
             </div>
             <div class="slide-body grid-3">
@@ -871,7 +964,7 @@ cmake --build build --config Release</code></pre>
         <!-- Slide 20: 12.1 Hands-on A -->
         <div class="slide">
             <div class="slide-header">
-                <h2 class="slide-title">12.1 ハンズオンA：標本の「多様性」を体験</h2>
+                <h2 class="slide-title">14.1 ハンズオンA：標本の「多様性」を体験</h2>
                 <span class="slide-badge">Workshop A</span>
             </div>
             <div class="slide-body">
@@ -912,7 +1005,7 @@ cmake --build build --config Release</code></pre>
         <!-- Slide 21: 12.2 Hands-on B -->
         <div class="slide">
             <div class="slide-header">
-                <h2 class="slide-title">12.2 ハンズオンB：CPUとGPUを同条件で比較</h2>
+                <h2 class="slide-title">14.2 ハンズオンB：CPUとGPUを同条件で比較</h2>
                 <span class="slide-badge">Workshop B</span>
             </div>
             <div class="slide-body grid-2">
@@ -937,10 +1030,36 @@ cmake --build build --config Release</code></pre>
             </div>
         </div>
 
-        <!-- Slide 22: Summary -->
+        <!-- Slide 22: MSMF Low Latency Capture (Moved) -->
         <div class="slide">
             <div class="slide-header">
-                <h2 class="slide-title">13. まとめ</h2>
+                <h2 class="slide-title">15. Windows Media Foundation (MSMF) による低遅延キャプチャ</h2>
+                <span class="slide-badge">System Backend</span>
+            </div>
+            <div class="slide-body grid-2">
+                <div class="card">
+                    <div class="card-title">`CamMf` クラスの独自設計</div>
+                    <ul class="custom-list">
+                        <li>Media Foundation Source Reader から直接圧縮フレーム取得</li>
+                        <li>`CODECAPI_AVLowLatencyMode` で MFT 内部バッファリングを防止</li>
+                        <li>RAII による堅牢な COM オブジェクト解放管理</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title">フレーム処理モード制御</div>
+                    <ul class="custom-list">
+                        <li><strong>レイテンシ優先 (Low Latency)</strong>: 古いフレームを破棄し常に最新フレームを提供</li>
+                        <li><strong>全フレーム処理 (Sequential)</strong>: フレーム落としなしに順番に処理</li>
+                        <li><strong>Lazy Initialization</strong>: キャプチャ開始時に適用</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 23: Summary -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">16. まとめ</h2>
                 <span class="slide-badge">Summary</span>
             </div>
             <div class="slide-body grid-2">
@@ -948,8 +1067,9 @@ cmake --build build --config Release</code></pre>
                     <div class="card-title">技術的ポイント</div>
                     <ul class="custom-list">
                         <li>ChArUco Board による強固かつ高精度な較正</li>
+                        <li>透視投影モデルと内部 $K$・外部 $[R|t]$ パラメータの最適化</li>
+                        <li>OpenCV (CPU `remap`) と GLSL (GPU `undistortion.frag`) の補正比較</li>
                         <li>MSMF によるフレームレイテンシの最小化</li>
-                        <li>GLSL シェーダーによる CPU 負荷ゼロのリアルタイム歪み補正</li>
                     </ul>
                 </div>
                 <div class="card">
@@ -963,10 +1083,10 @@ cmake --build build --config Release</code></pre>
             </div>
         </div>
 
-        <!-- Slide 23: Q&A -->
+        <!-- Slide 24: Q&A -->
         <div class="slide">
             <div class="slide-header">
-                <h2 class="slide-title">14. Q&A</h2>
+                <h2 class="slide-title">17. Q&A</h2>
                 <span class="slide-badge">Discussion</span>
             </div>
             <div class="slide-body" style="justify-content:center;align-items:center;text-align:center;">
@@ -983,12 +1103,11 @@ cmake --build build --config Release</code></pre>
         <div class="progress-bar-container">
             <div class="progress-bar" id="progressBar"></div>
         </div>
-        <span class="slide-counter" id="slideCounter">1 / 23</span>
+        <span class="slide-counter" id="slideCounter">1 / 24</span>
         <button class="btn-nav" id="nextBtn" onclick="changeSlide(1)">次へ →</button>
     </div>
 
     <script>
-        // Slide Navigation Logic
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const progressBar = document.getElementById('progressBar');
@@ -1006,6 +1125,17 @@ cmake --build build --config Release</code></pre>
             
             prevBtn.disabled = currentSlide === 0;
             nextBtn.disabled = currentSlide === slides.length - 1;
+
+            // Render Mermaid for the newly activated slide if present
+            setTimeout(() => {
+                const activeSlide = document.querySelector('.slide.active');
+                if (activeSlide) {
+                    const mermaids = activeSlide.querySelectorAll('.mermaid:not([data-processed="true"])');
+                    if (mermaids.length > 0) {
+                        mermaid.run({ nodes: mermaids });
+                    }
+                }
+            }, 50);
         }
 
         function changeSlide(direction) {
@@ -1036,7 +1166,8 @@ cmake --build build --config Release</code></pre>
                 throwOnError: false
             });
 
-            mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+            mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'loose' });
+            updateSlide();
         });
 
         updateSlide();

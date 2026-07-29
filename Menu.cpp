@@ -287,14 +287,14 @@ void Menu::loadConfig()
   if (NFD_OpenDialog(&filepath, jsonFilter, 1, NULL) == NFD_OKAY)
   {
     // 現在の構成を構成ファイルの内容にする
-    if (const_cast<Config&>(config).load(filepath))
+    if (config.load(filepath))
     {
       // 読み込んだ構成の数が現在の選択よりも少ないときは最初の項目の構成にする
-      if (preferenceNumber > static_cast<int>(config.preferenceList.size()))
+      if (preferenceNumber > static_cast<int>(config.getPreferences().size()))
         preferenceNumber = 0;
 
       // 現在の設定に反映する
-      settings = config.settings;
+      settings = config.getSettings();
     }
     else
     {
@@ -319,7 +319,7 @@ void Menu::saveConfig() const
   if (NFD_SaveDialog(&filepath, jsonFilter, 1, NULL, "*.json") == NFD_OKAY)
   {
     // 現在の設定で構成を更新する
-    const_cast<Config&>(config).settings = settings;
+    config.setSettings(settings);
 
     // 現在の構成を保存する
     if (!config.save(filepath))
@@ -356,26 +356,11 @@ void Menu::loadCalibration()
 //
 // コンストラクタ
 //
-Menu::Menu(const Config& config, Capture& capture, Undistortion& undistortion)
+Menu::Menu(Config& config, Capture& capture, Undistortion& undistortion)
   : config{ config }
-  , settings{ config.settings }
+  , settings{ config.getSettings() }
   , capture{ capture }
   , undistortion{ undistortion }
-  , undistortionMode{ UndistortionMode::None }
-  , deviceNumber{ 0 }
-#if defined(_WIN32)
-  , formatNumber{ 0 }
-  , lastDeviceNumber{ -1 }
-#else
-  , codecNumber{ 0 }
-  , backend{ cv::CAP_ANY }
-#endif
-  , preferenceNumber{ 0 }
-  , pose{ ggIdentity() }
-  , menubarHeight{ 0 }
-  , showInputPanel{ true }
-  , quit{ false }
-  , errorMessage{ nullptr }
 {
   // ファイルダイアログ (Native File Dialog Extended) を初期化する
   NFD_Init();
@@ -389,7 +374,7 @@ Menu::Menu(const Config& config, Capture& capture, Undistortion& undistortion)
   //ImGui::StyleColorsClassic();                              // 以前のスタイル
 
   // 日本語を表示できるメニューフォントを読み込む
-  if (!ImGui::GetIO().Fonts->AddFontFromFileTTF(config.menuFont.c_str(), config.menuFontSize,
+  if (!ImGui::GetIO().Fonts->AddFontFromFileTTF(config.getMenuFont().c_str(), config.getMenuFontSize(),
     nullptr, ImGui::GetIO().Fonts->GetGlyphRangesJapanese()))
   {
     // メニューフォントが読み込めなかったらエラーにする
@@ -498,14 +483,14 @@ void Menu::updateFormatDropdowns()
 std::array<GLsizei, 2> Menu::setup(GLfloat aspect) const
 {
   // 現在の投影設定から、通常表示用と歪み補正用のどちらを使うか選択する。
-  const auto& preference{ config.preferenceList[preferenceNumber] };
+  const auto& preference{ config.getPreferences()[preferenceNumber] };
   const auto& shader{ undistortionMode == UndistortionMode::OpenGL
     ? preference.getUndistortionShader() : preference.getShader() };
 
   // 通常シェーダと補正シェーダを同じ入口から設定する。
   // 補正用でない uniform は location=-1 となるため OpenGL 側で無視される。
   return shader.setup(settings.samples, aspect, pose, intrinsics.fov,
-    intrinsics.center, settings.getFocal(), config.background,
+    intrinsics.center, settings.getFocal(), config.getBackground(),
     undistortion.getCameraParameters(),
     undistortion.getDistortionParameters(), intrinsics.size);
 }
@@ -605,7 +590,7 @@ void Menu::draw()
     if (ImGui::BeginCombo(u8"投影方式", getPreference().getDescription().c_str()))
     {
       // すべての投影方式について
-      for (int i = 0; i < static_cast<int>(config.preferenceList.size()); ++i)
+      for (int i = 0; i < static_cast<int>(config.getPreferences().size()); ++i)
       {
         // その投影方式が選択されていれば真
         const bool selected{ i == preferenceNumber };
@@ -651,9 +636,9 @@ void Menu::draw()
     // 姿勢を元に戻す
     if (ImGui::Button(u8"復帰"))
     {
-      settings.euler = config.settings.euler;
-      settings.focal = config.settings.focal;
-      settings.focalRange = config.settings.focalRange;
+      settings.euler = config.getSettings().euler;
+      settings.focal = config.getSettings().focal;
+      settings.focalRange = config.getSettings().focalRange;
     }
 
     ImGui::Separator();

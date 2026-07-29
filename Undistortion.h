@@ -48,7 +48,7 @@ class Undistortion
   cv::Mat mapY;
 
   /// 現在の補正マップを作成した画像サイズ
-  cv::Size mapSize;
+  cv::Size mapSize{ 0, 0 };
 
 public:
 

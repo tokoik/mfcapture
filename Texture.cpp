@@ -269,6 +269,9 @@ void Texture::drawPixels(
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+//
+// CPU メモリ上の画像をテクスチャへ転送する
+//
 void Texture::drawPixels(GLsizei width, GLsizei height, int channels, const void* pixels)
 {
   // 空画像や不正なサイズでは OpenGL を呼ばず、現在のテクスチャを維持する。

@@ -30,16 +30,16 @@ class Preference
   std::array<std::string, 2> source;
 
   /// OpenGL 歪み補正用のバーテックス／フラグメントシェーダ名
-  std::array<std::string, 2> undistortionSource;
+  std::array<std::string, 2> undistortionSource{ "undistortion.vert", "undistortion.frag" };
 
   /// このキャプチャデバイス固有のパラメータ
   const Intrinsics intrinsics;
 
   /// このキャプチャデバイスの入力画像の平面展開用のシェーダへのポインタ
-  const Expand* shader;
+  const Expand* shader{ nullptr };
 
   /// この構成で使用する OpenGL 歪み補正用シェーダへのポインタ
-  const Expand* undistortionShader;
+  const Expand* undistortionShader{ nullptr };
 
   /// すべてのキャプチャデバイスの平面展開用のシェーダのリスト
   static std::map<std::string, Expand> shaderList;

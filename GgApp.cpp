@@ -349,21 +349,8 @@ void GgApp::Window::wheel(GLFWwindow* window, double x, double y)
 // Window クラスのコンストラクタ
 //
 GgApp::Window::Window(const std::string& title, int width, int height, int fullscreen, GLFWwindow* share) :
-  window{ nullptr },
   size{ width, height },
-  fboSize{ width, height },
-#if defined(IMGUI_VERSION)
-  menubarHeight{ 0 },
-#endif
-  aspect{ 1.0f },
-  velocity{ 1.0f, 1.0f, 0.1f },
-  status{ false },
-  interfaceNo{ 0 },
-  userPointer{ nullptr },
-  resizeFunc{ nullptr },
-  keyboardFunc{ nullptr },
-  mouseFunc{ nullptr },
-  wheelFunc{ nullptr }
+  fboSize{ width, height }
 {
   // ディスプレイの情報
   GLFWmonitor* monitor{ nullptr };
@@ -537,7 +524,7 @@ ovrGraphicsLuid GgApp::Oculus::GetDefaultAdapterLuid()
 {
   ovrGraphicsLuid luid = ovrGraphicsLuid();
 
-#    if defined(_MSC_VER)
+#    if defined(_WIN32)
   IDXGIFactory* factory{ nullptr };
 
   if (SUCCEEDED(CreateDXGIFactory(IID_PPV_ARGS(&factory))))
@@ -572,21 +559,7 @@ int GgApp::Oculus::Compare(const ovrGraphicsLuid& lhs, const ovrGraphicsLuid& rh
 //
 // コンストラクタ
 //
-GgApp::Oculus::Oculus() :
-  session{ nullptr },
-  oculusFbo{ 0 },
-  screen{ -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, },
-  mirrorFbo{ 0 },
-  window{ nullptr },
-#  if OVR_PRODUCT_VERSION > 0
-  frameIndex{ 0LL },
-  oculusDepth{ 0 },
-  mirrorWidth{ 1280 },
-  mirrorHeight{ 640 },
-#  endif
-  mirrorTexture{ nullptr }
-{
-}
+GgApp::Oculus::Oculus() = default;
 
 //
 // Oculus Rift のセッションを作成する

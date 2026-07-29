@@ -4,15 +4,6 @@
 /// MSVC環境用のOpenCV自動リンクおよびインクルード一括管理ヘッダー
 ///
 /// @file
-/// @details
-/// カメラ基底クラス (Camera.h) および Media Foundation バックエンド (CamMf) を
-/// OpenCVから完全に分離（疎結合化・Pure Media Foundationキャプチャ化）したことに伴い、
-/// OpenCVを必要とする他のモジュール（CamCv, CamImageなど）における
-/// 以下の処理を一括してカプセル化・再利用するために新設されました。
-///
-/// 1. MSVC コンパイラ向けの OpenCV ライブラリ自動リンク設定の一括適用
-/// 2. 日本語環境の MSVC で発生しやすい文字コード警告 C4819 の抑制
-/// 3. opencv2/opencv.hpp のインクルード
 ///
 
 // OpenCV

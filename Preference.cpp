@@ -24,10 +24,7 @@ Preference::Preference(const std::string& description,
   const Intrinsics& intrinsics)
   : description{ description }
   , source{ vert, frag }
-  , undistortionSource{ "undistortion.vert", "undistortion.frag" }
   , intrinsics{ intrinsics }
-  , shader{ nullptr }
-  , undistortionShader{ nullptr }
 {
   // 構成に undistortion ノードがない場合も、標準補正シェーダを使用できるようにする。
 }
@@ -37,10 +34,7 @@ Preference::Preference(const std::string& description,
 // キャプチャデバイスの構成データのコンストラクタ
 //
 Preference::Preference(const picojson::object& object)
-  : undistortionSource{ "undistortion.vert", "undistortion.frag" }
-  , intrinsics{ object }
-  , shader{ nullptr }
-  , undistortionShader{ nullptr }
+  : intrinsics{ object }
 {
   // 説明の文字列
   getString(object, "description", description);
