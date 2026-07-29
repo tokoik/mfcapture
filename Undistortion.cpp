@@ -6,6 +6,7 @@
 /// @date July 27, 2027
 ///
 #include "Undistortion.h"
+#include "gg.h"
 
 // JSON
 #include "picojson.h"
@@ -60,7 +61,7 @@ namespace
 bool Undistortion::load(const std::string& filename)
 {
   // 指定された JSON ファイルを開く。
-  std::ifstream stream{ filename };
+  std::ifstream stream{ Utf8ToTChar(filename) };
   if (!stream) return false;
 
   // picojson で構文解析し、ルートが JSON オブジェクトであることを確認する。
