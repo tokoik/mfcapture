@@ -31,6 +31,7 @@ out-of-source build を使用します。
 
 - Windows のカメラ入力は Microsoft Media Foundation を使用します。
 - その他のプラットフォームのカメラ入力と動画入力は OpenCV を使用します。
+- GStreamer パイプライン入力はサポート対象外とし、構成ファイルや UI に GStreamer 固有の設定を追加しません。
 - 静止画像は `CamImage` を通して扱います。
 - プラットフォーム固有処理は `CamMf`、`CamCv`、`Capture` に閉じ込め、UI と
   描画ループへ Media Foundation 固有型を露出させません。
@@ -92,6 +93,8 @@ out-of-source build を使用します。
 - `Menu::draw()` は UI の描画と入力受付を担当し、実際の画像処理は
   `mfcapture.cpp`、`Undistortion`、シェーダーへ委譲します。
 - 同じ状態遷移を複数の UI ブロックへ重複実装せず、補助関数へ集約します。
+- `const_cast` や `friend` によるクラスの不変条件迂回を一切禁止し、`getSettings()` や `setSettings()` などの明示的な公開 API を介して状態変更と連携を行います。
+- メンバ変数の初期化はコンストラクタの初期化子リストではなくクラス定義（ヘッダ内）のデフォルトメンバ初期化構文（インクラス初期化）へ集約します。
 
 ## 8. リソース管理と安全性
 
@@ -108,6 +111,7 @@ out-of-source build を使用します。
   その処理を行うかを記述します。
 - 教材として処理単位を追えるよう、ファイル読み込み、検証、キャッシュ更新、
   CPU／GPU 転送、座標変換の各ブロックに説明を付けます。
+- `calib-wom-msmf` と `mfcapture` 間で共通する変数名・関数名は `mfcapture` の命名に統一し、コメントおよび Doxygen の表現スタイルは `calib-wom-msmf` に統一します。
 - 公開型と公開関数、重要な非公開関数には Doxygen コメントを付けます。
 - `@param` は宣言の引数名と一致させ、戻り値がある関数には `@return` を記述します。
 - 実装を変更したときは、コメント、Doxygen、README、必要なら REQUESTS を同時に

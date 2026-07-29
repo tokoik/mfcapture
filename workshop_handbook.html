@@ -652,7 +652,15 @@ for (size_t i = 0; i &lt; allObjectPoints.size(); ++i) {
                     <li>入力画素: $u_d=1428.75, v_d=774.375$</li>
                 </ol>
 
-                <h3>4.6 解像度変更時の内部パラメータ</h3>
+                <h3>4.6 C++ クラス設計と安全なカプセル化</h3>
+                <p>保守性と安全性を高めるため、以下の C++ 設計原則を適用しています：</p>
+                <ul style="margin-left: 20px;">
+                    <li><strong>インクラスメンバ初期化 (Default Member Initializers)</strong>: ヘッダ（クラス定義内）で初期値を一元定義 (`int var{ 0 };`, `Framebuffer() = default;`) し、初期化漏れを防止。</li>
+                    <li><strong>`const_cast` / `friend` の全廃</strong>: 不変条件を迂回する非推奨構文を排出し、`getSettings()` / `setSettings()` 等の公開 API で UI (`Menu`) と構成 (`Config`) を疎結合化。</li>
+                    <li><strong>共通処理の命名・コメント統一</strong>: `calib-wom-msmf` との共通処理で変数名・関数名は `mfcapture`、コメント表現は `calib-wom-msmf` に完全統一。</li>
+                </ul>
+
+                <h3>4.7 解像度変更時の内部パラメータ</h3>
                 <p>解像度を半分にする場合、$f'_x = 0.5 f_x, c'_x = 0.5 c_x$ とスケールします。歪み係数は正規化座標に作用するため変更不要です。</p>
             </div>
         </section>

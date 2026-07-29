@@ -124,3 +124,9 @@ double rms = cv::calibrateCamera(
 ## 第4章 プログラム設計とアーキテクチャ
 
 ![全体システムアーキテクチャ](images/system_architecture.jpg)
+
+### 4.1 C++ クラス設計と安全なカプセル化
+
+- **インクラスメンバ初期化 (Default Member Initializers)**: 全クラスのメンバ変数初期化をヘッダ（クラス定義内）に集約 (`int var{ 0 };`, `Framebuffer() = default;`) し、コンストラクタにおける初期化漏れを防止。
+- **`const_cast` / `friend` の全廃**: クラスの不変条件を迂回・破壊する構文を完全に排出し、`getSettings()` / `setSettings()` 等の公開 getter / setter API で UI (`Menu`) と構成 (`Config`) を疎結合化。
+- **共通処理の命名・コメント統一**: `calib-wom-msmf` と `mfcapture` 間で共通する変数名・関数名は `mfcapture` に統一し、Doxygen/実装コメントスタイルは `calib-wom-msmf` に完全統一。

@@ -85,7 +85,7 @@ protected:
   /// 新しいフレームが取得されたら true
   std::atomic<bool> captured{ false };
 
-  /// 転送後も同じフレームを再利用するなら true
+  /// 再転送可能なフレーム（静止画像等）なら true
   bool reusableFrame{ false };
 
   /// キャプチャを非同期に行うためのスレッド

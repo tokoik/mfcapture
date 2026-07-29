@@ -158,6 +158,13 @@ class Menu
   bool openDevice();
 
   ///
+  /// 選択中の入力設定を適用してキャプチャを開始する
+  ///
+  /// @return デバイスを開いてキャプチャを開始できたら true
+  ///
+  bool startCapture();
+
+  ///
   /// 画像ファイルを開く
   ///
   void openImage();
@@ -178,17 +185,25 @@ class Menu
   void saveConfig() const;
 
   ///
-  /// calib が作成した較正パラメータファイルを読み込む
-  ///
-  /// @details NFD のファイルダイアログで JSON を選択し、読み込みに失敗した場合は
-  /// 補正を無効にしてエラーダイアログを表示する。
+  /// 較正ファイルを読み込む
   ///
   void loadCalibration();
+
+  ///
+  /// 選択中の投影方式とその内部パラメータを同期する
+  ///
+  /// @param index 新しく選択する投影方式の番号
+  /// @details 投影方式固有の画角と中心位置を反映し、入力が開いている場合は
+  /// 実際のキャプチャ解像度だけを維持する。入力オープン時に計算した初期画角は
+  /// この操作によって投影方式の設定値へ戻る。
+  ///
+  void selectPreference(int index);
 
   ///
   /// 指定した番号の構成を調べる
   ///
   /// @param i 構成の番号
+  /// @return 指定した投影方式への読み取り専用参照
   ///
   const auto& getPreference(int i) const
   {
@@ -196,14 +211,34 @@ class Menu
   }
 
   ///
-  /// 現在の構成を調べる
+  /// 現在選択中の投影方式を調べる
+  ///
+  /// @return 現在選択中の投影方式への読み取り専用参照
   ///
   const auto& getPreference() const
   {
     return getPreference(preferenceNumber);
   }
 
+  ///
+  /// メインメニューバーを描画し、ファイル操作とパネル表示の要求を処理する
+  ///
+  void drawMainMenuBar();
+
+  ///
+  /// 投影方式と入力デバイスを設定する入力パネルを描画する
+  ///
+  void drawInputPanel();
+
+  ///
+  /// 保留中のエラーメッセージをダイアログとして描画する
+  ///
+  void drawErrorDialog();
+
 public:
+
+  /// レイテンシを優先するなら true
+  bool prioritizeLatency{ true };
 
   ///
   /// コンストラクタ
@@ -245,7 +280,7 @@ public:
   }
 
   ///
-  /// 正規化デバイス座標系における焦点距離を求める
+  /// キャプチャデバイスの姿勢を得る
   ///
   /// @return 図形の姿勢
   ///
@@ -265,16 +300,24 @@ public:
   }
 
   ///
-  /// 解像度初期値を設定する
+  /// 入力画像に合わせて内部パラメータを初期化する
   ///
-  /// @param size キャプチャされるフレームの解像度
+  /// @param size 開かれた入力フレームの解像度
   ///
-  /// @note
-  /// 解像度と現在の焦点距離 focal をもとに、
-  /// 撮像系の縦横の画角の初期値も設定する。
-  /// 投影面の中心位置も設定する。
+  /// @details 実解像度を反映し、現在の焦点距離から画像全体が見やすい初期画角を
+  /// 計算する。中心位置は投影方式の設定値を維持する。
   /// 
-  void setSize(const std::array<int, 2>& size);
+  void initializeInputIntrinsics(const std::array<int, 2>& size);
+
+  ///
+  /// UI で選択されている歪み補正方法を得る
+  ///
+  /// @return 現在の歪み補正方法
+  ///
+  auto getUndistortionMode() const
+  {
+    return undistortionMode;
+  }
 
   ///
   /// シェーダを設定する
@@ -288,18 +331,7 @@ public:
   std::array<GLsizei, 2> setup(GLfloat aspect) const;
 
   ///
-  /// UI で選択されている歪み補正方法を得る
-  ///
-  /// @return 現在の歪み補正方法
-  ///
-  UndistortionMode getUndistortionMode() const
-  {
-    return undistortionMode;
-  }
-
-  ///
   /// メニューを描画する
   ///
   void draw();
-
 };

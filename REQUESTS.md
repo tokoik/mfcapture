@@ -123,3 +123,37 @@ OpenCV と OpenGL の二方式を比較できる歪み補正機能を追加し�
   - 教材としての目的、クラス境界、画像処理パイプライン、安全性、コメント方針、
     検証方針を `GEMINI.md` にまとめた。
   - これまでの指示、原因、対応、検証結果を本 `REQUESTS.md` に時系列で記録した。
+
+### 10. クラスメンバ変数の初期化の集約
+
+- **指示**: クラスメンバ変数の初期化を、コンストラクタからクラス定義（ヘッダ内）へ移行する。
+- **対応**:
+  - `Buffer`, `Camera`, `CamCv`, `CamImage`, `CamMf`, `Capture`, `Config`, `Expand`, `Framebuffer`, `Intrinsics`, `Menu`, `Preference`, `Texture`, `Undistortion` 等の全クラスで、初期値をヘッダ内（インクラス初期化構文 `int x{ 0 };`, `Framebuffer() = default;` 等）へ集約した。
+  - コンストラクタ初期化子リストをシンプル化し、メンバーの初期化漏れを防ぐ構造へリファクタリングした。
+
+### 11. `const_cast` および `friend` の完全廃止と公開 API の採用
+
+- **指示**: `mfcapture` で使っている `const_cast` や `friend` を、`calib-wom-msmf` に倣って getter / setter に置き換える。
+- **対応**:
+  - `Config.h` から `friend class Menu;` 宣言を削除し、`getSettings()`, `setSettings()`, `getPreferences()` 等の公開 API を追加した。
+  - `Menu` が保持する `Config` への参照を非 `const` 参照 (`Config& config`) へ変更し、`Menu::loadConfig()` や `saveConfig()` での `const_cast` を全廃した。
+  - 直接的なプライベートメンバ参照を公開 API 経由に統一し、カプセル化と安全性を向上させた。
+
+### 12. 共通処理における命名規約・コメントの統一とドキュメント同期
+
+- **指示**:
+  - `calib-wom-msmf` と `mfcapture` で共通する変数名・関数名は `mfcapture` のものに合わせる。
+  - コメント表現は `calib-wom-msmf` に合わせる。
+  - 修正内容を両プロジェクトのドキュメント (Markdown, HTML) に反映する。
+- **対応**:
+  - `calib-wom-msmf` と `mfcapture` 間で共通する変数名・関数名を `mfcapture` の命名規則へ統一し、Doxygen および実装コメント記述を `calib-wom-msmf` の解説表現へ統一した。
+  - C++ ソースは `UTF-8 with BOM`、GLSL ソースは `UTF-8 without BOM` の保存形式を再検証し、Debug / Release 両構成での正常ビルドを確認した。
+  - `presentation.html`, `presentation.md`, `workshop_handbook.html`, `workshop_handbook.md`, `images/` 内のプレゼンテーション・ハンドブック教材資産に C++ クラス設計・カプセル化方針を追記し、`calib-wom-msmf` および `mfcapture` の両ワークツリーへ反映・同期した。
+
+### 13. GStreamer 関連コードの削除
+
+- **指示**: GStreamer は使用しないため、`mfcapture` の関連コードを削除し、`GEMINI.md`, `README.md`, `REQUESTS.md` も更新する。
+- **対応**:
+  - `Menu.cpp` から `cv::CAP_GSTREAMER` バックエンド定義および `openDevice()` 内の GStreamer パイプライン処理分岐を完全に削除した。
+  - `GEMINI.md` に GStreamer 非対応・構成非追加の基本方針を明記した。
+  - Debug / Release 両構成での完全ビルドが成功することを確認した。

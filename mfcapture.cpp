@@ -50,8 +50,8 @@ int GgApp::main(int argc, const char* const* argv)
   // キャプチャデバイスで初期画像を開く
   if (!capture.openImage(config.getInitialImage())) throw std::runtime_error("Cannot open initial image.");
 
-  // 解像度と画角の調整値の初期値を初期画像に合わせる
-  menu.setSize(capture.getSize());
+  // 実解像度と焦点距離から初期画角を設定する
+  menu.initializeInputIntrinsics(capture.getSize());
 
   // キャプチャしたフレームを保持するテクスチャ
   Texture frame;

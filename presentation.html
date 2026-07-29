@@ -917,7 +917,7 @@ fragment = texture(image, uv);</code></pre>
                 <h2 class="slide-title">13. 開発環境とビルド構成規約</h2>
                 <span class="slide-badge">Rules</span>
             </div>
-            <div class="slide-body grid-2">
+            <div class="slide-body grid-3">
                 <div class="card">
                     <div class="card-title">文字コード厳守規則</div>
                     <ul class="custom-list">
@@ -926,11 +926,18 @@ fragment = texture(image, uv);</code></pre>
                     </ul>
                 </div>
                 <div class="card">
+                    <div class="card-title">C++ クラス設計と安全なカプセル化</div>
+                    <ul class="custom-list">
+                        <li><strong>インクラスメンバ初期化</strong>: クラス定義 (ヘッダ) 内で初期値を一元管理</li>
+                        <li><strong>`const_cast` / `friend` 全廃</strong>: `getSettings()` / `setSettings()` 等の公開 API で状態連携</li>
+                        <li><strong>コード統一</strong>: 共通関数・変数名は `mfcapture`、コメント表現は `calib` に統一</li>
+                    </ul>
+                </div>
+                <div class="card">
                     <div class="card-title">CMake & Visual Studio</div>
                     <ul class="custom-list">
                         <li>VS2022 / C++17 (`/std:c++17`)</li>
-                        <li>`Header Files` フィルタ: ヘッダファイル</li>
-                        <li>`Shader Files` フィルタ: GLSL ソース</li>
+                        <li>`Header Files` / `Shader Files` フィルタ構成</li>
                         <li>依存 DLL は CMake がビルドディレクトリへ自動コピー</li>
                     </ul>
                 </div>

@@ -248,7 +248,15 @@ flowchart TD
 
 ---
 
-## 10. Windows Media Foundation (MSMF) による低遅延キャプチャ
+## 10. C++ クラス設計と安全なカプセル化
+
+- **インクラスメンバ初期化 (Default Member Initializers)**: メンバ変数の初期値をヘッダ（クラス定義内）に集約し、初期化漏れを防止
+- **`const_cast` / `friend` の完全排除**: `getSettings()` / `setSettings()` 等の公開 getter / setter API で UI (`Menu`) と構成 (`Config`) を安全に疎結合化
+- **構造統一**: 共通処理の変数名・関数名は `mfcapture`、Doxygen/実装コメントスタイルは `calib-wom-msmf` に統一
+
+---
+
+## 11. Windows Media Foundation (MSMF) による低遅延キャプチャ
 
 - `CamMf` クラスによる MSMF 直接操作
 - `CODECAPI_AVLowLatencyMode` で MFT 内部バッファリングを排除
@@ -256,9 +264,10 @@ flowchart TD
 
 ---
 
-## 11. まとめ
+## 12. まとめ
 
 - ChArUco Board による高精度な交点認識
 - 透視投影モデルと内部 $K$・外部 $[R|t]$ パラメータの最適化
 - CPU 補正 (OpenCV `remap`) と GPU 補正 (GLSL シェーダー) の実装構造
+- 堅牢な C++ クラス設計とカプセル化（インクラス初期化・公開 API）
 - MSMF による超低遅延映像処理

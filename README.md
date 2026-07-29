@@ -77,7 +77,13 @@ OpenCV 補正はキャプチャ直後の CPU メモリ上かつ GPU 転送前に
 
 ### `Menu`
 
-Dear ImGui による入力選択、表示設定、較正ファイル読み込み、補正方式選択、エラー表示を担当します。
+`Menu` は Dear ImGui による操作画面と、UI 操作を各機能へ伝える処理を担当します。描画処理は次の単位に分離されています。
+
+- `drawMainMenuBar()`: ファイル操作とパネル表示
+- `drawInputPanel()`: 投影方式、入力デバイス、歪み補正方式、開始・停止
+- `drawErrorDialog()`: エラーメッセージ表示
+
+投影方式の同期は `selectPreference()`、キャプチャ開始は `startCapture()` に集約し、UI 内に同じ状態遷移を重複して実装しない方針です。
 
 ## Windowsでの低遅延キャプチャ
 
@@ -141,6 +147,9 @@ cmake --build build --config Release
 - 較正ファイルの読み込みに失敗した場合、以前の値を部分的に更新しないこと。
 - 通常シェーダーと補正シェーダーは同じ投影設定から選択できること。
 - Windows 固有処理は `CamMf` と `Capture` に閉じ込め、`Menu` に Media Foundation 固有型を露出させないこと。
+- `const_cast` や `friend` による不変条件迂回を排出し、`getSettings()` / `setSettings()` 等の公開 API で状態連携すること。
+- クラスメンバ変数の初期化はコンストラクタの初期化子リストではなくクラス定義（ヘッダ内）のデフォルトメンバ初期化構文（インクラス初期化）へ集約すること。
+- `calib-wom-msmf` との共通処理で変数名・関数名は `mfcapture`、コメント・Doxygen 表現は `calib-wom-msmf` に統一すること。
 - C++ ソースは `UTF-8 with BOM`、GLSL ソースは `UTF-8 without BOM` の文字コード規約を厳守すること。
 - コメントと Doxygen を実装変更と同時に更新すること。
 

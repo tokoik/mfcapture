@@ -41,7 +41,6 @@ const std::map<cv::VideoCaptureAPIs, const char*> Menu::backendList
 #  if defined(__APPLE__)
   { cv::CAP_AVFOUNDATION, "AV Foundation" },
 #  endif
-  { cv::CAP_GSTREAMER, "GStreamer" },
   { cv::CAP_FFMPEG, u8"動画ファイル履歴" }
 };
 
@@ -119,8 +118,8 @@ bool Menu::openDevice()
     // フォーマットを指定して開始できるように準備する
     if (capture.select(formatNumber))
     {
-      // 構成データの解像度と画角を開いた画像に合わせる
-      setSize(capture.getSize());
+      // 実解像度と焦点距離から、この入力を見やすく表示する初期画角を設定する
+      initializeInputIntrinsics(capture.getSize());
       return true;
     }
   }
@@ -129,24 +128,6 @@ bool Menu::openDevice()
   errorMessage = u8"デバイスが開けません";
   return false;
 #else
-  // バックエンドが GStreamer なら
-  if (backend == cv::CAP_GSTREAMER)
-  {
-    // パイプライン設定の取り出し
-    const auto& pipeline{ config.gstreamerPipelines[deviceNumber] };
-
-    // ダイアログで指定したパイプラインが開けなかったら
-    if (!capture.openMovie(pipeline, backend))
-    {
-      // 開けなかった
-      errorMessage = u8"パイプラインが開けません";
-      return false;
-    }
-
-    // GStreamer が使える
-    return true;
-  }
-
   // コーデック
   char codec[5]{};
   if (codecNumber > 0) strncpy(codec, codecList[codecNumber], 5);
@@ -194,8 +175,8 @@ void Menu::openImage()
     // ダイアログで指定した画像ファイルが開けたら
     if (capture.openImage(filepath))
     {
-      // 構成データの解像度と画角を開いた画像に合わせる
-      setSize(capture.getSize());
+      // 実解像度と焦点距離から、この画像を見やすく表示する初期画角を設定する
+      initializeInputIntrinsics(capture.getSize());
     }
     else
     {
@@ -226,8 +207,8 @@ void Menu::openMovie()
     // ダイアログで指定した動画ファイルが開けたら
     if (capture.openMovie(filepath))
     {
-      // 構成データの解像度と画角を開いた画像に合わせる
-      setSize(capture.getSize());
+      // 実解像度と焦点距離から、この動画を見やすく表示する初期画角を設定する
+      initializeInputIntrinsics(capture.getSize());
     }
     else
     {
@@ -260,8 +241,8 @@ void Menu::openMovie()
     // ダイアログで指定した動画ファイルが開けたら
     if (capture.openMovie(filepath, backend))
     {
-      // 構成データの解像度と画角を開いた画像に合わせる
-      setSize(capture.getSize());
+      // 実解像度と焦点距離から、この動画を見やすく表示する初期画角を設定する
+      initializeInputIntrinsics(capture.getSize());
     }
     else
     {
@@ -289,12 +270,12 @@ void Menu::loadConfig()
     // 現在の構成を構成ファイルの内容にする
     if (config.load(filepath))
     {
-      // 読み込んだ構成の数が現在の選択よりも少ないときは最初の項目の構成にする
-      if (preferenceNumber > static_cast<int>(config.getPreferences().size()))
-        preferenceNumber = 0;
-
       // 現在の設定に反映する
       settings = config.getSettings();
+
+      // 選択番号を有効範囲に収め、新しい投影方式の内部パラメータを反映する
+      selectPreference(preferenceNumber < static_cast<int>(config.getPreferences().size())
+        ? preferenceNumber : 0);
     }
     else
     {
@@ -334,21 +315,27 @@ void Menu::saveConfig() const
 }
 
 //
-// calib が作成した較正パラメータファイルを読み込む
+// 較正ファイルを読み込む
 //
 void Menu::loadCalibration()
 {
-  // 他のファイル操作と同じ NFD ダイアログで JSON ファイルを選択する。
+  // ファイルダイアログから得るパス
   nfdchar_t* filepath;
+
+  // ファイルダイアログを開く
   if (NFD_OpenDialog(&filepath, jsonFilter, 1, NULL) == NFD_OKAY)
   {
-    // 必須のカメラ行列または歪み係数を読めなければ、誤った補正を防ぐため無効にする。
+    // 現在のキャリブレーションパラメータを較正ファイルの内容にする
     if (!undistortion.load(filepath))
     {
+      // 読み込めなかった
       errorMessage = u8"較正ファイルが読み込めません";
+      
+      // だから画像を補正しない
       undistortionMode = UndistortionMode::None;
     }
-    // NFD が確保したパス文字列を、成否にかかわらず解放する。
+
+    // ファイルパスの取り出しに使ったメモリを開放する
     NFD_FreePath(filepath);
   }
 }
@@ -422,16 +409,50 @@ Menu::~Menu()
 }
 
 //
-// 解像度の初期値を設定する
+// 入力画像に合わせて内部パラメータを初期化する
 //
-void Menu::setSize(const std::array<int, 2>& size)
+void Menu::initializeInputIntrinsics(const std::array<int, 2>& size)
 {
-  // 解像度の調整値を設定する
+  // 実際の入力解像度を処理系へ反映する
   intrinsics.size = size;
 
-  // 投影像の画角と中心位置を設定する
-  intrinsics.setFov(settings.focal);
-  intrinsics.setCenter(0.0f, 0.0f);
+  // 無効な入力によるゼロ除算を避け、有効な場合だけ焦点距離から初期画角を求める
+  if (size[0] > 0 && size[1] > 0 && settings.focal > 0.0f)
+  {
+    intrinsics.setFov(settings.focal);
+  }
+}
+
+//
+// 選択中の入力設定を適用してキャプチャを開始する
+//
+bool Menu::startCapture()
+{
+  // オープンとフォーマット適用を一つの入口に集約し、失敗時は開始処理を中断する
+  if (!openDevice()) return false;
+
+  // デバイスが確定してから動作モードと入力に合う初期画角を反映し、取得スレッドを開始する
+  capture.setPrioritizeLatency(prioritizeLatency);
+  initializeInputIntrinsics(capture.getSize());
+  capture.start();
+  return true;
+}
+
+//
+// 選択中の投影方式とその内部パラメータを同期する
+//
+void Menu::selectPreference(int index)
+{
+  // 不正な選択番号では現在の投影状態を変更しない
+  if (index < 0 || index >= static_cast<int>(config.getPreferences().size())) return;
+
+  // 入力中の実解像度を、投影方式の構成値で上書きしないため退避する
+  const auto size{ intrinsics.size };
+  preferenceNumber = index;
+  intrinsics = getPreference().getIntrinsics();
+
+  // 入力中は実解像度だけを戻し、画角と中心位置は選択した投影方式の設定値を使用する
+  if (capture.isOpened()) intrinsics.size = size;
 }
 
 #if defined(_WIN32)
@@ -496,11 +517,10 @@ std::array<GLsizei, 2> Menu::setup(GLfloat aspect) const
 }
 
 //
-// メニューの描画
+// メインメニューバーの描画
 //
-void Menu::draw()
+void Menu::drawMainMenuBar()
 {
-  // メインメニューバー
   if (ImGui::BeginMainMenuBar())
   {
     // ファイルメニュー
@@ -518,7 +538,7 @@ void Menu::draw()
       // 構成ファイルを保存する
       if (ImGui::MenuItem(u8"構成ファイルを保存")) saveConfig();
 
-      // calib で作成した較正パラメータを読み込む
+      // キャリブレーションパラメータファイルを開く
       if (ImGui::MenuItem(u8"較正ファイルを開く")) loadCalibration();
 
       // 終了
@@ -544,16 +564,22 @@ void Menu::draw()
     // メインメニューバー終了
     ImGui::EndMainMenuBar();
   }
+}
 
+//
+// 入力パネルの描画
+//
+void Menu::drawInputPanel()
+{
   // 入力パネル
   if (showInputPanel)
   {
     // ウィンドウの位置とサイズ
     ImGui::SetNextWindowPos(ImVec2(2.0f, 2.0f + menubarHeight), ImGuiCond_Once);
 #if defined(_WIN32)
-    ImGui::SetNextWindowSize(ImVec2(262, 546), ImGuiCond_Once);
-#else
     ImGui::SetNextWindowSize(ImVec2(262, 576), ImGuiCond_Once);
+#else
+    ImGui::SetNextWindowSize(ImVec2(262, 606), ImGuiCond_Once);
 #endif
     ImGui::Begin(u8"入力", &showInputPanel);
 
@@ -599,10 +625,7 @@ void Menu::draw()
         if (ImGui::Selectable(getPreference(i).getDescription().c_str(), selected))
         {
           // 表示した投影方式が選択されていたらそれを現在の選択とする
-          preferenceNumber = i;
-
-          // 選択した投影方式のキャプチャデバイス固有のパラメータをコピーする
-          intrinsics = getPreference().getIntrinsics();
+          selectPreference(i);
         }
 
         // この選択を次にコンボボックスを開いたときのデフォルトにしておく
@@ -763,6 +786,12 @@ void Menu::draw()
           }
         }
 
+        // 4. レイテンシ優先のチェックボックス
+        if (ImGui::Checkbox(u8"レイテンシ優先", &prioritizeLatency))
+        {
+          if (capture) capture.setPrioritizeLatency(prioritizeLatency);
+        }
+
         // キャプチャの開始と停止
         if (capture)
         {
@@ -775,28 +804,10 @@ void Menu::draw()
         {
           if (formatExists)
           {
-            // 「開始」ボタンをクリックしたときデバイスが選択されているとき
+            // 「開始」ボタンをクリックしたときデバイスが選択されていれば
             if (ImGui::Button(u8"開始") && deviceNumber >= 0)
             {
-              // もしすでにデバイスが開いていないか、画像が開かれているなら openDevice を呼ぶ
-              if (!capture.isOpened() || capture.isImage())
-              {
-                capture.openDevice(deviceNumber);
-              }
-
-              // ビデオフォーマットを指定できたら
-              if (capture.select(formatNumber))
-              {
-                // 解像度を合わせる
-                setSize(capture.getSize());
-                // キャプチャスレッドを動かす
-                capture.start();
-              }
-              else
-              {
-                // ビデオフォーマットが選択できなかった
-                errorMessage = u8"ビデオフォーマットが選択できません";
-              }
+              startCapture();
             }
             ImGui::SameLine();
             ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"停止中");
@@ -916,8 +927,7 @@ void Menu::draw()
       // キャプチャスレッドが止まっているので
       if (ImGui::Button(u8"開始") && deviceNumber >= 0)
       {
-        // キャプチャデバイスが開けたらキャプチャスレッドを動かす
-        if (openDevice()) capture.start();
+        startCapture();
       }
       ImGui::SameLine();
       ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"停止中");
@@ -925,7 +935,13 @@ void Menu::draw()
 #endif
     ImGui::End();
   }
+}
 
+//
+// エラーダイアログの描画
+//
+void Menu::drawErrorDialog()
+{
   // エラーメッセージが設定されていたら
   if (errorMessage)
   {
@@ -950,5 +966,15 @@ void Menu::draw()
     }
     ImGui::End();
   }
+}
 
+//
+// メニューの描画
+//
+void Menu::draw()
+{
+  // 各ウィンドウの描画責務を分離し、この関数では一フレーム分の呼び出し順だけを管理する
+  drawMainMenuBar();
+  drawInputPanel();
+  drawErrorDialog();
 }

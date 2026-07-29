@@ -206,7 +206,7 @@ void Framebuffer::update(const std::array<int, 2>& size, const Texture& frame, i
   // テクスチャをフレームバッファオブジェクトに展開する
   update(size);
 
-  // 展開するするテクスチャの指定を解除する
+  // 展開するテクスチャの指定を解除する
   frame.unbindTexture();
 }
 
