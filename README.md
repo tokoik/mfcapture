@@ -6,12 +6,13 @@
 
 画像処理プログラミングの勉強会等において、CPU（OpenCV）とGPU（OpenGL / GLSL）による画像処理モデルの違いや、`calib-wom-msmf` で得られたカメラの内部パラメータ（カメラ行列および歪み係数）を用いたレンズ歪み補正の仕組みを比較学習するためのサンプルとして使用します。
 
-Windowsのカメラ入力には Microsoft Media Foundation（MSMF）を直接使用します。macOSおよびLinux、ならびに動画・静止画像の入力にはOpenCVを使用し、描画とUIにはOpenGL、GLFW、Dear ImGuiを使用します。カメラ較正処理自体は行わず、`calib-wom-msmf` が出力したJSON形式の較正パラメータを読み込んで補正に利用します。
+Windowsのカメラ入力には Microsoft Media Foundation（MSMF）を直接使用します。Raspberry Pi ではネイティブの `libcamera` バックエンド (`CamLibcam`) および OpenGL ES 3.1 をサポートします。macOSおよびLinux、ならびに動画・静止画像の入力にはOpenCVを使用し、描画とUIにはOpenGL / OpenGL ES、GLFW、Dear ImGuiを使用します。カメラ較正処理自体は行わず、`calib-wom-msmf` が出力したJSON形式の較正パラメータを読み込んで補正に利用します。
 
 ## 主な機能
 
 - Webカメラ、動画ファイル、静止画像からの映像入力
-- Windows Media FoundationによるH.264/MJPGの直接取得、デコード、RGB変換
+- Windows Media FoundationによるH.264/MJPGの直接取得、デコード、RGB変換 (`CamMf`)
+- Raspberry Pi ネイティブの `libcamera` による高速フレーム取得と色変換 (`CamLibcam`)
 - 解像度、フレームレート、符号化方式の組み合わせ選択
 - 全フレーム処理とレイテンシ優先（低遅延）処理の切り替え
 - 各種投影方式（Orthographic、Equirectangular、Equidistance、Stereographic等）によるGLSL展開描画
@@ -140,6 +141,28 @@ cmake --build build --config Release
 
 初回の CMake 構成時には、`CMakeLists.txt` が必要な依存ライブラリを `libs` 以下へ自動取得します。ビルド後は、シェーダー、構成ファイル、画像、フォント、OpenCV DLL が実行ファイルのディレクトリへコピーされます。
 
+### Raspberry Pi (Linux ARM) でのビルド例
+
+Raspberry Pi OS (Bookworm / Bullseye, 64-bit / 32-bit) では、標準のパッケージマネージャから必要な開発パッケージを導入してビルドします。
+
+```bash
+# 依存パッケージのインストール
+sudo apt update
+sudo apt install -y build-essential cmake libopencv-dev libglfw3-dev libgtk-3-dev libgles2-mesa-dev libegl1-mesa-dev libcamera-dev libcamera-tools
+
+# ビルド (OpenGL ES 3.1 および libcamera ネイティブバックエンドを使用)
+cmake -B build -DUSE_GLES=ON -DUSE_LIBCAMERA=ON
+cmake --build build -j$(nproc)
+
+# 実行
+./build/mfcapture
+
+# Raspberry Pi Camera Module を V4L2 経由で使用する場合 (libcamerify 経由)
+libcamerify ./build/mfcapture
+```
+
+ビルド完了後、POST_BUILD コマンドによりシェーダーおよび JSON 構成ファイル、画像アセットが `build/` ディレクトリへ自動コピーされます。
+
 ## 開発時の確認事項
 
 - OpenCV 補正は GPU 転送前、OpenGL 補正は GLSL 内だけで実行すること。
@@ -164,6 +187,7 @@ cmake --build build --config Release
 ### モジュール解説ドキュメント
 - [CamMf.md](CamMf.md): Windows Media Foundation ビデオキャプチャクラス `CamMf` の実装詳細および Win32 / MF API リファレンス
 - [CamMf.html](CamMf.html): `CamMf` の構造とデータパイプラインを解説した勉強会用スライド (HTML)
+- [CamLibcam.md](CamLibcam.md): Raspberry Pi ネイティブカメラキャプチャクラス `CamLibcam` の実装詳細および libcamera C++ API リファレンス
 
 ### 勉強会プレゼンテーション・ハンドブック
 - [presentation.md](presentation.md): カメラキャリブレーション & レンズ歪み補正プレゼンテーション概要

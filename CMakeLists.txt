@@ -123,6 +123,8 @@ set(SOURCES
     Buffer.cpp
     Buffer.h
     CamCv.h
+    CamLibcam.cpp
+    CamLibcam.h
     CamImage.h
     Camera.h
     Capture.cpp
@@ -171,6 +173,7 @@ set(SOURCES
 set(HEADER_FILES_LIST
     Buffer.h
     CamCv.h
+    CamLibcam.h
     CamImage.h
     Camera.h
     CamMf.h
@@ -454,34 +457,88 @@ elseif(APPLE)
     )
 
 else()
-    # Ubuntu Linux platform settings
+    # Linux (Ubuntu, Raspberry Pi OS, etc.) platform settings
     set(PLATFORM_SOURCES
         libs/ImGui/nfd_gtk.cpp
     )
     
+    # GLES 3.1 option (default ON for ARM architectures like Raspberry Pi)
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm|aarch64")
+        set(USE_GLES_DEFAULT ON)
+        set(USE_LIBCAMERA_DEFAULT ON)
+    else()
+        set(USE_GLES_DEFAULT OFF)
+        set(USE_LIBCAMERA_DEFAULT OFF)
+    endif()
+    option(USE_GLES "Use OpenGL ES 3.1 instead of Desktop OpenGL" ${USE_GLES_DEFAULT})
+    option(USE_LIBCAMERA "Use libcamera native capture backend" ${USE_LIBCAMERA_DEFAULT})
+
     # Find system libraries
     find_package(OpenCV REQUIRED)
-    
+
     find_package(PkgConfig REQUIRED)
     pkg_search_module(GLFW REQUIRED glfw3)
     pkg_search_module(GTK3 REQUIRED gtk+-3.0)
-    
+
     add_executable(mfcapture ${SOURCES} ${PLATFORM_SOURCES})
-    
+
     # Include paths for system packages
     target_include_directories(mfcapture PRIVATE
         ${OpenCV_INCLUDE_DIRS}
         ${GLFW_INCLUDE_DIRS}
         ${GTK3_INCLUDE_DIRS}
     )
-    
+
     # Link libraries
     target_link_libraries(mfcapture PRIVATE
         ${OpenCV_LIBS}
         ${GLFW_LIBRARIES}
         ${GTK3_LIBRARIES}
-        GL
-        dl
+        m
         pthread
+        dl
+    )
+
+    if(USE_GLES)
+        message(STATUS "Configuring mfcapture for OpenGL ES 3.1 (Raspberry Pi / Embedded)...")
+        target_compile_definitions(mfcapture PRIVATE GL_GLES_PROTOTYPES IMGUI_IMPL_OPENGL_ES3)
+        target_link_libraries(mfcapture PRIVATE GLESv2 EGL)
+    else()
+        message(STATUS "Configuring mfcapture for Desktop OpenGL...")
+        target_link_libraries(mfcapture PRIVATE GL)
+    endif()
+
+    if(USE_LIBCAMERA)
+        pkg_check_modules(LIBCAMERA libcamera)
+        if(LIBCAMERA_FOUND)
+            message(STATUS "Configuring mfcapture with libcamera native capture backend...")
+            target_compile_definitions(mfcapture PRIVATE USE_LIBCAMERA)
+            target_include_directories(mfcapture PRIVATE ${LIBCAMERA_INCLUDE_DIRS})
+            target_link_libraries(mfcapture PRIVATE ${LIBCAMERA_LIBRARIES})
+        else()
+            message(WARNING "libcamera not found via pkg-config. Native libcamera capture will be disabled.")
+        endif()
+    endif()
+
+    # Copy Assets and Shaders to Build Directory
+    file(GLOB SHADER_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.vert"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.frag"
+    )
+    set(ASSET_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/mfcapture_config.json"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Mplus1-Regular.ttf"
+        "${CMAKE_CURRENT_SOURCE_DIR}/castle.jpg"
+        "${CMAKE_CURRENT_SOURCE_DIR}/initial.jpg"
+        "${CMAKE_CURRENT_SOURCE_DIR}/gg.ico"
+    )
+
+    add_custom_command(TARGET mfcapture POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:mfcapture>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${SHADER_FILES}
+            ${ASSET_FILES}
+            $<TARGET_FILE_DIR:mfcapture>
+        COMMENT "Copying assets and shaders to build folder..."
     )
 endif()

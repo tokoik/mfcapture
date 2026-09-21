@@ -37,9 +37,14 @@ std::string Config::initialImage{ "initial.jpg" };
 // バックエンドのリスト
 const std::map<cv::VideoCaptureAPIs, const char*> Menu::backendList
 {
+#  if defined(USE_LIBCAMERA)
+  { CAP_LIBCAMERA, "libcamera" },
+#  endif
   { cv::CAP_ANY, "(any)" },
 #  if defined(__APPLE__)
   { cv::CAP_AVFOUNDATION, "AV Foundation" },
+#  elif defined(__linux__)
+  { cv::CAP_V4L2, "V4L2" },
 #  endif
   { cv::CAP_FFMPEG, u8"動画ファイル履歴" }
 };
@@ -81,6 +86,107 @@ void getAnyList(std::vector<std::string>& list)
 void getAvFoundationList(std::vector<std::string>& list)
 {
   getAnyList(list);
+}
+#  elif defined(__linux__)
+#    include <filesystem>
+#    include <fstream>
+#    include <fcntl.h>
+#    include <unistd.h>
+#    include <sys/ioctl.h>
+#    include <linux/videodev2.h>
+
+//
+// Linux (V4L2) のビデオデバイスの一覧を作る
+//
+void getV4L2List(std::vector<std::string>& list)
+{
+  namespace fs = std::filesystem;
+  std::error_code ec;
+
+  // /sys/class/video4linux ディレクトリを走査する
+  const fs::path v4l2Path{ "/sys/class/video4linux" };
+  if (fs::exists(v4l2Path, ec))
+  {
+    std::map<int, std::string> cameraDevices;
+    std::map<int, std::string> otherDevices;
+
+    for (const auto& entry : fs::directory_iterator(v4l2Path, ec))
+    {
+      const auto filename{ entry.path().filename().string() };
+      // "video" で始まるノード (video0, video1, ...)
+      if (filename.rfind("video", 0) == 0)
+      {
+        try
+        {
+          const int index{ std::stoi(filename.substr(5)) };
+          const std::string devPath{ "/dev/" + filename };
+
+          // デバイスファイルを開いてケーパビリティを調べる
+          const int fd{ ::open(devPath.c_str(), O_RDONLY | O_NONBLOCK) };
+          if (fd >= 0)
+          {
+            v4l2_capability cap{};
+            if (::ioctl(fd, VIDIOC_QUERYCAP, &cap) == 0)
+            {
+              const uint32_t caps{ cap.device_caps ? cap.device_caps : cap.capabilities };
+              const std::string card{ reinterpret_cast<const char*>(cap.card) };
+              const std::string driver{ reinterpret_cast<const char*>(cap.driver) };
+
+              // キャプチャ機能 (VIDEO_CAPTURE) を持ち、出力 (OUTPUT) や M2M ではないこと
+              const bool isCapture{ (caps & (V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_VIDEO_CAPTURE_MPLANE)) != 0 };
+              const bool isM2M{ (caps & (V4L2_CAP_VIDEO_M2M | V4L2_CAP_VIDEO_M2M_MPLANE)) != 0 };
+              const bool isOutput{ (caps & (V4L2_CAP_VIDEO_OUTPUT | V4L2_CAP_VIDEO_OUTPUT_MPLANE)) != 0 };
+              const bool isMeta{ (caps & (V4L2_CAP_META_CAPTURE | V4L2_CAP_META_OUTPUT)) != 0 };
+
+              // Raspberry Pi の bcm2835-codec や bcm2835-isp, pisp 等の SoC 内部処理用ノードは除外
+              const bool isSoCInternal{
+                driver.find("bcm2835") != std::string::npos ||
+                card.find("bcm2835") != std::string::npos ||
+                driver.find("pisp") != std::string::npos ||
+                card.find("pisp") != std::string::npos
+              };
+
+              std::string displayName{ filename + ": " + (card.empty() ? driver : card) };
+
+              if (isCapture && !isM2M && !isOutput && !isMeta && !isSoCInternal)
+              {
+                cameraDevices[index] = displayName;
+              }
+              else
+              {
+                otherDevices[index] = displayName;
+              }
+            }
+            ::close(fd);
+          }
+        }
+        catch (...)
+        {
+        }
+      }
+    }
+
+    // カメラデバイスがあればそれを登録
+    for (const auto& [idx, devName] : cameraDevices)
+    {
+      list.emplace_back(devName);
+    }
+
+    // カメラデバイスが見つからなかった場合はフォールバックとしてその他を登録
+    if (list.empty())
+    {
+      for (const auto& [idx, devName] : otherDevices)
+      {
+        list.emplace_back(devName);
+      }
+    }
+  }
+
+  // デバイスが取得できなかった場合はフォールバック
+  if (list.empty())
+  {
+    getAnyList(list);
+  }
 }
 #  endif
 
@@ -132,8 +238,34 @@ bool Menu::openDevice()
   char codec[5]{};
   if (codecNumber > 0) strncpy(codec, codecList[codecNumber], 5);
 
+  // 実際のデバイス番号を決定する
+  int actualDeviceNumber{ deviceNumber };
+#  if defined(__linux__)
+#    if defined(USE_LIBCAMERA)
+  if (backend == CAP_LIBCAMERA)
+  {
+    actualDeviceNumber = deviceNumber;
+  }
+  else
+#    endif
+  if (backend == cv::CAP_V4L2)
+  {
+    const auto& name{ getDeviceName(backend, deviceNumber) };
+    if (name.rfind("video", 0) == 0)
+    {
+      try
+      {
+        actualDeviceNumber = std::stoi(name.substr(5));
+      }
+      catch (...)
+      {
+      }
+    }
+  }
+#  endif
+
   // ダイアログで指定したキャプチャデバイスが開けなかったら
-  if (!capture.openDevice(deviceNumber,
+  if (!capture.openDevice(actualDeviceNumber,
     intrinsics.size, intrinsics.fps, backend, codec))
   {
     // 開けなかった
@@ -389,6 +521,15 @@ Menu::Menu(Config& config, Capture& capture, Undistortion& undistortion)
   getMediaFoundationList(deviceList.at(cv::CAP_MSMF));
 #elif defined(__APPLE__)
   getAvFoundationList(deviceList.at(cv::CAP_AVFOUNDATION));
+#elif defined(__linux__)
+#  if defined(USE_LIBCAMERA)
+  deviceList.at(CAP_LIBCAMERA) = CamLibcam::getDeviceList();
+  if (!deviceList.at(CAP_LIBCAMERA).empty())
+  {
+    backend = CAP_LIBCAMERA;
+  }
+#  endif
+  getV4L2List(deviceList.at(cv::CAP_V4L2));
 #endif
 #endif
 }

@@ -4808,23 +4808,22 @@ static GLboolean printShaderInfoLog(GLuint shader, const std::string& str)
   // コンパイル結果を取得する
   GLint status;
   glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-#if defined(DEBUG)
-  if (status == GL_FALSE) std::cerr << "Compile Error in " << str << std::endl;
-#endif
-
-  // シェーダのコンパイル時のログの長さを取得する
-  GLsizei bufSize;
-  glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &bufSize);
-
-  if (bufSize > 1)
+  if (status == GL_FALSE)
   {
-    // シェーダのコンパイル時のログの内容を取得する
-    std::vector<GLchar> infoLog(bufSize);
-    GLsizei length;
-    glGetShaderInfoLog(shader, bufSize, &length, infoLog.data());
-#if defined(DEBUG)
-    std::cerr << infoLog.data();
-#endif
+    std::cerr << "Compile Error in " << str << std::endl;
+
+    // シェーダのコンパイル時のログの長さを取得する
+    GLsizei bufSize;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &bufSize);
+
+    if (bufSize > 1)
+    {
+      // シェーダのコンパイル時のログの内容を取得する
+      std::vector<GLchar> infoLog(bufSize);
+      GLsizei length;
+      glGetShaderInfoLog(shader, bufSize, &length, infoLog.data());
+      std::cerr << infoLog.data() << std::endl;
+    }
   }
 
   // コンパイル結果を返す
@@ -4839,28 +4838,56 @@ static GLboolean printProgramInfoLog(GLuint program)
   // リンク結果を取得する
   GLint status;
   glGetProgramiv(program, GL_LINK_STATUS, &status);
-#if defined(DEBUG)
-  if (status == GL_FALSE) std::cerr << "Link Error." << std::endl;
-#endif
-
-  // シェーダのリンク時のログの長さを取得する
-  GLsizei bufSize;
-  glGetProgramiv(program, GL_INFO_LOG_LENGTH, &bufSize);
-
-  // シェーダのリンク時のログの内容を取得する
-  if (bufSize > 1)
+  if (status == GL_FALSE)
   {
-    std::vector<GLchar> infoLog(bufSize);
-    GLsizei length;
-    glGetProgramInfoLog(program, bufSize, &length, infoLog.data());
-#if defined(DEBUG)
-    std::cerr << infoLog.data() << std::endl;
-#endif
+    std::cerr << "Link Error." << std::endl;
+
+    // シェーダのリンク時のログの長さを取得する
+    GLsizei bufSize;
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &bufSize);
+
+    if (bufSize > 1)
+    {
+      // シェーダのリンク時のログの内容を取得する
+      std::vector<GLchar> infoLog(bufSize);
+      GLsizei length;
+      glGetProgramInfoLog(program, bufSize, &length, infoLog.data());
+      std::cerr << infoLog.data() << std::endl;
+    }
   }
 
   // リンク結果を返す
   return static_cast<GLboolean>(status);
 }
+
+#if defined(GL_GLES_PROTOTYPES)
+//
+// OpenGL ES 3.1 向けにシェーダのソースコードを変換する
+//
+static std::string adaptShaderSourceForGles(const std::string& src, bool isFragment)
+{
+  if (src.empty()) return src;
+
+  std::string adapted{ src };
+  const auto versionPos{ adapted.find("#version") };
+  if (versionPos != std::string::npos)
+  {
+    const auto eol{ adapted.find_first_of("\r\n", versionPos) };
+    const auto line{ adapted.substr(versionPos, (eol != std::string::npos ? eol - versionPos : adapted.size() - versionPos)) };
+    if (line.find("es") == std::string::npos)
+    {
+      std::string header{ "#version 310 es\nprecision highp float;\nprecision highp int;" };
+      adapted.replace(versionPos, line.size(), header);
+    }
+    else if (adapted.find("precision ") == std::string::npos)
+    {
+      adapted.insert(eol != std::string::npos ? eol + 1 : adapted.size(), "\nprecision highp float;\nprecision highp int;\n");
+    }
+  }
+
+  return adapted;
+}
+#endif
 
 //
 // シェーダのソースプログラムの文字列を読み込んでプログラムオブジェクトを作成する
@@ -4894,9 +4921,14 @@ GLuint gg::ggCreateShader(
 
     if (!vsrc.empty())
     {
+#if defined(GL_GLES_PROTOTYPES)
+      const std::string vsrcGles{ adaptShaderSourceForGles(vsrc, false) };
+      const auto* vsrcp{ vsrcGles.c_str() };
+#else
+      const auto* vsrcp{ vsrc.c_str() };
+#endif
       // バーテックスシェーダのシェーダオブジェクトを作成する
       const auto vertShader{ glCreateShader(GL_VERTEX_SHADER) };
-      const auto* vsrcp{ vsrc.c_str() };
       glShaderSource(vertShader, 1, &vsrcp, nullptr);
       glCompileShader(vertShader);
 
@@ -4910,9 +4942,14 @@ GLuint gg::ggCreateShader(
 
     if (!fsrc.empty())
     {
+#if defined(GL_GLES_PROTOTYPES)
+      const std::string fsrcGles{ adaptShaderSourceForGles(fsrc, true) };
+      const auto* fsrcp{ fsrcGles.c_str() };
+#else
+      const auto* fsrcp{ fsrc.c_str() };
+#endif
       // フラグメントシェーダのシェーダオブジェクトを作成する
       const auto fragShader{ glCreateShader(GL_FRAGMENT_SHADER) };
-      const auto* fsrcp{ fsrc.c_str() };
       glShaderSource(fragShader, 1, &fsrcp, nullptr);
       glCompileShader(fragShader);
 
@@ -4976,17 +5013,52 @@ GLuint gg::ggCreateShader(
 //
 static bool readShaderSource(const std::string& name, std::string& src)
 {
-  // ファイル名が nullptr ならそのまま戻る
+  // ファイル名が空ならそのまま戻る
   if (name.empty()) return true;
 
   // ソースファイルを開く
   std::ifstream file{ Utf8ToTChar(name), std::ios::binary };
+
+#if defined(_WIN32)
+  // カレントディレクトリで開けなかった場合、実行ファイルと同じディレクトリから探す
   if (file.fail())
   {
-    // ファイルが開けなければエラーで戻る
-#if defined(DEBUG)
-    std::cerr << "Error: Can't open source file: " << name << std::endl;
+    wchar_t exePath[MAX_PATH]{};
+    if (GetModuleFileNameW(NULL, exePath, MAX_PATH) > 0)
+    {
+      CString exeDir{ exePath };
+      const auto lastSlash{ exeDir.ReverseFind(L'\\') };
+      if (lastSlash >= 0)
+      {
+        exeDir = exeDir.Left(lastSlash + 1);
+        file.open(exeDir + Utf8ToTChar(name), std::ios::binary);
+      }
+    }
+  }
+#else
+  // カレントディレクトリで開けなかった場合、実行ファイルと同じディレクトリから探す
+  if (file.fail())
+  {
+    char exePath[PATH_MAX]{};
+    const ssize_t len{ readlink("/proc/self/exe", exePath, sizeof(exePath) - 1) };
+    if (len > 0)
+    {
+      exePath[len] = '\0';
+      std::string exeDir{ exePath };
+      const auto lastSlash{ exeDir.find_last_of('/') };
+      if (lastSlash != std::string::npos)
+      {
+        exeDir = exeDir.substr(0, lastSlash + 1);
+        file.open(exeDir + name, std::ios::binary);
+      }
+    }
+  }
 #endif
+
+  if (file.fail())
+  {
+    // ファイルが開けなければエラーを出力して戻る
+    std::cerr << "Error: Can't open source file: " << name << std::endl;
     return false;
   }
 
@@ -4998,9 +5070,7 @@ static bool readShaderSource(const std::string& name, std::string& src)
   // ファイルがうまく読み込めなければ戻る
   if (file.bad())
   {
-#if defined(DEBUG)
-    std::cerr << "Error: Could not read souce file: " << name << std::endl;
-#endif
+    std::cerr << "Error: Could not read source file: " << name << std::endl;
     return false;
   }
 
