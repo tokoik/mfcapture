@@ -22,17 +22,19 @@ Windowsのカメラ入力には Microsoft Media Foundation（MSMF）を直接使
 
 ## プログラムの処理の流れ
 
-`mfcapture.cpp` のメインループでは、一フレームを次の順序で処理します。
+`mfcapture.cpp` のメインループでは、一フレームを「第 1 パス：歪み補正」$\rightarrow$「第 2 パス：Preference 展開」$\rightarrow$「最終画面表示」のパイプラインで処理します。
 
-1. `Menu` がUIを描画し、入力源、投影方式、歪み補正モードの設定変更を受け付ける。
+1. `Menu` が UI を描画し、入力源、投影方式、歪み補正モードの設定変更を受け付ける。
 2. `Capture` が現在の入力源から最新フレームを取得する。
-3. **OpenCV 補正モード選択時**: キャプチャ直後の CPU メモリ上の `cv::Mat` に対して `Undistortion::apply()` を適用し、`cv::remap()` で補正する。
-4. 補正済み（または未補正）のフレームを Pixel Buffer Object (PBO) 等を経由して OpenGL テクスチャへ転送する。
-5. `Menu::setup()` が現在選択されている `Preference` と補正モードに応じた展開シェーダー（通常表示用 `normal.frag` または OpenGL 歪み補正用 `undistortion.frag`）を設定する。
-6. `Framebuffer` が GLSL シェーダーによる変換・展開結果を描画バッファに生成する。
-7. 最終画像と Dear ImGui の UI を画面へ描画する。
-
-OpenCV 補正はキャプチャ直後の CPU メモリ上かつ GPU 転送前に実行します。この順序により、GPU から CPU への不要な読み戻しを一切発生させず、補正結果だけを一度アップロードする効率的なパイプラインを維持します。一方、OpenGL 補正モードでは CPU 側の補正処理を行わず、テクスチャ転送後に `undistortion.frag` シェーダー内で逆写像 (Backward Mapping) により参照 UV 座標を動的に変換します。
+3. **第 1 パス (歪み補正)**:
+   - **OpenCV 方式**: キャプチャ直後の CPU メモリ上の `cv::Mat` に対して `Undistortion::apply()` を適用し、`cv::remap()` で補正した上でテクスチャ `frame` へ転送する。
+   - **OpenGL 方式**: 生画像をテクスチャ `frame` へ転送し、中間フレームバッファ `undistortedFramebuffer` に対して `Menu::setupUndistortion()` で設定した歪み補正シェーダー (`undistortion.vert` + `undistortion.frag`) を実行して GPU 上で補正する。
+   - **なし**: 生画像をそのままテクスチャ `frame` へ転送する。
+4. **第 2 パス (Preference 展開)**:
+   - 補正モード（なし／OpenCV／OpenGL）に関わらず、補正済み（または未補正）のフレームテクスチャを入力とし、`Menu::setup()` で設定した現在選択中の投影方式（Preference）の展開シェーダー（`orthographic.vert` + `normal.frag` など）を用いて最終フレームバッファ `framebuffer` へ展開する。
+   - これにより、CPU 補正と GPU 補正で全く同一の画角、焦点距離、姿勢・回転、アスペクト比が適用され、表示結果が完全に一致します。
+5. **最終画面表示**:
+   - `framebuffer.draw(window.getFboWidth(), window.getFboHeight())` により、実 Framebuffer サイズに基づいて縦横比を保ったまま画面中央へ contain 表示する。
 
 `Framebuffer::resize()` や `Undistortion` のマップ更新は毎フレーム呼び出せますが、入力解像度やパラメータが変化していない場合は再確保・再計算を行わないキャッシュ設計となっています。
 
@@ -49,11 +51,11 @@ OpenCV 補正はキャプチャ直後の CPU メモリ上かつ GPU 転送前に
 
 ### OpenCV 方式 (CPU 補正)
 
-`cv::initUndistortRectifyMap()` を用いて補正座標参照マップ `map1`, `map2` を事前生成し、`cv::remap()` でフレームを補正します。重い計算を伴うマップ生成は解像度変更時のみ実行され、毎フレームの再計算を回避します。
+キャプチャ直後の CPU フレームに対し、`cv::initUndistortRectifyMap()` で事前生成した補正参照マップを用いて `cv::remap()` で補正したのち、テクスチャへアップロードします。GPU から CPU への不要な読み戻しは発生しません。
 
 ### OpenGL 方式 (GPU 補正)
 
-`orthographic.vert`（または専用頂点シェーダー）と `undistortion.frag` を使用します。フラグメントシェーダー内で各出力ピクセルの正規化座標から放射歪み・接線歪みモデルを適用して逆写像し、入力テクスチャの参照 UV 座標を計算します。CPU 負荷を増やすことなく高速に処理されます。
+生画像テクスチャをそのままアップロードし、中間フレームバッファへ `undistortion.vert` と `undistortion.frag` で描画します。フラグメントシェーダー内で各出力ピクセルの正規化座標から放射歪み・接線歪みモデルを適用して逆写像 (Backward Mapping) してサンプリングします。CPU 負荷を増やすことなく高速に処理されます。
 
 ## 主要クラスと責務
 
@@ -194,4 +196,3 @@ libcamerify ./build/mfcapture
 - [presentation.html](presentation.html): カメラキャリブレーション & レンズ歪み補正勉強会用スライド (HTML)
 - [workshop_handbook.md](workshop_handbook.md): 勉強会ハンズオン用ハンドブック
 - [workshop_handbook.html](workshop_handbook.html): 勉強会ハンズオン用ハンドブック (HTML)
-

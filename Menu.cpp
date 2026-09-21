@@ -640,17 +640,29 @@ void Menu::updateFormatDropdowns()
 #endif
 
 //
+// 歪み補正シェーダを設定する
+//
+std::array<GLsizei, 2> Menu::setupUndistortion(GLfloat aspect) const
+{
+  // 現在の投影設定から歪み補正用シェーダを取り出して設定する。
+  const auto& preference{ config.getPreferences()[preferenceNumber] };
+  const auto& shader{ preference.getUndistortionShader() };
+
+  return shader.setup(settings.samples, aspect, pose, intrinsics.fov,
+    intrinsics.center, settings.getFocal(), config.getBackground(),
+    undistortion.getCameraParameters(),
+    undistortion.getDistortionParameters(), intrinsics.size);
+}
+
+//
 // シェーダを設定する
 //
 std::array<GLsizei, 2> Menu::setup(GLfloat aspect) const
 {
-  // 現在の投影設定から、通常表示用と歪み補正用のどちらを使うか選択する。
+  // 補正方式に関わらず、展開パスでは現在の投影方式のシェーダを使用する。
   const auto& preference{ config.getPreferences()[preferenceNumber] };
-  const auto& shader{ undistortionMode == UndistortionMode::OpenGL
-    ? preference.getUndistortionShader() : preference.getShader() };
+  const auto& shader{ preference.getShader() };
 
-  // 通常シェーダと補正シェーダを同じ入口から設定する。
-  // 補正用でない uniform は location=-1 となるため OpenGL 側で無視される。
   return shader.setup(settings.samples, aspect, pose, intrinsics.fov,
     intrinsics.center, settings.getFocal(), config.getBackground(),
     undistortion.getCameraParameters(),

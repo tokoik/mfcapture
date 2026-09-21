@@ -157,3 +157,33 @@ OpenCV と OpenGL の二方式を比較できる歪み補正機能を追加し�
   - `Menu.cpp` から `cv::CAP_GSTREAMER` バックエンド定義および `openDevice()` 内の GStreamer パイプライン処理分岐を完全に削除した。
   - `GEMINI.md` に GStreamer 非対応・構成非追加の基本方針を明記した。
   - Debug / Release 両構成での完全ビルドが成功することを確認した。
+
+### 14. Raspberry Pi (`CamLibcam`) および Linux ARM (GLES 3.1) のサポート
+
+- **指示**: `calib-rpi` に追加された `CamLibcam` クラスを `mfcapture` へ導入し、技術解説ドキュメント `CamLibcam.md` を作成する。また Raspberry Pi (Linux ARM) 上でビルド・動作可能にする。
+- **対応**:
+  - `CamLibcam.h`, `CamLibcam.cpp`, `CamLibcam.md` を導入し、libcamera ネイティブバックエンドによる高効率なフレーム取得・色変換処理を実装した。
+  - Linux 環境における `cv::CAP_V4L2` カメラ選択と `/sys/class/video4linux` デバイス列挙を整備した。
+  - CMake オプション `USE_GLES` および `USE_LIBCAMERA` を整備し、OpenGL ES 3.1 / EGL 環境に対応した。
+  - Linux 環境特有のビルドエラー（`pwd.h`, `sys/types.h` 不足や GLES での `GL_BGR` 未定義等）を解消した。
+
+### 15. `GgApp::OpenXR` への統合と同期
+
+- **指示**: `calib-rpi` と `mfcapture` の `GgApp` クラスの OpenXR 対応を `calib-openxr` と一致させ、リベースおよび同期を可能にする。
+- **対応**:
+  - `GgApp` 内部に公式 OpenXR 実装をカプセル化し、MSVC Debug 構成での `openxr_loaderd.lib` リンク不整合を解消した。
+  - 3 つのリポジトリ間で OpenXR 実装の足並みを揃え、VR / MR ヘッドセットへのステレオ出力パスを確立した。
+
+### 16. レンズ歪み補正の 2 パス描画パイプライン統合 (OpenCV / OpenGL 結果・アスペクト比の完全一致)
+
+- **指示**: OpenCV による歪み補正と OpenGL による歪み補正で結果（画角、アスペクト比、拡大縮小率）が一致しない問題を解消する。
+- **原因**:
+  - OpenCV 方式では歪み補正後に Preference の展開シェーダー（`orthographic.vert` + `normal.frag`）が二重に適用されていたのに対し、OpenGL 方式では展開シェーダーがスキップされ、歪み補正シェーダー（`undistortion.vert` + `undistortion.frag`）のみが実行されていたため、画角やアスペクト比が一致していなかった。
+- **対応**:
+  - レンダリングパイプラインを「第 1 パス：歪み補正（OpenCV / OpenGL / なし）」$\rightarrow$「第 2 パス：共通の Preference 展開シェーダー」の 2 パス構成に統合した。
+  - 中間フレームバッファ `undistortedFramebuffer` を導入し、OpenGL 方式では第 1 パスで GPU 歪み補正を行い、その結果を展開パスへ渡すようにした。
+  - `Menu::setupUndistortion()` を新設して歪み補正シェーダーの設定を分離し、`Menu::setup()` は常に展開シェーダーを設定するように整理した。
+  - 最終表示を `framebuffer.draw(window.getFboWidth(), window.getFboHeight())` に統一し、HiDPI 環境でのアスペクト比歪みを防止した。
+- **検証**:
+  - OpenCV 方式と OpenGL 方式を切り替えても、画角・アスペクト比・拡大縮小率が完全に一致することを確認した。
+  - MSVC Debug / Release 両構成で警告・エラーなくビルドが成功することを確認した。

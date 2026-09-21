@@ -14,9 +14,9 @@
 
 ## 2. 開発環境
 
-- 統合開発環境: Visual Studio 2022 以降
+- 統合開発環境: Visual Studio 2022 以降（Windows）、VS Code / GCC（Linux）
 - 開発言語: C++17
-- ターゲット: 64 bit（x64）
+- ターゲット: 64 bit（x64 / aarch64）
 - ビルドシステム: CMake 3.13 以降
 - C++ ソース（`.h`、`.cpp`）: UTF-8、BOM 付き
 - GLSL ソース（`.vert`、`.frag`、`.comp`）: UTF-8、BOM なし
@@ -29,14 +29,14 @@ out-of-source build を使用します。
 
 ## 3. 入力とキャプチャ
 
-- Windows のカメラ入力は Microsoft Media Foundation を使用します。
-- その他のプラットフォームのカメラ入力と動画入力は OpenCV を使用します。
+- Windows のカメラ入力は Microsoft Media Foundation を使用します (`CamMf`)。
+- Raspberry Pi のカメラ入力は libcamera ネイティブバックエンドを使用します (`CamLibcam`)。
+- その他のプラットフォームのカメラ入力と動画入力は OpenCV を使用します (`CamCv`)。
 - GStreamer パイプライン入力はサポート対象外とし、構成ファイルや UI に GStreamer 固有の設定を追加しません。
 - 静止画像は `CamImage` を通して扱います。
-- プラットフォーム固有処理は `CamMf`、`CamCv`、`Capture` に閉じ込め、UI と
-  描画ループへ Media Foundation 固有型を露出させません。
-- `CamMf` は MFT デコーダとカラーコンバータを使い、CPU メモリ上のフレームへ
-  変換します。
+- プラットフォーム固有処理は `CamMf`、`CamLibcam`、`CamCv`、`Capture` に閉じ込め、UI と
+  描画ループへプラットフォーム固有型を露出させません。
+- `CamMf` は MFT デコーダとカラーコンバータを使い、CPU メモリ上のフレームへ変換します。
 - フォーマット列挙時には重いデコーダ初期化を行わず、開始時に選択フォーマットを
   適用する遅延初期化を維持します。
 - レイテンシ優先時は古いフレームを破棄し、全フレーム処理時は取得前のフレームを
@@ -46,18 +46,22 @@ out-of-source build を使用します。
 
 ## 4. 画像処理パイプライン
 
-一フレームの基本順序は、入力取得、必要なら CPU 補正、GPU 転送、GLSL 変換、
-最終表示とします。
+一フレームの基本順序は、入力取得、第 1 パス（歪み補正）、第 2 パス（Preference 展開）、
+最終表示の 2 パス構成とします。
 
-- OpenCV 歪み補正はキャプチャ直後、OpenGL テクスチャへ転送する前に行います。
-  GPU から CPU への読み戻しを追加してはいけません。
-- OpenGL 歪み補正は専用 GLSL でテクスチャ参照座標を変換し、CPU 画像を変更しません。
-- 補正なしと OpenGL 補正では Pixel Buffer Object を使用する転送経路を維持します。
+- **第 1 パス (歪み補正)**:
+  - OpenCV 歪み補正はキャプチャ直後、OpenGL テクスチャへ転送する前に行います。GPU から CPU への読み戻しを追加してはいけません。
+  - OpenGL 歪み補正は生画像テクスチャを入力とし、中間フレームバッファ (`undistortedFramebuffer`) へ `undistortion.vert` と `undistortion.frag` で GPU 補正描画を行います。
+  - 補正なしの場合は、生画像テクスチャをそのまま第 2 パスへ渡します。
+  - 補正なしと OpenGL 補正では Pixel Buffer Object を使用する高速な転送経路を維持します。
+- **第 2 パス (Preference 展開)**:
+  - 歪み補正モード（なし／OpenCV／OpenGL）に関わらず、補正済み（または未補正）のフレームテクスチャを入力として、共通の Preference 展開シェーダー（`orthographic.vert` + `normal.frag` など）で最終フレームバッファ (`framebuffer`) へ展開します。
+  - これにより、CPU 補正と GPU 補正で同一の画角、焦点距離、回転、アスペクト比が保証され、補正結果が完全に一致します。
+- **最終表示**:
+  - `framebuffer.draw(window.getFboWidth(), window.getFboHeight())` を用い、実 Framebuffer サイズに基づいて縦横比を維持した中央表示（contain 方式）を行います。
 - `Undistortion` の補正マップは入力サイズが変化した場合だけ再構築します。
-- `Framebuffer::resize()` は毎フレーム呼び出せますが、同じサイズでは GPU
-  リソースを再確保しない実装を維持します。
-- CPU 側のフレーム形式と GLSL が期待する色成分の対応を変更する場合は、
-  最終表示シェーダーまで含めて確認します。
+- `Framebuffer::resize()` は毎フレーム呼び出せますが、同じサイズでは GPU リソースを再確保しないキャッシュ実装を維持します。
+- CPU 側のフレーム形式と GLSL が期待する色成分の対応を変更する場合は、最終表示シェーダーまで含めて確認します。
 
 ## 5. 較正ファイルと歪み補正
 
@@ -68,18 +72,17 @@ out-of-source build を使用します。
 - JSON 配列から `cv::Mat` を作成するときは、行列サイズを指定する通常の
   コンストラクタを使用します。波括弧による初期化で initializer-list
   コンストラクタを誤選択しないよう注意します。
-- OpenCV と GLSL は同じカメラ行列および 5 係数
-  `k1, k2, p1, p2, k3` を使用します。
+- OpenCV と GLSL は同じカメラ行列および 5 係数 `k1, k2, p1, p2, k3` を使用します。
 - OpenGL 用 uniform へ渡すときは、画素単位の焦点距離と主点、および実際の
   入力解像度の関係を崩さないようにします。
 
 ## 6. シェーダーと構成
 
-- 各 `Preference` は通常表示用の `shader` と、歪み補正用の `undistortion` を
+- 各 `Preference` は通常展開用の `shader` と、歪み補正用の `undistortion` を
   構成ファイルから読み込みます。
 - `Default` を含む投影方式は、起動時に必要なシェーダーを構築します。
-- 通常表示では `orthographic.vert` と `normal.frag`、OpenGL 歪み補正では
-  `undistortion.vert` と `undistortion.frag` を使用します。
+- 歪み補正パス（第 1 パス）の設定は `Menu::setupUndistortion()` を使用し、`undistortion.vert` と `undistortion.frag` を設定します。
+- 展開パス（第 2 パス）の設定は `Menu::setup()` を使用し、現在選択されている投影方式の展開シェーダー（`preference.getShader()`）を設定します。
 - 両シェーダーで共通の設定処理を使用します。存在しない uniform の location が
   `-1` の場合に OpenGL が更新を無視する性質を利用し、不要な分岐を増やしません。
 - 構成の読み込みに失敗した場合は、使用可能な既定シェーダーを維持します。
@@ -98,8 +101,7 @@ out-of-source build を使用します。
 
 ## 8. リソース管理と安全性
 
-- COM オブジェクト、OpenGL オブジェクト、MFT バッファは RAII または明示的な
-  対称処理で解放し、早期 return や `continue` でも漏らしません。
+- COM オブジェクト、OpenGL オブジェクト、MFT バッファ、libcamera 要求オブジェクトは RAII または明示的な対称処理で解放し、早期 return や `continue` でも漏らしません。
 - コピー長は入力と出力の実容量から決め、バッファ境界を越えないようにします。
 - 画像サイズが 0、較正値が未設定、シェーダー構築失敗などの状態を公開関数の
   入口で検査します。
@@ -141,3 +143,8 @@ out-of-source build を使用します。
   - `/sys/class/video4linux` を走査して接続されたカメラデバイスの一覧と実際のデバイス番号を取得し、SoC 内部処理ノード（bcm2835-codec, bcm2835-isp, pisp 等）を除外した上で、USB カメラおよび Raspberry Pi Camera Module を選択可能にします。
 - **アセット・リソースの配置**:
   - Linux 環境でも POST_BUILD コマンドにより、シェーダー、構成ファイル、画像アセットを実行バイナリディレクトリへ自動配置します。
+
+## 12. OpenXR サポート方針
+
+- `GgApp::OpenXR` により、VR / MR ヘッドセットへのステレオ展開出力をサポートします。
+- OpenXR API への依存は `GgApp` 内にカプセル化し、メインアプリケーションや画像パイプラインの独立性を保ちます。

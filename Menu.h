@@ -320,6 +320,14 @@ public:
   }
 
   ///
+  /// 歪み補正シェーダを設定する
+  ///
+  /// @param aspect 表示領域の縦横比
+  /// @return 描画すべきメッシュの横と縦の格子点数
+  ///
+  std::array<GLsizei, 2> setupUndistortion(GLfloat aspect) const;
+
+  ///
   /// シェーダを設定する
   ///
   /// @param aspect 表示領域の縦横比

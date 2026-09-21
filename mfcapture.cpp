@@ -56,6 +56,9 @@ int GgApp::main(int argc, const char* const* argv)
   // キャプチャしたフレームを保持するテクスチャ
   Texture frame;
 
+  // OpenGL 歪み補正時に使用する中間フレームバッファオブジェクト
+  Framebuffer undistortedFramebuffer;
+
   // OpenCV 補正時に使用する CPU フレーム
   cv::Mat sourceFrame;
   cv::Mat correctedFrame;
@@ -68,6 +71,9 @@ int GgApp::main(int argc, const char* const* argv)
   {
     // メニューを表示して設定を更新する
     menu.draw();
+
+    // 展開パスへ渡すフレームへのポインタ
+    const Texture* processedFrame{ &frame };
 
     if (menu.getUndistortionMode() == UndistortionMode::OpenCV)
     {
@@ -83,27 +89,40 @@ int GgApp::main(int argc, const char* const* argv)
           correctedFrame.channels(), correctedFrame.data);
       }
     }
-    else
+    else if (menu.getUndistortionMode() == UndistortionMode::OpenGL)
     {
       // 補正なし／OpenGL方式ではCPU処理が不要なので、高速なPBO経路を維持する。
       if (capture.retrieve(frame)) frame.drawPixels();
+
+      // 第1パス：OpenGLによるGPUレンズ歪み補正
+      undistortedFramebuffer.resize(frame);
+      const auto&& undistortSize{ menu.setupUndistortion(undistortedFramebuffer.getAspect()) };
+      undistortedFramebuffer.update(undistortSize, frame);
+
+      // 補正結果のフレームを展開パスの入力とする
+      processedFrame = &undistortedFramebuffer;
+    }
+    else
+    {
+      // 補正なしではCPU処理が不要なので、高速なPBO経路を維持する。
+      if (capture.retrieve(frame)) frame.drawPixels();
     }
 
-    // フレームバッファオブジェクトのサイズをキャプチャしたフレームに合わせる
-    framebuffer.resize(frame);
+    // 第2パス：フレームバッファオブジェクトのサイズを補正後のフレームに合わせる
+    framebuffer.resize(*processedFrame);
 
-    // シェーダの設定を行う
+    // 投影方式に応じた展開シェーダの設定を行う
     const auto&& size{ menu.setup(framebuffer.getAspect()) };
 
     // フレームバッファオブジェクトにフレームを展開する
-    framebuffer.update(size, frame);
+    framebuffer.update(size, *processedFrame);
 
     // 表示するウィンドウのビューポートを再設定する
     window.setMenubarHeight(menu.getMenubarHeight());
 
     // フレームバッファオブジェクトの内容を表示する
     //framebuffer.show(window.getWidth(), window.getHeight());
-    framebuffer.draw(window.getWidth(), window.getHeight());
+    framebuffer.draw(window.getFboWidth(), window.getFboHeight());
 
     // カラーバッファを入れ替えてイベントを取り出す
     window.swapBuffers();
