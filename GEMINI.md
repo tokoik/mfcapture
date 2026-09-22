@@ -34,6 +34,11 @@ out-of-source build を使用します。
 - その他のプラットフォームのカメラ入力と動画入力は OpenCV を使用します (`CamCv`)。
 - GStreamer パイプライン入力はサポート対象外とし、構成ファイルや UI に GStreamer 固有の設定を追加しません。
 - 静止画像は `CamImage` を通して扱います。
+- `Camera.h` は純粋なフレーム取得レイヤとし、OpenGL (`gg.h`)、OpenCV、GLFW への依存を完全に排除して標準 C++ ライブラリのみで構成します。
+- NVI (Non-Virtual Interface) パターンを採用し、公開インターフェース `start()`, `stop()`, `close()` で排他制御、スレッド状態フラグ（`running`）、およびスレッド合流（`thr.join()`）などの共通ライフサイクルを一元管理します。派生クラスは保護フック関数 `onStart()`, `onStop()`, `onClose()` にハードウェア固有処理のみを実装します。
+- 従来の二重バッファ（`frame` と `image`）を廃止し、単一バッファ（`std::vector<std::uint8_t> image`）へ集約してメモリ使用量と不要な内部コピーを排除します。
+- 上位層へのフレーム転送はテンプレートメソッド `lockFrame(F&& func)` によるコールバック方式とし、非ブロッキング排他ロック（`try_to_lock`）成功時のみデータポインタを渡して直接 PBO 転送や `cv::Mat` へのコピーを行うゼロコピー設計とします。
+- 上位層での `dynamic_cast` による具象クラス依存を排除し、`isStillImage()`, `getFormatList()`, `selectFormat()` 等の基底クラス仮想関数を介して疎結合に連携します。
 - プラットフォーム固有処理は `CamMf`、`CamLibcam`、`CamCv`、`Capture` に閉じ込め、UI と
   描画ループへプラットフォーム固有型を露出させません。
 - `CamMf` は MFT デコーダとカラーコンバータを使い、CPU メモリ上のフレームへ変換します。

@@ -61,11 +61,17 @@ Windowsのカメラ入力には Microsoft Media Foundation（MSMF）を直接使
 
 ### `Camera` と入力実装
 
-`Camera` はキャプチャスレッド、共有フレーム、排他制御、レイテンシ優先フラグを管理する基底クラスです。
+`Camera` はキャプチャスレッド、フレームバッファ、排他制御、レイテンシ優先フラグを管理する基底クラスです。外部グラフィックス API（OpenGL）や画像処理ライブラリ（OpenCV）への依存を完全に排除し、標準 C++ ライブラリのみで構成された純粋なフレーム取得レイヤとして再設計されています。
+
+- **NVI (Non-Virtual Interface) パターン**: 公開インターフェース `start()`, `stop()`, `close()` がスレッド状態フラグ（`running`）の更新、排他制御、およびスレッド合流（`thr.join()`）などの共通ライフサイクルを一元管理し、派生クラスは保護仮想フック関数 `onStart()`, `onStop()`, `onClose()` にハードウェア固有の処理のみをオーバーライドします。
+- **単一バッファ化とコピー削減**: 従来の二重バッファ（`frame` と `image`）を廃止し、CPU メモリ上の単一バッファ（`std::vector<std::uint8_t> image`）へ集約してメモリ使用量とコピーのオーバーヘッドを削減しています。
+- **コールバック式ゼロコピーフレームロック (`lockFrame`)**: `lockFrame(F&& func)` テンプレートメソッドにより、ミューテックスの非ブロッキングロック (`try_to_lock`) 成功時のみフレームデータポインタをコールバックへ渡し、PBO への直接転送（`glBufferSubData`）や `cv::Mat` へのコピーを上位層で安全かつ直接的に行います。
+- **`dynamic_cast` の排除**: 基底クラスに `isStillImage()`, `getFormatList()`, `selectFormat()` の仮想関数を導入し、上位層が特定派生クラスの型チェック（ダウンキャスト）を行わずにポリモーフィックに操作できるように疎結合化しました。
 
 - `CamMf`: Windows Media Foundation によるカメラ入力
 - `CamCv`: OpenCV によるカメラ、動画、ネットワーク入力
 - `CamImage`: 静止画像入力
+- `CamLibcam`: Raspberry Pi ネイティブの libcamera によるカメラ入力
 - `Capture`: 上記入力実装の所有、切り替え、開始・停止、フレーム取得の窓口
 
 ### `Config`、`Preference`、`Intrinsics`

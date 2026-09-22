@@ -187,3 +187,19 @@ OpenCV と OpenGL の二方式を比較できる歪み補正機能を追加し�
 - **検証**:
   - OpenCV 方式と OpenGL 方式を切り替えても、画角・アスペクト比・拡大縮小率が完全に一致することを確認した。
   - MSVC Debug / Release 両構成で警告・エラーなくビルドが成功することを確認した。
+
+### 17. CamMf.md / CamLibcam.md の calib への移行と Camera クラスの再設計・最適化
+
+- **指示**:
+  - `mfcapture` にあった `CamMf.md` と `CamLibcam.md` を `calib` リポジトリの `docs/` 配下へ移行する。
+  - `Camera` クラスの設計見直しと最適化（NVI パターン導入、二重バッファ廃止、外部依存排除、ゼロコピー化）を実施する。
+- **対応**:
+  - `CamMf.md` および `CamLibcam.md` を `calib/docs/` へ移動し、`mfcapture` 側のリンクおよび参照関係を更新した。
+  - `Camera.h` から OpenGL (`gg.h`)、OpenCV、GLFW への不要な依存を完全に排除し、標準 C++ ライブラリのみで構成された純粋なフレーム取得レイヤへ再設計した。
+  - NVI (Non-Virtual Interface) パターンを導入し、`start()`, `stop()`, `close()` の公開メソッドでスレッド状態（`running`）、排他制御、およびスレッド合流（`thr.join()`）のライフサイクルを一元管理した。派生クラスは保護フック `onStart()`, `onStop()`, `onClose()` を実装する責務分担とした。
+  - 従来の `frame` と `image` の二重バッファを廃止し、`std::vector<std::uint8_t> image` の単一バッファへ集約してメモリ消費およびコピーコストを削減した。
+  - コールバック関数テンプレート `lockFrame(F&& func)` を実装し、非ブロッキングロック（`try_to_lock`）のもとで PBO への直接転送（`glBufferSubData`）や `cv::Mat` へのコピーを行うゼロコピーアーキテクチャへ刷新した。
+  - `Capture.h` / `Capture.cpp` における `dynamic_cast<CamMf*>` や `dynamic_cast<CamImage*>` への依存を排除し、基底クラスの仮想関数 `isStillImage()`, `getFormatList()`, `selectFormat()` を介した疎結合なポリモーフィック設計へリファクタリングした。
+  - `CamCv`, `CamMf`, `CamLibcam`, `CamImage` の全派生クラスを新設計へ適合させ、`CamCv` 内の不要な中間 `cv::Mat` コピーの排除や動画再生制御変数の適切なカプセル化、`CamMf` の独立した文字列変換ヘルパー（Win32 `WideCharToMultiByte`）を実装した。
+  - `README.md`、`GEMINI.md`、`REQUESTS.md` を現行アーキテクチャに合わせて更新・最適化した。
+  - MSVC Debug / Release 両構成でビルドがエラー・警告なく正常に通ることを確認した。
