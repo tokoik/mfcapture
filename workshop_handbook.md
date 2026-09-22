@@ -1,6 +1,6 @@
 # 実践カメラキャリブレーション & レンズ歪み補正 講義・実習ハンドブック
 
-本ドキュメントは、ChArUco Board を用いたカメラキャリブレーションプログラム `calib-wom-msmf` および、キャリブレーション結果を用いてリアルタイムにレンズ歪み補正を行って表示するプログラム `mfcapture` を用いた技術勉強会の受講者用詳細資料です。
+本ドキュメントは、ChArUco Board を用いたカメラキャリブレーションプログラム `calib` および、キャリブレーション結果を用いてリアルタイムにレンズ歪み補正を行って表示するプログラム `mfcapture` を用いた技術勉強会の受講者用詳細資料です。
 
 対象読者は、C++ や Swift 等で OpenCV を用いた画像処理アプリの開発経験があるエンジニアです。
 
@@ -129,4 +129,4 @@ double rms = cv::calibrateCamera(
 
 - **インクラスメンバ初期化 (Default Member Initializers)**: 全クラスのメンバ変数初期化をヘッダ（クラス定義内）に集約 (`int var{ 0 };`, `Framebuffer() = default;`) し、コンストラクタにおける初期化漏れを防止。
 - **`const_cast` / `friend` の全廃**: クラスの不変条件を迂回・破壊する構文を完全に排出し、`getSettings()` / `setSettings()` 等の公開 getter / setter API で UI (`Menu`) と構成 (`Config`) を疎結合化。
-- **共通処理の命名・コメント統一**: `calib-wom-msmf` と `mfcapture` 間で共通する変数名・関数名は `mfcapture` に統一し、Doxygen/実装コメントスタイルは `calib-wom-msmf` に完全統一。
+- **共通処理の命名・コメント統一**: `calib` と `mfcapture` 間で共通する変数名・関数名は `mfcapture` に統一し、Doxygen/実装コメントスタイルは `calib` に完全統一。

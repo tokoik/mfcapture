@@ -70,7 +70,7 @@ out-of-source build を使用します。
 
 ## 5. 較正ファイルと歪み補正
 
-- 入力は `calib-wom-msmf` が出力する JSON 形式とし、`camera matrix`（3×3）と
+- 入力は `calib` が出力する JSON 形式とし、`camera matrix`（3×3）と
   `distortion`（5×1）を必須とします。
 - 行列は一時領域へ読み込み、形状と全要素を検証してから現在値を置き換えます。
 - 読み込み失敗時は補正方式を「なし」に戻し、不完全なパラメータを使用しません。
@@ -118,7 +118,7 @@ out-of-source build を使用します。
   その処理を行うかを記述します。
 - 教材として処理単位を追えるよう、ファイル読み込み、検証、キャッシュ更新、
   CPU／GPU 転送、座標変換の各ブロックに説明を付けます。
-- `calib-wom-msmf` と `mfcapture` 間で共通する変数名・関数名は `mfcapture` の命名に統一し、コメントおよび Doxygen の表現スタイルは `calib-wom-msmf` に統一します。
+- `calib` と `mfcapture` 間で共通する変数名・関数名は `mfcapture` の命名に統一し、コメントおよび Doxygen の表現スタイルは `calib` に統一します。
 - 公開型と公開関数、重要な非公開関数には Doxygen コメントを付けます。
 - `@param` は宣言の引数名と一致させ、戻り値がある関数には `@return` を記述します。
 - 実装を変更したときは、コメント、Doxygen、README、必要なら REQUESTS を同時に

@@ -11,7 +11,7 @@ ChArUco Board と OpenGL/GLSL によるリアルタイム高精度画像補正�
 - レンズ歪みの数理（放射歪み・接線歪み）
 - ChArUco Board 原理と特徴（チェスボード＋ArUco）
 - C++ OpenCV 実装の詳細関数と引数構造 (`CharucoBoard`, `detectBoard`, `matchImagePoints`, `calibrateCamera`)
-- 全体システム構成 (`calib-wom-msmf` & `mfcapture`)
+- 全体システム構成 (`calib` & `mfcapture`)
 
 ### 後半: 実装とハンズオン
 - CPU (OpenCV `remap`) vs GPU (GLSL) 補正パイプライン
@@ -252,7 +252,7 @@ flowchart TD
 
 - **インクラスメンバ初期化 (Default Member Initializers)**: メンバ変数の初期値をヘッダ（クラス定義内）に集約し、初期化漏れを防止
 - **`const_cast` / `friend` の完全排除**: `getSettings()` / `setSettings()` 等の公開 getter / setter API で UI (`Menu`) と構成 (`Config`) を安全に疎結合化
-- **構造統一**: 共通処理の変数名・関数名は `mfcapture`、Doxygen/実装コメントスタイルは `calib-wom-msmf` に統一
+- **構造統一**: 共通処理の変数名・関数名は `mfcapture`、Doxygen/実装コメントスタイルは `calib` に統一
 
 ---
 

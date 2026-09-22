@@ -317,7 +317,7 @@
             <li><a href="#ch3-3" class="nav-link" style="padding-left: 20px;">3.3～3.10 実装と関数構造</a></li>
             <li><a href="#ch4" class="nav-link">第4章 設計とアーキテクチャ</a></li>
             <li><a href="#ch4-4" class="nav-link" style="padding-left: 20px;">4.4 逆写像と座標系</a></li>
-            <li><a href="#ch5" class="nav-link">第5章 実習1: calib-wom-msmf</a></li>
+            <li><a href="#ch5" class="nav-link">第5章 実習1: calib</a></li>
             <li><a href="#ch6" class="nav-link">第6章 実習2: mfcapture 補正</a></li>
             <li><a href="#ch6-4" class="nav-link" style="padding-left: 20px;">6.4 ハンズオン A & B</a></li>
             <li><a href="#ch7" class="nav-link">第7章 低遅延キャプチャ & FAQ</a></li>
@@ -340,7 +340,7 @@
         <!-- Chapter 1 -->
         <section id="ch1" class="section">
             <h2>第1章 開発環境とプロジェクト規約</h2>
-            
+
             <h3>1.1 開発環境要件</h3>
             <p>本勉強会で使用する開発環境およびツール群は以下の通りです。</p>
             <ul>
@@ -395,10 +395,10 @@
         <!-- Chapter 2 -->
         <section id="ch2" class="section">
             <h2>第2章 カメラモデリングとレンズ歪みの数理</h2>
-            
+
             <h3>2.1 ピンホールカメラモデル・内部パラメータ・外部パラメータ</h3>
             <p>ピンホールカメラモデルでは、3次元空間の世界座標点 $P_w = (X_w, Y_w, Z_w)^T$ がカメラの光学中心を通り、画像平面上の点 $p = (u, v)^T$ に投影されます。この関係は**透視投影 (Perspective Projection)** 方程式として次のように記述されます。</p>
-            
+
             $$s \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = K \begin{bmatrix} R & t \end{bmatrix} \begin{bmatrix} X_w \\ Y_w \\ Z_w \\ 1 \end{bmatrix}$$
 
             <h4>カメラ内部行列 (Camera Matrix $K$)</h4>
@@ -626,7 +626,7 @@ for (size_t i = 0; i &lt; allObjectPoints.size(); ++i) {
         <!-- Chapter 4 -->
         <section id="ch4" class="section">
             <h2>第4章 プログラム設計とアーキテクチャ</h2>
-            
+
             <div class="arch-img-box">
                 <img src="images/system_architecture.jpg" alt="全体システムアーキテクチャ図">
             </div>
@@ -657,7 +657,7 @@ for (size_t i = 0; i &lt; allObjectPoints.size(); ++i) {
                 <ul style="margin-left: 20px;">
                     <li><strong>インクラスメンバ初期化 (Default Member Initializers)</strong>: ヘッダ（クラス定義内）で初期値を一元定義 (`int var{ 0 };`, `Framebuffer() = default;`) し、初期化漏れを防止。</li>
                     <li><strong>`const_cast` / `friend` の全廃</strong>: 不変条件を迂回する非推奨構文を排出し、`getSettings()` / `setSettings()` 等の公開 API で UI (`Menu`) と構成 (`Config`) を疎結合化。</li>
-                    <li><strong>共通処理の命名・コメント統一</strong>: `calib-wom-msmf` との共通処理で変数名・関数名は `mfcapture`、コメント表現は `calib-wom-msmf` に完全統一。</li>
+                    <li><strong>共通処理の命名・コメント統一</strong>: `calib` との共通処理で変数名・関数名は `mfcapture`、コメント表現は `calib` に完全統一。</li>
                 </ul>
 
                 <h3>4.7 解像度変更時の内部パラメータ</h3>
@@ -667,11 +667,11 @@ for (size_t i = 0; i &lt; allObjectPoints.size(); ++i) {
 
         <!-- Chapter 5 -->
         <section id="ch5" class="section">
-            <h2>第5章 実習1: calib-wom-msmf でのキャリブレーション</h2>
-            
+            <h2>第5章 実習1: calib でのキャリブレーション</h2>
+
             <h3>ビルドコマンド</h3>
             <pre><code># PowerShell
-cd d:\Users\tokoi\Documents\Projects\worktrees\calib-wom-msmf
+cd d:\Users\tokoi\Documents\Projects\worktrees\calib
 cmake -S . -B build
 cmake --build build --config Release</code></pre>
 
@@ -687,7 +687,7 @@ cmake --build build --config Release</code></pre>
         <!-- Chapter 6 -->
         <section id="ch6" class="section">
             <h2>第6章 実習2: mfcapture によるリアルタイム歪み補正</h2>
-            
+
             <h3>6.1 OpenCV (CPU) による C++ 歪み補正 (`initUndistortRectifyMap` & `remap`)</h3>
             <pre><code>// 1. 歪み補正ルックアップテーブルの事前生成（解像度変更時のみ一度実行）
 cv::Mat map1, map2;
@@ -786,7 +786,7 @@ void main() {
         <!-- Chapter 7 -->
         <section id="ch7" class="section">
             <h2>第7章 低遅延キャプチャ & トラブルシューティング</h2>
-            
+
             <h3>7.1 Media Foundation (MSMF) による低遅延設計</h3>
             <p>`CamMf` クラスでは Microsoft Media Foundation を用いて MFT デコーダに対し `CODECAPI_AVLowLatencyMode` を設定し、内部バッファリングを排してレイテンシを最小化しています。</p>
 

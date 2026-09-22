@@ -415,7 +415,7 @@
                         <li>レンズ歪みの数理（放射歪み・接線歪み）</li>
                         <li>ChArUco Board 原理と特徴（チェスボード＋ArUco）</li>
                         <li>C++ OpenCV 実装の詳細関数と引数構造 (`CharucoBoard`, `detectBoard`, `matchImagePoints`, `calibrateCamera`)</li>
-                        <li>全体システム構成 (`calib-wom-msmf` & `mfcapture`)</li>
+                        <li>全体システム構成 (`calib` & `mfcapture`)</li>
                     </ul>
                 </div>
                 <div class="card">
@@ -694,10 +694,10 @@ double rms = cv::calibrateCamera(
             </div>
         </div>
 
-        <!-- Slide 11: calib-wom-msmf Flow -->
+        <!-- Slide 11: calib Flow -->
         <div class="slide">
             <div class="slide-header">
-                <h2 class="slide-title">7. calib-wom-msmf キャリブレーションフロー</h2>
+                <h2 class="slide-title">7. calib キャリブレーションフロー</h2>
                 <span class="slide-badge">Workflow</span>
             </div>
             <div class="slide-body">
@@ -1129,7 +1129,7 @@ cmake --build build --config Release</code></pre>
             const progress = ((currentSlide + 1) / slides.length) * 100;
             progressBar.style.width = progress + '%';
             slideCounter.textContent = `${currentSlide + 1} / ${slides.length}`;
-            
+
             prevBtn.disabled = currentSlide === 0;
             nextBtn.disabled = currentSlide === slides.length - 1;
 

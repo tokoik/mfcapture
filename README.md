@@ -4,9 +4,9 @@
 
 本プログラムは、Webカメラ、動画ファイル、静止画像から取得した映像をOpenGLテクスチャへ転送し、GLSLで展開しながらリアルタイムに表示するC++アプリケーションです。
 
-画像処理プログラミングの勉強会等において、CPU（OpenCV）とGPU（OpenGL / GLSL）による画像処理モデルの違いや、`calib-wom-msmf` で得られたカメラの内部パラメータ（カメラ行列および歪み係数）を用いたレンズ歪み補正の仕組みを比較学習するためのサンプルとして使用します。
+画像処理プログラミングの勉強会等において、CPU（OpenCV）とGPU（OpenGL / GLSL）による画像処理モデルの違いや、`calib` で得られたカメラの内部パラメータ（カメラ行列および歪み係数）を用いたレンズ歪み補正の仕組みを比較学習するためのサンプルとして使用します。
 
-Windowsのカメラ入力には Microsoft Media Foundation（MSMF）を直接使用します。Raspberry Pi ではネイティブの `libcamera` バックエンド (`CamLibcam`) および OpenGL ES 3.1 をサポートします。macOSおよびLinux、ならびに動画・静止画像の入力にはOpenCVを使用し、描画とUIにはOpenGL / OpenGL ES、GLFW、Dear ImGuiを使用します。カメラ較正処理自体は行わず、`calib-wom-msmf` が出力したJSON形式の較正パラメータを読み込んで補正に利用します。
+Windowsのカメラ入力には Microsoft Media Foundation（MSMF）を直接使用します。Raspberry Pi ではネイティブの `libcamera` バックエンド (`CamLibcam`) および OpenGL ES 3.1 をサポートします。macOSおよびLinux、ならびに動画・静止画像の入力にはOpenCVを使用し、描画とUIにはOpenGL / OpenGL ES、GLFW、Dear ImGuiを使用します。カメラ較正処理自体は行わず、`calib` が出力したJSON形式の較正パラメータを読み込んで補正に利用します。
 
 ## 主な機能
 
@@ -16,7 +16,7 @@ Windowsのカメラ入力には Microsoft Media Foundation（MSMF）を直接使
 - 解像度、フレームレート、符号化方式の組み合わせ選択
 - 全フレーム処理とレイテンシ優先（低遅延）処理の切り替え
 - 各種投影方式（Orthographic、Equirectangular、Equidistance、Stereographic等）によるGLSL展開描画
-- `calib-wom-msmf` が出力したJSON形式カメラ較正パラメータの安全な読み込み
+- `calib` が出力したJSON形式カメラ較正パラメータの安全な読み込み
 - 「なし」「OpenCV (CPU)」「OpenGL (GPU / GLSL)」の3モードから選択可能なレンズ歪み補正
 - JSON構成ファイルによる投影方式、シェーダー設定、表示設定の一元管理
 
@@ -106,7 +106,7 @@ Windowsのカメラ入力には Microsoft Media Foundation（MSMF）を直接使
 
 ## 基本操作
 
-1. 「ファイル」メニューから画像、動画、または較正ファイル (`calib-wom-msmf` の出力 JSON) を開く。
+1. 「ファイル」メニューから画像、動画、または較正ファイル (`calib` の出力 JSON) を開く。
 2. カメラを使用する場合は「入力」パネルでカメラ装置を選択する。
 3. Windows では解像度、フレームレート、符号化方式を選択する。
 4. 必要に応じて「レイテンシ優先」を有効にする。
@@ -180,7 +180,7 @@ libcamerify ./build/mfcapture
 - Windows 固有処理は `CamMf` と `Capture` に閉じ込め、`Menu` に Media Foundation 固有型を露出させないこと。
 - `const_cast` や `friend` による不変条件迂回を排出し、`getSettings()` / `setSettings()` 等の公開 API で状態連携すること。
 - クラスメンバ変数の初期化はコンストラクタの初期化子リストではなくクラス定義（ヘッダ内）のデフォルトメンバ初期化構文（インクラス初期化）へ集約すること。
-- `calib-wom-msmf` との共通処理で変数名・関数名は `mfcapture`、コメント・Doxygen 表現は `calib-wom-msmf` に統一すること。
+- `calib` との共通処理で変数名・関数名は `mfcapture`、コメント・Doxygen 表現は `calib` に統一すること。
 - C++ ソースは `UTF-8 with BOM`、GLSL ソースは `UTF-8 without BOM` の文字コード規約を厳守すること。
 - コメントと Doxygen を実装変更と同時に更新すること。
 
