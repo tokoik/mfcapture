@@ -426,6 +426,14 @@ elseif(APPLE)
     # Create the macOS App Bundle
     add_executable(mfcapture MACOSX_BUNDLE ${SOURCES} ${PLATFORM_SOURCES} ${APP_RESOURCES})
     
+    # Include OpenCV headers
+    file(GLOB OPENCV_MODULE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv-4.13.0/modules/*/include")
+    target_include_directories(mfcapture PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv-4.13.0/include
+        ${OPENCV_MODULE_INCLUDE_DIRS}
+    )
+    
     # Set target frameworks and link libraries
     target_link_libraries(mfcapture PRIVATE
         opencv_world
@@ -436,6 +444,7 @@ elseif(APPLE)
         "-framework CoreVideo"
         "-framework OpenGL"
         "-framework AppKit"
+        "-framework UniformTypeIdentifiers"
     )
     
     # Configure macOS App Bundle properties
@@ -447,12 +456,12 @@ elseif(APPLE)
         INSTALL_RPATH "@executable_path/../Frameworks"
     )
     
-    # Copy shared libraries (dylibs) to Frameworks inside the bundle and fix load paths
+    # Copy shared libraries (dylibs) to Frameworks inside the bundle and create symlinks
     add_custom_command(TARGET mfcapture POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:mfcapture>/../Frameworks
         COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:opencv_world> $<TARGET_FILE_DIR:mfcapture>/../Frameworks/
-        COMMAND install_name_tool -id @executable_path/../Frameworks/$<TARGET_FILE_NAME:opencv_world> $<TARGET_FILE_DIR:mfcapture>/../Frameworks/$<TARGET_FILE_NAME:opencv_world>
-        COMMAND install_name_tool -change $<TARGET_FILE:opencv_world> @executable_path/../Frameworks/$<TARGET_FILE_NAME:opencv_world> $<TARGET_FILE:mfcapture>
+        COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE_NAME:opencv_world> $<TARGET_FILE_DIR:mfcapture>/../Frameworks/$<TARGET_SONAME_FILE_NAME:opencv_world>
+        COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_SONAME_FILE_NAME:opencv_world> $<TARGET_FILE_DIR:mfcapture>/../Frameworks/$<TARGET_LINKER_FILE_NAME:opencv_world>
         COMMENT "Packaging dynamic libraries inside the macOS App Bundle..."
     )
 
