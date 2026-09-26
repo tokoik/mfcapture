@@ -92,4 +92,24 @@ public:
   /// @return (k1, k2, p1, p2, k3) の順に格納した配列
   ///
   std::array<float, 5> getDistortionParameters() const;
+
+  ///
+  /// カメラ行列を取り出す
+  ///
+  /// @return カメラ行列への参照
+  ///
+  const cv::Mat& getCameraMatrix() const
+  {
+    return cameraMatrix;
+  }
+
+  ///
+  /// 歪み係数を取り出す
+  ///
+  /// @return 歪み係数への参照
+  ///
+  const cv::Mat& getDistortion() const
+  {
+    return distortion;
+  }
 };

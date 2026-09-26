@@ -21,6 +21,9 @@
 // メニュー
 #include "Menu.h"
 
+// ArUco Marker 認識
+#include "Aruco.h"
+
 // 構成ファイル名
 #define CONFIG_FILE PROJECT_NAME "_config.json"
 
@@ -44,8 +47,11 @@ int GgApp::main(int argc, const char* const* argv)
   // calib が出力したカメラ内部パラメータと歪み係数
   Undistortion undistortion;
 
+  // ArUco Marker 認識
+  Aruco aruco{ config.getSettings().dictionaryName };
+
   // メニューを作る
-  Menu menu{ config, capture, undistortion };
+  Menu menu{ config, capture, undistortion, aruco };
 
   // キャプチャデバイスで初期画像を開く
   if (!capture.openImage(config.getInitialImage())) throw std::runtime_error("Cannot open initial image.");
@@ -84,6 +90,16 @@ int GgApp::main(int argc, const char* const* argv)
         // 較正値から作成した座標マップでレンズ歪みを補正する。
         undistortion.apply(sourceFrame, correctedFrame);
 
+        // ArUco Marker を検出するなら
+        if (menu.detectMarker)
+        {
+          // 較正後画像に対してマーカー認識を行う。
+          // 既に歪み補正済みのため歪み係数は渡さない（空行列）。
+          aruco.detectMarkers(correctedFrame, menu.getMarkerLength(),
+            undistortion.ready() ? undistortion.getCameraMatrix() : cv::Mat{},
+            cv::Mat{});
+        }
+
         // 補正済みのCPU画像を表示用テクスチャへアップロードする。
         frame.drawPixels(correctedFrame.cols, correctedFrame.rows,
           correctedFrame.channels(), correctedFrame.data);
@@ -99,13 +115,57 @@ int GgApp::main(int argc, const char* const* argv)
       const auto&& undistortSize{ menu.setupUndistortion(undistortedFramebuffer.getAspect()) };
       undistortedFramebuffer.update(undistortSize, frame);
 
+      // ArUco Marker を検出するなら
+      if (menu.detectMarker)
+      {
+        // 較正後画像（undistortedFramebuffer）の内容をピクセルバッファオブジェクトに転送する
+        undistortedFramebuffer.readPixels();
+
+        // 較正後画像のサイズを調べる
+        const auto size{ cv::Size{ undistortedFramebuffer.getWidth(), undistortedFramebuffer.getHeight() } };
+
+        // ピクセルバッファオブジェクトを CPU のメモリ空間にマップする
+        cv::Mat image{ size, CV_8UC(undistortedFramebuffer.getChannels()), undistortedFramebuffer.map() };
+
+        // 較正後画像に対してマーカー認識を行う。
+        // 既に歪み補正済みのため歪み係数は渡さない（空行列）。
+        aruco.detectMarkers(image, menu.getMarkerLength(),
+          undistortion.ready() ? undistortion.getCameraMatrix() : cv::Mat{},
+          cv::Mat{});
+
+        // ピクセルバッファオブジェクトのマップを解除する
+        undistortedFramebuffer.unmap();
+
+        // ピクセルバッファオブジェクトの内容をフレームバッファオブジェクトに書き戻す
+        undistortedFramebuffer.drawPixels();
+      }
+
       // 補正結果のフレームを展開パスの入力とする
       processedFrame = &undistortedFramebuffer;
     }
     else
     {
-      // 補正なしではCPU処理が不要なので、高速なPBO経路を維持する。
-      if (capture.retrieve(frame)) frame.drawPixels();
+      // ArUco Marker を検出するなら
+      if (menu.detectMarker)
+      {
+        if (capture.retrieve(sourceFrame))
+        {
+          // 補正前の生画像に対してマーカー認識を行う。
+          // 較正パラメータがある場合は歪み係数も渡して座標軸を描く。
+          aruco.detectMarkers(sourceFrame, menu.getMarkerLength(),
+            undistortion.ready() ? undistortion.getCameraMatrix() : cv::Mat{},
+            undistortion.ready() ? undistortion.getDistortion() : cv::Mat{});
+
+          // マーカー描画済みの生画像を表示用テクスチャへアップロードする。
+          frame.drawPixels(sourceFrame.cols, sourceFrame.rows,
+            sourceFrame.channels(), sourceFrame.data);
+        }
+      }
+      else
+      {
+        // 補正なし・認識なしではCPU処理が不要なので、高速なPBO経路を維持する。
+        if (capture.retrieve(frame)) frame.drawPixels();
+      }
     }
 
     // 第2パス：フレームバッファオブジェクトのサイズを補正後のフレームに合わせる

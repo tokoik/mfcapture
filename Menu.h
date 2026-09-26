@@ -17,6 +17,9 @@
 // レンズ歪み補正
 #include "Undistortion.h"
 
+// ArUco Marker 認識
+#include "Aruco.h"
+
 ///
 /// メニューの描画
 ///
@@ -87,6 +90,9 @@ class Menu
   /// 較正パラメータと補正処理
   Undistortion& undistortion;
 
+  /// ArUco Marker 認識処理
+  Aruco& aruco;
+
   /// 選択中の補正方法
   UndistortionMode undistortionMode{ UndistortionMode::None };
 
@@ -144,6 +150,9 @@ class Menu
 
   /// 入力パネルの表示
   bool showInputPanel{ true };
+
+  /// ArUco パネルの表示
+  bool showArucoPanel{ true };
 
   /// 終了するなら true
   bool quit{ false };
@@ -231,6 +240,11 @@ class Menu
   void drawInputPanel();
 
   ///
+  /// ArUco Marker の設定と認識を行うパネルを描画する
+  ///
+  void drawArucoPanel();
+
+  ///
   /// 保留中のエラーメッセージをダイアログとして描画する
   ///
   void drawErrorDialog();
@@ -240,14 +254,18 @@ public:
   /// レイテンシを優先するなら true
   bool prioritizeLatency{ true };
 
+  /// ArUco Marker を検出するなら true
+  bool detectMarker{ false };
+
   ///
   /// コンストラクタ
   ///
   /// @param config 構成データ
   /// @param capture 入力フレームを取得するキャプチャデバイス
   /// @param undistortion 較正パラメータと歪み補正処理
+  /// @param aruco ArUco Marker 認識処理
   ///
-  Menu(Config& config, Capture& capture, Undistortion& undistortion);
+  Menu(Config& config, Capture& capture, Undistortion& undistortion, Aruco& aruco);
 
   ///
   /// コピーコンストラクタは使用しない
@@ -297,6 +315,16 @@ public:
   auto getMenubarHeight() const
   {
     return menubarHeight;
+  }
+
+  ///
+  /// ArUco Marker の一辺の長さを得る
+  ///
+  /// @return ArUco Marker の一辺の長さ (単位 cm)
+  ///
+  auto getMarkerLength() const
+  {
+    return settings.markerLength;
   }
 
   ///

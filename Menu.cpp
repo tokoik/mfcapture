@@ -475,11 +475,12 @@ void Menu::loadCalibration()
 //
 // コンストラクタ
 //
-Menu::Menu(Config& config, Capture& capture, Undistortion& undistortion)
+Menu::Menu(Config& config, Capture& capture, Undistortion& undistortion, Aruco& aruco)
   : config{ config }
   , settings{ config.getSettings() }
   , capture{ capture }
   , undistortion{ undistortion }
+  , aruco{ aruco }
 {
   // ファイルダイアログ (Native File Dialog Extended) を初期化する
   NFD_Init();
@@ -707,7 +708,10 @@ void Menu::drawMainMenuBar()
       // 入力パネルの表示
       ImGui::MenuItem(u8"入力", NULL, &showInputPanel);
 
-      // File メニュー修了
+      // ArUco パネルの表示
+      ImGui::MenuItem(u8"ArUco", NULL, &showArucoPanel);
+
+      // ウィンドウメニュー終了
       ImGui::EndMenu();
     }
 
@@ -1091,6 +1095,54 @@ void Menu::drawInputPanel()
 }
 
 //
+// ArUco パネルの描画
+//
+void Menu::drawArucoPanel()
+{
+  // ArUco パネルを表示するなら
+  if (showArucoPanel)
+  {
+    // ウィンドウの位置と初期サイズを設定する
+    ImGui::SetNextWindowPos(ImVec2(270.0f, 2.0f + menubarHeight), ImGuiCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(222, 133), ImGuiCond_Once);
+    ImGui::Begin(u8"ArUco", &showArucoPanel);
+
+    // 認識に使用する ArUco Marker 辞書の選択コンボボックス
+    if (ImGui::BeginCombo(u8"辞書", settings.dictionaryName.c_str()))
+    {
+      // 事前定義されたすべての辞書について選択肢を表示する
+      for (auto d = aruco.dictionaryList.begin(); d != aruco.dictionaryList.end(); ++d)
+      {
+        // 現在選択中の辞書ならハイライトする
+        const bool selected{ d->first == settings.dictionaryName };
+
+        // 辞書名をコンボボックスに表示する
+        if (ImGui::Selectable(d->first.c_str(), selected))
+        {
+          // 選択された辞書名を保存し、検出器を再生成する
+          settings.dictionaryName = d->first;
+          aruco.setDictionary(settings.dictionaryName);
+        }
+
+        // 次回コンボボックスを開いたときに現在の選択位置にフォーカスする
+        if (selected) ImGui::SetItemDefaultFocus();
+      }
+      ImGui::EndCombo();
+    }
+
+    ImGui::Separator();
+
+    // ArUco Marker 認識の有効／無効チェックボックス
+    ImGui::Checkbox(u8"ArUco Marker 検出", &detectMarker);
+
+    // 姿勢推定および座標軸表示に使用する ArUco Marker の一辺の長さ (cm)
+    ImGui::InputFloat(u8"マーカ長", &settings.markerLength, 0.0f, 0.0f, "%.2f cm");
+
+    ImGui::End();
+  }
+}
+
+//
 // エラーダイアログの描画
 //
 void Menu::drawErrorDialog()
@@ -1129,5 +1181,6 @@ void Menu::draw()
   // 各ウィンドウの描画責務を分離し、この関数では一フレーム分の呼び出し順だけを管理する
   drawMainMenuBar();
   drawInputPanel();
+  drawArucoPanel();
   drawErrorDialog();
 }

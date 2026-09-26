@@ -44,7 +44,10 @@ struct Settings
   std::array<float, 2> checkerLength{ 4.0f, 2.0f };
 
   /// 検出する ArUco Marker の一辺の長さ (単位 cm)
-  float markerLength{ 5.0f };
+  float markerLength{ defaultMarkerLength };
+
+  /// 検出する ArUco Marker の一辺の長さのデフォルト値
+  static constexpr decltype(markerLength) defaultMarkerLength{ 5.0f };
 
   ///
   /// 正規化デバイス座標系における焦点距離を求める

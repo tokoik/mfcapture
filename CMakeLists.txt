@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+﻿cmake_minimum_required(VERSION 3.13)
 project(mfcapture LANGUAGES C CXX)
 
 # Configure C++ standard
@@ -120,6 +120,8 @@ include_directories(
 
 # Common source files
 set(SOURCES
+    Aruco.cpp
+    Aruco.h
     Buffer.cpp
     Buffer.h
     CamCv.h
@@ -171,6 +173,7 @@ set(SOURCES
 
 # 1. Header Files (.h)
 set(HEADER_FILES_LIST
+    Aruco.h
     Buffer.h
     CamCv.h
     CamLibcam.h

@@ -146,6 +146,10 @@ bool Config::load(const pathString& filename)
   // ArUco Marker の辞書名
   getString(object, "dictionary", loadedSettings.dictionaryName);
 
+  // ArUco Marker の一辺の長さ
+  if (!getValue(object, "marker", loadedSettings.markerLength))
+    getValue(object, "markerLength", loadedSettings.markerLength);
+
   // 初期表示画像
   getString(object, "initial", loadedInitialImage);
 
@@ -223,6 +227,12 @@ bool Config::save(const pathString& filename) const
 
   // 描画時の焦点距離の範囲
   setValue(object, "range", settings.focalRange);
+
+  // ArUco Marker 辞書名
+  setString(object, "dictionary", settings.dictionaryName);
+
+  // ArUco Marker の一辺の長さ
+  setValue(object, "marker", settings.markerLength);
 
   // 初期表示画像
   setString(object, "initial", initialImage);
