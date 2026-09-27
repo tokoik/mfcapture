@@ -99,7 +99,7 @@ class Menu
   /// 選択しているキャプチャデバイスの番号
   int deviceNumber{ 0 };
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__ANDROID__)
   /// 選択しているビデオフォーマットの番号
   int formatNumber{ 0 };
 
@@ -137,6 +137,20 @@ class Menu
 
   /// デバイスプリファレンス
   cv::VideoCaptureAPIs backend{ cv::CAP_ANY };
+#endif
+
+#if defined(__ANDROID__)
+  /// ファイル選択モーダルの種類
+  enum class FileModalType { None, Image, Calibration };
+
+  /// ファイル選択モーダルの種類
+  FileModalType fileModalType{ FileModalType::None };
+
+  /// ファイル選択モーダルの表示フラグ
+  bool showFileModal{ false };
+
+  /// ファイル選択モーダルを描画する
+  void drawFileModal();
 #endif
 
   /// 使用中の構成の番号
