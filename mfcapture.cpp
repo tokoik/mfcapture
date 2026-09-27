@@ -94,9 +94,11 @@ int GgApp::main(int argc, const char* const* argv)
         if (menu.detectMarker)
         {
           // 較正後画像に対してマーカー認識を行う。
-          // 歪み補正前のカメラパラメータでは較正後画像に対する正確な姿勢推定が行えないため、
-          // 姿勢推定（座標軸描画）は行わず、マーカーの矩形枠と ID 番号を描画する。
-          aruco.detectMarkers(correctedFrame, menu.getMarkerLength());
+          // 既に歪み補正済みのため、歪み係数はゼロ（空行列）としてカメラパラメータを渡し、
+          // 姿勢推定を行って 3 次元の座標軸を描画する。
+          aruco.detectMarkers(correctedFrame, menu.getMarkerLength(),
+            undistortion.ready() ? undistortion.getCameraMatrix() : cv::Mat{},
+            cv::Mat{});
         }
 
         // 補正済みのCPU画像を表示用テクスチャへアップロードする。
@@ -127,9 +129,11 @@ int GgApp::main(int argc, const char* const* argv)
         cv::Mat image{ size, CV_8UC(undistortedFramebuffer.getChannels()), undistortedFramebuffer.map() };
 
         // 較正後画像に対してマーカー認識を行う。
-        // 歪み補正前のカメラパラメータでは較正後画像に対する正確な姿勢推定が行えないため、
-        // 姿勢推定（座標軸描画）は行わず、マーカーの矩形枠と ID 番号を描画する。
-        aruco.detectMarkers(image, menu.getMarkerLength());
+        // 既に歪み補正済みのため、歪み係数はゼロ（空行列）としてカメラパラメータを渡し、
+        // 姿勢推定を行って 3 次元の座標軸を描画する。
+        aruco.detectMarkers(image, menu.getMarkerLength(),
+          undistortion.ready() ? undistortion.getCameraMatrix() : cv::Mat{},
+          cv::Mat{});
 
         // ピクセルバッファオブジェクトのマップを解除する
         undistortedFramebuffer.unmap();
@@ -149,7 +153,8 @@ int GgApp::main(int argc, const char* const* argv)
         if (capture.retrieve(sourceFrame))
         {
           // 補正前の生画像に対してマーカー認識を行う。
-          // 較正パラメータがある場合は歪み係数も渡して座標軸を描く。
+          // 較正パラメータがある場合は歪み係数も渡して姿勢推定を行い座標軸を描く。
+          // 較正パラメータがない場合はカメラ行列を渡さず、矩形枠と ID を描く。
           aruco.detectMarkers(sourceFrame, menu.getMarkerLength(),
             undistortion.ready() ? undistortion.getCameraMatrix() : cv::Mat{},
             undistortion.ready() ? undistortion.getDistortion() : cv::Mat{});
