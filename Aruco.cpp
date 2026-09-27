@@ -92,7 +92,7 @@ void Aruco::detectMarkers(cv::Mat& image, float markerLength,
   }
   else
   {
-    // カメラパラメータが読み込まれていなければ、ArUco Marker の場所に矩形枠と ID 番号を描き込む
+    // カメラパラメータが指定されていなければ、ArUco Marker の場所に矩形枠と ID 番号を描き込む
     cv::aruco::drawDetectedMarkers(tempImage, corners, ids);
   }
 
