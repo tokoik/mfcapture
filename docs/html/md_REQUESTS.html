@@ -1,0 +1,447 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.15.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mfcapture: 作業指示および対応履歴</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="gg.ico"/></td>
+  <td id="projectalign">
+   <div id="projectname">mfcapture<span id="projectnumber">&#160;0.0.1</span>
+   </div>
+   <div id="projectbrief">Microsoft Media Foundation によるビデオキャプチャサンプル</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.15.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','検索',true);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('md_REQUESTS.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">作業指示および対応履歴 </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p><a class="anchor" id="autotoc_md84"></a></p>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md85"></a>
+概要</h1>
+<p>本プロジェクトでは、Windows Media Foundation による低遅延キャプチャを導入し、 CMake ベースの再現可能なビルド環境へ移行したうえで、機能を画像取得と GLSL 表示に 整理しました。その後、<span class="tt">calib-wom-msmf</span> が出力した内部パラメータを利用し、 OpenCV と OpenGL の二方式を比較できる歪み補正機能を追加しています。</p>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md86"></a>
+作業履歴</h1>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md87"></a>
+1. <span class="tt">CamMf</span> のバックポート</h2>
+<ul>
+<li><b>指示</b>: <span class="tt">calib-wom-msmf</span> の <span class="tt"><a class="el" href="classCamMf.html">CamMf</a></span> クラスを <span class="tt">mfcapture</span> へバックポートする。</li>
+<li><b>対応</b>:<ul>
+<li>Microsoft Media Foundation Source Reader、MFT デコーダ、カラーコンバータを 使用するカメラ入力を移植した。</li>
+<li>H.264／MJPG などの入力を CPU メモリ上の表示可能なフレームへ変換した。</li>
+<li>レイテンシ優先と全フレーム処理の切り替え、フォーマット列挙、遅延初期化、 COM リソース管理を反映した。</li>
+<li><span class="tt"><a class="el" href="classCamera.html">Camera</a></span> と <span class="tt"><a class="el" href="classCapture.html">Capture</a></span> のフレーム転送経路を移植後のインターフェースへ合わせた。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md88"></a>
+2. CMake ビルドと依存ライブラリ管理</h2>
+<ul>
+<li><b>指示</b>: <span class="tt">calib-wom-mf</span> と同様に CMake でビルドできるようにし、ダウンロードした ライブラリを <span class="tt">libs</span> へ置く。既存の <span class="tt">libs</span> ジャンクションは削除する。</li>
+<li><b>対応</b>:<ul>
+<li>C++17 の <span class="tt">CMakeLists.txt</span> を整備した。</li>
+<li>OpenCV、GLFW、Dear ImGui、Native File Dialog Extended などを <span class="tt">libs</span> 以下へ 取得して参照する構成にした。</li>
+<li><span class="tt">libs</span> ジャンクションを削除し、通常のディレクトリへ置き換えた。</li>
+<li>実行時に必要な DLL、構成ファイル、シェーダー、画像、フォントをビルド先へ コピーする処理を追加した。</li>
+<li>Visual Studio の Debug／Release 構成でビルドできることを確認した。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md89"></a>
+3. 較正機能と ChArUco Board 作成機能の削除</h2>
+<ul>
+<li><b>指示</b>: <span class="tt">mfcapture</span> から ChArUco Board 作成を含む較正機能を削除し、 キャプチャした画像を GLSL で変形表示するだけにする。</li>
+<li><b>対応</b>:<ul>
+<li>マーカー検出、標本取得、較正計算、ChArUco Board 作成に関するクラス、UI、 設定を削除した。</li>
+<li>入力、テクスチャ転送、GLSL 変換、画面表示という処理へ責務を整理した。</li>
+<li>OpenCV は動画入力や後に追加する画像補正に必要な範囲だけ残した。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md90"></a>
+4. ソーストップディレクトリの整理</h2>
+<ul>
+<li><b>指示</b>: 不要になったプロジェクトファイルなどを削除し、&lt;tt&gt;.gitignore</li>
+</ul>
+<p>も修正する。</p><ul>
+<li><b>対応</b>:<ul>
+<li>CMake から生成できる Visual Studio プロジェクトファイルや古いビルド成果物を ソース管理対象から削除した。</li>
+<li>out-of-source build を前提に <span class="tt">.gitignore</span> を更新した。</li>
+<li>ダウンロード依存物、生成文書、各構成のビルド成果物を無視するよう整理した。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md91"></a>
+5. 描画ループ内の <span class="tt">Framebuffer::resize()</span> の確認</h2>
+<ul>
+<li><b>質問</b>: 毎フレーム <span class="tt">framebuffer.resize(frame)</span> を呼ぶことによるオーバーヘッドは 大きくないか。</li>
+<li><b>確認結果</b>:<ul>
+<li><span class="tt">resize()</span> は現在サイズと入力フレームサイズを比較し、同じ場合は再確保しない。</li>
+<li>通常フレームで行われる処理はサイズ確認だけであり、大きなオーバーヘッドには ならない。</li>
+<li>入力源や解像度が変化した場合だけ、Framebuffer Object と付随リソースを 作り直す現在の呼び出し位置を維持した。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md92"></a>
+6. 較正ファイルによる歪み補正の追加</h2>
+<ul>
+<li><b>指示</b>:<ul>
+<li><span class="tt">calib-wom-msmf</span> で作成した内部パラメータ JSON を「ファイル」メニューから Native File Dialog Extended で読み込む。</li>
+<li>OpenCV と OpenGL／GLSL の二方式で補正する。</li>
+<li><span class="tt">mfcapture_config.json</span> の <span class="tt">Default</span> に <span class="tt">undistortion</span> ノードを追加する。</li>
+<li>「なし」「OpenCV」「OpenGL」のラジオボタンを追加する。</li>
+</ul>
+</li>
+<li><b>対応</b>:<ul>
+<li><span class="tt"><a class="el" href="classUndistortion.html">Undistortion</a></span> クラスを追加し、<span class="tt">camera matrix</span> と <span class="tt">distortion</span> を保持するようにした。</li>
+<li>JSON の必須項目と行列サイズを検証し、成功時だけ現在値を置き換えるようにした。</li>
+<li>OpenCV 方式はキャプチャ直後かつ GPU 転送前に <span class="tt">cv::remap()</span> を実行するようにした。 この位置により GPU から CPU への読み戻しを避けられる。</li>
+<li>補正マップは入力サイズが変化した場合だけ <span class="tt">cv::initUndistortRectifyMap()</span> で再作成するようにした。</li>
+<li><span class="tt">undistortion.vert</span> と <span class="tt">undistortion.frag</span> を追加し、GLSL で歪み座標を計算する OpenGL 方式を実装した。</li>
+<li><span class="tt"><a class="el" href="classPreference.html">Preference</a></span> が通常シェーダーと補正シェーダーを起動時に構築し、 <span class="tt"><a class="el" href="classMenu.html#a144b100568382513c749f88bd7b92495">Menu::setup()</a></span> が選択方式に応じて切り替えるようにした。</li>
+<li>較正値がない状態では OpenCV／OpenGL を選択できないようにした。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md93"></a>
+7. 較正ファイル読み込み時の例外修正</h2>
+<ul>
+<li><b>指示</b>: <span class="tt">mfcapture</span> では <span class="tt"><a class="el" href="Undistortion_8cpp.html">Undistortion.cpp</a></span> の行列読み込みで例外が発生するが、 同じファイルを <span class="tt">calib-wom-msmf</span> では正常に読めるため修正する。</li>
+<li><b>原因</b>:<ul>
+<li><span class="tt">cv::Mat loaded{ rows, columns, CV_64F };</span> が行列サイズを指定する コンストラクタではなく initializer-list と解釈され、意図しない 3×1 行列が 作成されていた。</li>
+<li>その行列へ 3×3 の要素を書き込んだため範囲外アクセスの例外が発生した。</li>
+</ul>
+</li>
+<li><b>対応</b>:<ul>
+<li><span class="tt">cv::Mat loaded(rows, columns, CV_64F);</span> と丸括弧による構築へ変更した。</li>
+<li>読み込み失敗時に現在の較正値を部分更新しない処理を維持した。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md94"></a>
+8. 教材向けコメントと Doxygen の整備</h2>
+<ul>
+<li><b>指示</b>: 追加コードの各ブロックへ「何のために、どういう処理を行うか」を説明する コメントと Doxygen コメントを追加し、既存コメントも点検する。</li>
+<li><b>対応</b>:<ul>
+<li><span class="tt"><a class="el" href="classUndistortion.html">Undistortion</a></span>、較正ファイル読み込み、OpenCV 補正経路、シェーダー切り替え、 uniform 設定へ目的を説明する日本語コメントを追加した。</li>
+<li>GLSL へカメラ座標、正規化座標、放射・接線歪み、範囲外判定の説明を追加した。</li>
+<li>公開型、公開関数、引数、戻り値の Doxygen コメントを追加・更新した。</li>
+<li>既存コードの <span class="tt">@param</span> 引数名不一致、誤記、未知の Doxygen コマンドを修正した。</li>
+<li><span class="tt">Doxyfile</span> が <span class="tt">libs</span>、<span class="tt">build</span>、<span class="tt">docs</span> を走査しないよう更新した。</li>
+</ul>
+</li>
+<li><b>検証</b>:<ul>
+<li>Doxygen でプロジェクトコードの引数・コメント不一致がないことを確認した。</li>
+<li>Debug／Release の両構成でビルドが成功した。</li>
+<li><span class="tt">git diff --check</span> が成功した。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md95"></a>
+9. プロジェクト文書の整備</h2>
+<ul>
+<li><b>指示</b>: <span class="tt">calib-wom-msmf</span> に倣い、プログラム解説、開発方針、依頼と処理内容の 履歴を作成する。</li>
+<li><b>対応</b>:<ul>
+<li>利用方法、処理の流れ、クラスの責務、補正方式、ビルド方法を <span class="tt"><a class="el" href="README_8md.html">README.md</a></span> に まとめた。</li>
+<li>教材としての目的、クラス境界、画像処理パイプライン、安全性、コメント方針、 検証方針を <span class="tt"><a class="el" href="GEMINI_8md.html">GEMINI.md</a></span> にまとめた。</li>
+<li>これまでの指示、原因、対応、検証結果を本 <span class="tt"><a class="el" href="REQUESTS_8md.html">REQUESTS.md</a></span> に時系列で記録した。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md96"></a>
+10. クラスメンバ変数の初期化の集約</h2>
+<ul>
+<li><b>指示</b>: クラスメンバ変数の初期化を、コンストラクタからクラス定義（ヘッダ内）へ移行する。</li>
+<li><b>対応</b>:<ul>
+<li><span class="tt"><a class="el" href="classBuffer.html">Buffer</a></span>, <span class="tt"><a class="el" href="classCamera.html">Camera</a></span>, <span class="tt"><a class="el" href="classCamCv.html">CamCv</a></span>, <span class="tt"><a class="el" href="classCamImage.html">CamImage</a></span>, <span class="tt"><a class="el" href="classCamMf.html">CamMf</a></span>, <span class="tt"><a class="el" href="classCapture.html">Capture</a></span>, <span class="tt"><a class="el" href="classConfig.html">Config</a></span>, <span class="tt"><a class="el" href="classExpand.html">Expand</a></span>, <span class="tt"><a class="el" href="classFramebuffer.html">Framebuffer</a></span>, <span class="tt"><a class="el" href="structIntrinsics.html">Intrinsics</a></span>, <span class="tt"><a class="el" href="classMenu.html">Menu</a></span>, <span class="tt"><a class="el" href="classPreference.html">Preference</a></span>, <span class="tt"><a class="el" href="classTexture.html">Texture</a></span>, <span class="tt"><a class="el" href="classUndistortion.html">Undistortion</a></span> 等の全クラスで、初期値をヘッダ内（インクラス初期化構文 <span class="tt">int x{ 0 };</span>, <span class="tt"><a class="el" href="classFramebuffer.html">Framebuffer()</a> = default;</span> 等）へ集約した。</li>
+<li>コンストラクタ初期化子リストをシンプル化し、メンバーの初期化漏れを防ぐ構造へリファクタリングした。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md97"></a>
+11. <span class="tt">const_cast</span> および <span class="tt">friend</span> の完全廃止と公開 API の採用</h2>
+<ul>
+<li><b>指示</b>: <span class="tt">mfcapture</span> で使っている <span class="tt">const_cast</span> や <span class="tt">friend</span> を、<span class="tt">calib-wom-msmf</span> に倣って getter / setter に置き換える。</li>
+<li><b>対応</b>:<ul>
+<li><span class="tt"><a class="el" href="Config_8h.html">Config.h</a></span> から <span class="tt">friend class <a class="el" href="classMenu.html">Menu</a>;</span> 宣言を削除し、<span class="tt">getSettings()</span>, <span class="tt">setSettings()</span>, <span class="tt">getPreferences()</span> 等の公開 API を追加した。</li>
+<li><span class="tt"><a class="el" href="classMenu.html">Menu</a></span> が保持する <span class="tt"><a class="el" href="classConfig.html">Config</a></span> への参照を非 <span class="tt">const</span> 参照 (<span class="tt"><a class="el" href="classConfig.html">Config</a>&amp; config</span>) へ変更し、<span class="tt">Menu::loadConfig()</span> や <span class="tt">saveConfig()</span> での <span class="tt">const_cast</span> を全廃した。</li>
+<li>直接的なプライベートメンバ参照を公開 API 経由に統一し、カプセル化と安全性を向上させた。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md98"></a>
+12. 共通処理における命名規約・コメントの統一とドキュメント同期</h2>
+<ul>
+<li><b>指示</b>:<ul>
+<li><span class="tt">calib-wom-msmf</span> と <span class="tt">mfcapture</span> で共通する変数名・関数名は <span class="tt">mfcapture</span> のものに合わせる。</li>
+<li>コメント表現は <span class="tt">calib-wom-msmf</span> に合わせる。</li>
+<li>修正内容を両プロジェクトのドキュメント (Markdown, HTML) に反映する。</li>
+</ul>
+</li>
+<li><b>対応</b>:<ul>
+<li><span class="tt">calib-wom-msmf</span> と <span class="tt">mfcapture</span> 間で共通する変数名・関数名を <span class="tt">mfcapture</span> の命名規則へ統一し、Doxygen および実装コメント記述を <span class="tt">calib-wom-msmf</span> の解説表現へ統一した。</li>
+<li>C++ ソースは <span class="tt">UTF-8 with BOM</span>、GLSL ソースは <span class="tt">UTF-8 without BOM</span> の保存形式を再検証し、Debug / Release 両構成での正常ビルドを確認した。</li>
+<li><span class="tt">presentation.html</span>, <span class="tt"><a class="el" href="presentation_8md.html">presentation.md</a></span>, <span class="tt">workshop_handbook.html</span>, <span class="tt"><a class="el" href="workshop__handbook_8md.html">workshop_handbook.md</a></span>, <span class="tt">images/</span> 内のプレゼンテーション・ハンドブック教材資産に C++ クラス設計・カプセル化方針を追記し、<span class="tt">calib-wom-msmf</span> および <span class="tt">mfcapture</span> の両ワークツリーへ反映・同期した。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md99"></a>
+13. GStreamer 関連コードの削除</h2>
+<ul>
+<li><b>指示</b>: GStreamer は使用しないため、<span class="tt">mfcapture</span> の関連コードを削除し、<span class="tt"><a class="el" href="GEMINI_8md.html">GEMINI.md</a></span>, <span class="tt"><a class="el" href="README_8md.html">README.md</a></span>, <span class="tt"><a class="el" href="REQUESTS_8md.html">REQUESTS.md</a></span> も更新する。</li>
+<li><b>対応</b>:<ul>
+<li><span class="tt"><a class="el" href="Menu_8cpp.html">Menu.cpp</a></span> から <span class="tt">cv::CAP_GSTREAMER</span> バックエンド定義および <span class="tt">openDevice()</span> 内の GStreamer パイプライン処理分岐を完全に削除した。</li>
+<li><span class="tt"><a class="el" href="GEMINI_8md.html">GEMINI.md</a></span> に GStreamer 非対応・構成非追加の基本方針を明記した。</li>
+<li>Debug / Release 両構成での完全ビルドが成功することを確認した。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md100"></a>
+14. Raspberry Pi (<span class="tt">CamLibcam</span>) および Linux ARM (GLES 3.1) のサポート</h2>
+<ul>
+<li><b>指示</b>: <span class="tt">calib-rpi</span> に追加された <span class="tt">CamLibcam</span> クラスを <span class="tt">mfcapture</span> へ導入し、技術解説ドキュメント <span class="tt">CamLibcam.md</span> を作成する。また Raspberry Pi (Linux ARM) 上でビルド・動作可能にする。</li>
+<li><b>対応</b>:<ul>
+<li><span class="tt"><a class="el" href="CamLibcam_8h.html">CamLibcam.h</a></span>, <span class="tt"><a class="el" href="CamLibcam_8cpp.html">CamLibcam.cpp</a></span>, <span class="tt">CamLibcam.md</span> を導入し、libcamera ネイティブバックエンドによる高効率なフレーム取得・色変換処理を実装した。</li>
+<li>Linux 環境における <span class="tt">cv::CAP_V4L2</span> カメラ選択と <span class="tt">/sys/class/video4linux</span> デバイス列挙を整備した。</li>
+<li>CMake オプション <span class="tt">USE_GLES</span> および <span class="tt">USE_LIBCAMERA</span> を整備し、OpenGL ES 3.1 / EGL 環境に対応した。</li>
+<li>Linux 環境特有のビルドエラー（<span class="tt">pwd.h</span>, <span class="tt">sys/types.h</span> 不足や GLES での <span class="tt">GL_BGR</span> 未定義等）を解消した。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md101"></a>
+15. <span class="tt">GgApp::OpenXR</span> への統合と同期</h2>
+<ul>
+<li><b>指示</b>: <span class="tt">calib-rpi</span> と <span class="tt">mfcapture</span> の <span class="tt"><a class="el" href="classGgApp.html">GgApp</a></span> クラスの OpenXR 対応を <span class="tt">calib-openxr</span> と一致させ、リベースおよび同期を可能にする。</li>
+<li><b>対応</b>:<ul>
+<li><span class="tt"><a class="el" href="classGgApp.html">GgApp</a></span> 内部に公式 OpenXR 実装をカプセル化し、MSVC Debug 構成での <span class="tt">openxr_loaderd.lib</span> リンク不整合を解消した。</li>
+<li>3 つのリポジトリ間で OpenXR 実装の足並みを揃え、VR / MR ヘッドセットへのステレオ出力パスを確立した。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md102"></a>
+16. レンズ歪み補正の 2 パス描画パイプライン統合 (OpenCV / OpenGL 結果・アスペクト比の完全一致)</h2>
+<ul>
+<li><b>指示</b>: OpenCV による歪み補正と OpenGL による歪み補正で結果（画角、アスペクト比、拡大縮小率）が一致しない問題を解消する。</li>
+<li><b>原因</b>:<ul>
+<li>OpenCV 方式では歪み補正後に <a class="el" href="classPreference.html">Preference</a> の展開シェーダー（<span class="tt">orthographic.vert</span> + <span class="tt">normal.frag</span>）が二重に適用されていたのに対し、OpenGL 方式では展開シェーダーがスキップされ、歪み補正シェーダー（<span class="tt">undistortion.vert</span> + <span class="tt">undistortion.frag</span>）のみが実行されていたため、画角やアスペクト比が一致していなかった。</li>
+</ul>
+</li>
+<li><b>対応</b>:<ul>
+<li>レンダリングパイプラインを「第 1 パス：歪み補正（OpenCV / OpenGL / なし）」$\rightarrow$「第 2 パス：共通の <a class="el" href="classPreference.html">Preference</a> 展開シェーダー」の 2 パス構成に統合した。</li>
+<li>中間フレームバッファ <span class="tt">undistortedFramebuffer</span> を導入し、OpenGL 方式では第 1 パスで GPU 歪み補正を行い、その結果を展開パスへ渡すようにした。</li>
+<li><span class="tt"><a class="el" href="classMenu.html#a4f36a627c2bbe5c84d9722779dab5ed9">Menu::setupUndistortion()</a></span> を新設して歪み補正シェーダーの設定を分離し、<span class="tt"><a class="el" href="classMenu.html#a144b100568382513c749f88bd7b92495">Menu::setup()</a></span> は常に展開シェーダーを設定するように整理した。</li>
+<li>最終表示を <span class="tt">framebuffer.draw(window.getFboWidth(), window.getFboHeight())</span> に統一し、HiDPI 環境でのアスペクト比歪みを防止した。</li>
+</ul>
+</li>
+<li><b>検証</b>:<ul>
+<li>OpenCV 方式と OpenGL 方式を切り替えても、画角・アスペクト比・拡大縮小率が完全に一致することを確認した。</li>
+<li>MSVC Debug / Release 両構成で警告・エラーなくビルドが成功することを確認した。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md103"></a>
+17. CamMf.md / CamLibcam.md の calib への移行と Camera クラスの再設計・最適化</h2>
+<ul>
+<li><b>指示</b>:<ul>
+<li><span class="tt">mfcapture</span> にあった <span class="tt">CamMf.md</span> と <span class="tt">CamLibcam.md</span> を <span class="tt">calib</span> リポジトリの <span class="tt">docs/</span> 配下へ移行する。</li>
+<li><span class="tt"><a class="el" href="classCamera.html">Camera</a></span> クラスの設計見直しと最適化（NVI パターン導入、二重バッファ廃止、外部依存排除、ゼロコピー化）を実施する。</li>
+</ul>
+</li>
+<li><b>対応</b>:<ul>
+<li><span class="tt">CamMf.md</span> および <span class="tt">CamLibcam.md</span> を <span class="tt">calib/docs/</span> へ移動し、<span class="tt">mfcapture</span> 側のリンクおよび参照関係を更新した。</li>
+<li><span class="tt"><a class="el" href="Camera_8h.html">Camera.h</a></span> から OpenGL (<span class="tt"><a class="el" href="gg_8h.html">gg.h</a></span>)、OpenCV、GLFW への不要な依存を完全に排除し、標準 C++ ライブラリのみで構成された純粋なフレーム取得レイヤへ再設計した。</li>
+<li>NVI (Non-Virtual Interface) パターンを導入し、<span class="tt">start()</span>, <span class="tt">stop()</span>, <span class="tt">close()</span> の公開メソッドでスレッド状態（<span class="tt">running</span>）、排他制御、およびスレッド合流（<span class="tt">thr.join()</span>）のライフサイクルを一元管理した。派生クラスは保護フック <span class="tt">onStart()</span>, <span class="tt">onStop()</span>, <span class="tt">onClose()</span> を実装する責務分担とした。</li>
+<li>従来の <span class="tt">frame</span> と <span class="tt">image</span> の二重バッファを廃止し、<span class="tt">std::vector&lt;std::uint8_t&gt; image</span> の単一バッファへ集約してメモリ消費およびコピーコストを削減した。</li>
+<li>コールバック関数テンプレート <span class="tt">lockFrame(F&amp;&amp; func)</span> を実装し、非ブロッキングロック（<span class="tt">try_to_lock</span>）のもとで PBO への直接転送（<span class="tt">glBufferSubData</span>）や <span class="tt">cv::Mat</span> へのコピーを行うゼロコピーアーキテクチャへ刷新した。</li>
+<li><span class="tt"><a class="el" href="Capture_8h.html">Capture.h</a></span> / <span class="tt"><a class="el" href="Capture_8cpp.html">Capture.cpp</a></span> における <span class="tt">dynamic_cast&lt;CamMf*&gt;</span> や <span class="tt">dynamic_cast&lt;CamImage*&gt;</span> への依存を排除し、基底クラスの仮想関数 <span class="tt">isStillImage()</span>, <span class="tt">getFormatList()</span>, <span class="tt">selectFormat()</span> を介した疎結合なポリモーフィック設計へリファクタリングした。</li>
+<li><span class="tt"><a class="el" href="classCamCv.html">CamCv</a></span>, <span class="tt"><a class="el" href="classCamMf.html">CamMf</a></span>, <span class="tt">CamLibcam</span>, <span class="tt"><a class="el" href="classCamImage.html">CamImage</a></span> の全派生クラスを新設計へ適合させ、<span class="tt"><a class="el" href="classCamCv.html">CamCv</a></span> 内の不要な中間 <span class="tt">cv::Mat</span> コピーの排除や動画再生制御変数の適切なカプセル化、<span class="tt"><a class="el" href="classCamMf.html">CamMf</a></span> の独立した文字列変換ヘルパー（Win32 <span class="tt">WideCharToMultiByte</span>）を実装した。</li>
+<li><span class="tt"><a class="el" href="README_8md.html">README.md</a></span>、<span class="tt"><a class="el" href="GEMINI_8md.html">GEMINI.md</a></span>、<span class="tt"><a class="el" href="REQUESTS_8md.html">REQUESTS.md</a></span> を現行アーキテクチャに合わせて更新・最適化した。</li>
+<li>MSVC Debug / Release 両構成でビルドがエラー・警告なく正常に通ることを確認した。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md104"></a>
+18. プログラム終了時の純粋仮想関数呼び出し例外の解消</h2>
+<ul>
+<li><b>現象</b>: Windows においてプログラム終了時に <span class="tt"><a class="el" href="Camera_8h.html">Camera.h</a></span> の 167 行目付近（<span class="tt">close()</span> 内の <span class="tt">onClose()</span>）で例外（R6025 pure virtual function call、終了コード 0xC0000417）が発生する。</li>
+<li><b>原因</b>: 基底クラス <span class="tt"><a class="el" href="classCamera.html">Camera</a></span> のデストラクタ <span class="tt">~Camera()</span> 内で <span class="tt"><a class="el" href="classCamera.html#a19b8e56ddba3acc0f7f963360418bf44">Camera::close()</a></span> を呼び出していたため。C++ の仕様上、基底クラスのデストラクタ実行時には派生クラス（<span class="tt"><a class="el" href="classCamMf.html">CamMf</a></span>, <span class="tt"><a class="el" href="classCamCv.html">CamCv</a></span>, <span class="tt"><a class="el" href="classCamImage.html">CamImage</a></span>, <span class="tt">CamLibcam</span>）のサブオブジェクトおよび vptr はすでに解体されており、純粋仮想関数 <span class="tt">onClose()</span> の呼び出しが <span class="tt">__purecall</span> となり例外が発生していた。</li>
+<li><b>対応</b>:<ul>
+<li><span class="tt"><a class="el" href="Camera_8h.html">Camera.h</a></span> の仮想デストラクタを <span class="tt">virtual ~Camera() = default;</span> に修正。</li>
+<li>各派生クラス（<span class="tt"><a class="el" href="classCamMf.html">CamMf</a></span>, <span class="tt"><a class="el" href="classCamCv.html">CamCv</a></span>, <span class="tt">CamLibcam</span> は既存、<span class="tt"><a class="el" href="classCamImage.html">CamImage</a></span> に明示的デストラクタを追加）のデストラクタ内で確実に <span class="tt">close()</span> を呼ぶ設計へ統一。</li>
+<li>C++ ソースファイルに UTF-8 BOM を付与し、MSVC Debug / Release ビルドおよび終了処理の正常性（終了コード 0）を確認。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md105"></a>
+19. Android スマートフォン対応</h2>
+<ul>
+<li><b>指示</b>: Android スマートフォン対応版を作成する。</li>
+<li><b>対応</b>:<ul>
+<li>Android NDK の Camera2 API (<span class="tt">ACameraManager</span>, <span class="tt">ACameraDevice</span>, <span class="tt">ACaptureSessionOutputContainer</span>, <span class="tt">ACaptureRequest</span>, <span class="tt">AImageReader</span>) を使用した低遅延カメラキャプチャバックエンド <span class="tt">CamAndroid</span> を実装。</li>
+<li><span class="tt"><a class="el" href="classCamera.html">Camera</a></span> 基底クラスの NVI 設計に従い、保護フック <span class="tt">onStart()</span>, <span class="tt">onStop()</span>, <span class="tt">onClose()</span> の実装と <span class="tt">lockFrame()</span> による非ブロッキング排他ロック・ゼロコピー転送を実現。</li>
+<li>EGL および OpenGL ES 3.1 を使用した NativeActivity (<span class="tt">android_main</span>) レンダリングライフサイクルとタッチ入力イベント（<span class="tt">ImGui_ImplAndroid_HandleInputEvent</span>）を <span class="tt"><a class="el" href="classGgApp.html">GgApp</a></span> に統合。</li>
+<li>Android 上で Native File Dialog (NFD) に代わるインアプリファイル選択モーダル <span class="tt">Menu::drawFileModal()</span> を実装。</li>
+<li>アプリ起動時に APK の <span class="tt">assets/</span> から内部ストレージへ設定ファイル・シェーダー・画像を自動展開する機構を実装。</li>
+<li>Gradle プロジェクト（<span class="tt">android/</span>）を新設し、OpenCV Android SDK 4.11.0 を自動取得・連携して APK 生成を可能にした。</li>
+<li>Windows Release ビルドおよび Android Debug APK ビルドの正常完了、ならびに <span class="tt">git diff --check</span> を確認。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md106"></a>
+20. macOS における AV Foundation (<span class="tt">CamAvf</span>) ネイティブカメラキャプチャ対応とインタフェース統一</h2>
+<ul>
+<li><b>指示</b>:<ul>
+<li>macOS 対応において、映像入力に <span class="tt"><a class="el" href="classCamCv.html">CamCv</a></span>（OpenCV + <span class="tt">cv::CAP_AVFOUNDATION</span>）を使用していたが、これではシステムからカメラデバイスの一覧やカメラの特性（解像度・フレームレート・コーデック）を取得できない。</li>
+<li>macOS ネイティブのカメラ入力に対応した <span class="tt"><a class="el" href="classCamera.html">Camera</a></span> クラスのサブクラス <span class="tt">CamAvf</span> を作成し、macOS に対応する。</li>
+<li>カメラデバイスリストやカメラの特性リストを取得・選択するインタフェースを、他のシステム（Windows <span class="tt"><a class="el" href="classCamMf.html">CamMf</a></span>, Android <span class="tt">CamAndroid</span> 等）と統一する。</li>
+</ul>
+</li>
+<li><b>対応</b>:<ul>
+<li><span class="tt"><a class="el" href="CamAvf_8h.html">CamAvf.h</a></span> および <span class="tt"><a class="el" href="CamAvf_8mm.html">CamAvf.mm</a></span> を新設し、macOS の AV Foundation を用いたネイティブキャプチャバックエンドを実装した。</li>
+<li><span class="tt">AVCaptureDeviceDiscoverySession</span> を用いて接続されているすべてのビデオデバイス（内蔵 FaceTime HD カメラ、外付け Web カメラ、連係カメラ等）を検出し、重複名対策（<span class="tt">カメラ名##インデックス</span>）を施して <span class="tt">getDeviceList()</span> に格納するようにした。</li>
+<li>各デバイスの <span class="tt">AVCaptureDeviceFormat</span> から解像度、最大フレームレート、フォーマットの 4CC / 符号化形式（<span class="tt">mediaSubType</span>）を抽出し、<span class="tt"><a class="el" href="structCaptureFormat.html">CaptureFormat</a></span> 構造体のリストとして格納する <span class="tt">enumerateFormats()</span> および <span class="tt">getFormatList()</span> を実装した。</li>
+<li><span class="tt"><a class="el" href="classCamera.html">Camera</a></span> 基底クラスの NVI 設計に準拠し、<span class="tt">onStart()</span>, <span class="tt">onStop()</span>, <span class="tt">onClose()</span> の保護フックを実装した。</li>
+<li><span class="tt">AVCaptureVideoDataOutput</span> の <span class="tt">videoSettings</span> に <span class="tt">kCVPixelFormatType_32BGRA</span> を指定して OS 側で高速に BGRA 変換を行い、ストライド（行パディング）を考慮しながら <span class="tt"><a class="el" href="classCamera.html">Camera</a></span> の単一バッファ <span class="tt">image</span> へゼロコピーで格納するデリゲートを実装した。</li>
+<li><span class="tt"><a class="el" href="classCamera.html#a6fd9283e0cd262c730571e175b5c11ee">Camera::setPrioritizeLatency(bool)</a></span> を仮想関数化し、<span class="tt">CamAvf</span> において <span class="tt">alwaysDiscardsLateVideoFrames</span> をリアルタイムに切り替え可能とした。また全フレーム処理モード（<span class="tt">!prioritizeLatency</span>）時にはメインスレッドがフレームを取り出すまで待機する安全機構を導入した。</li>
+<li><span class="tt">onStop()</span> 時に <span class="tt">dispatch_sync</span> によるデリゲートシリアルキューのフラッシュ待機を組み込み、停止処理時のスレッドセーフティとコールバックの安全な合流を確立した。</li>
+<li>デバイス列挙・フォーマット列挙時にはセッション構築を行わず、キャプチャ開始時（<span class="tt">onStart</span>）にのみデバイスをロックしてフォーマットを適用する遅延初期化（Lazy Initialization）を維持した。</li>
+<li><span class="tt"><a class="el" href="Capture_8h.html">Capture.h</a></span> / <span class="tt"><a class="el" href="Capture_8cpp.html">Capture.cpp</a></span> を整理し、macOS でも <span class="tt">CamAvf</span> を通じて <span class="tt">openDevice(int)</span>, <span class="tt">getFormatList()</span>, <span class="tt">select(int)</span> 等を Windows や Android と共通のインタフェースで利用できるようにした。</li>
+<li><span class="tt"><a class="el" href="Config_8h.html">Config.h</a></span> / <span class="tt"><a class="el" href="Config_8cpp.html">Config.cpp</a></span> において、macOS 環境の <span class="tt">Config::deviceList</span> を <span class="tt">CamAvf::getDeviceList()</span> で初期化するようにした。</li>
+<li><span class="tt"><a class="el" href="Menu_8h.html">Menu.h</a></span> / <span class="tt"><a class="el" href="Menu_8cpp.html">Menu.cpp</a></span> において、従来の OpenCV による <span class="tt">getAvFoundationList()</span> や独自分岐を全廃し、カメラ装置ドロップダウン、解像度・コマ数・符号化方式の 3 段階ドロップダウン、レイテンシ優先設定の UI を Windows / Android と共通化・統一した。</li>
+<li><span class="tt">CMakeLists.txt</span> において、macOS 環境で <span class="tt"><a class="el" href="CamAvf_8mm.html">CamAvf.mm</a></span> をビルド対象に追加し、<span class="tt">AVFoundation</span> および <span class="tt">CoreMedia</span> フレームワークをリンクするように設定した。</li>
+<li>全 C++ ソースコードファイルに単一の UTF-8 BOM を付与・正規化し、Clang 構文チェックおよび Doxygen 警告ゼロを検証した。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md107"></a>
+21. macOS ビルドエラーの解消、Homebrew 非依存の自己完結化、およびカメラ名サニタイズとグリフ拡張</h2>
+<ul>
+<li><b>指示</b>:<ul>
+<li><span class="tt">mfcapture</span> を macOS / Xcode 環境でビルドした際に <span class="tt"><a class="el" href="Menu_8cpp.html">Menu.cpp</a></span> 内で発生する <span class="tt">backend</span> および <span class="tt">fileHistory</span> の未定義エラーを解消する。</li>
+<li>共同研究者の環境に Homebrew がインストールされていないことを想定し、Homebrew に一切依存せずビルド・動作可能にする。</li>
+<li>カメラデバイス名に ImGui の既定日本語フォントセットで表示できない文字が含まれている問題に対処する（フォント変更は行わず、ImGui グリフ範囲の拡張とデバイス名のサニタイズを実施）。</li>
+<li>共同研究者が理解しやすいよう、<span class="tt"><a class="el" href="CamAvf_8mm.html">CamAvf.mm</a></span> のコードに <span class="tt"><a class="el" href="CamMf_8cpp.html">CamMf.cpp</a></span> と同等レベルの詳細な教育的コメントを追加する。</li>
+</ul>
+</li>
+<li><b>対応</b>:<ul>
+<li><span class="tt"><a class="el" href="Menu_8cpp.html">Menu.cpp</a></span> の <span class="tt">openMovie()</span> 内に残存していた旧コード由来の <span class="tt">#if defined(_WIN32)</span> 分岐および未宣言変数 <span class="tt">backend</span>, <span class="tt">fileHistory</span> を撤廃し、クロスプラットフォーム共通の <span class="tt">capture.openMovie(filepath)</span> 呼び出しへ統一した。</li>
+<li><span class="tt">CMakeLists.txt</span> において、macOS 上での OpenCV 自動ビルド構成を見直し、Homebrew ディレクトリ（<span class="tt">/opt/homebrew</span> や <span class="tt">/usr/local</span>）にインストールされた不要なサードパーティライブラリ（Protobuf, FFmpeg, GStreamer, VTK, OpenEXR, libavif, Eigen, OpenJPEG, JasPer, Qt, TBB, IPP 等）の自動検出を無効化（<span class="tt">OFF</span>）し、組み込み 3rdparty（ZLIB, JPEG, PNG, TIFF, WEBP）を強制設定した。これにより生成される <span class="tt">opencv_world</span> バイナリから Homebrew 依存を完全に排除し、Xcode Command Line Tools + CMake のみで完全自己完結ビルドできる環境を確立した。</li>
+<li><span class="tt"><a class="el" href="Menu_8cpp.html">Menu.cpp</a></span> のフォント初期化において、<span class="tt">ImFontGlyphRangesBuilder</span> を用いて一般的な句読点（General Punctuation: <span class="tt">0x2000-0x206F</span>）、文字様記号（Letterlike Symbols: <span class="tt">0x2100-0x214F</span>）、矢印（Arrows: <span class="tt">0x2190-0x21FF</span>）、囲み英数字（Enclosed Alphanumerics: <span class="tt">0x2460-0x24FF</span>）、幾何学模様（Geometric Shapes: <span class="tt">0x25A0-0x25FF</span>）のグリフ範囲を追加登録し、フォントファイル（<span class="tt">Mplus1-Regular.ttf</span>）に収録されている特殊記号・引用符が正しく描画されるようにした。</li>
+<li><span class="tt"><a class="el" href="CamAvf_8mm.html">CamAvf.mm</a></span> および <span class="tt"><a class="el" href="CamMf_8cpp.html">CamMf.cpp</a></span> に <span class="tt">sanitizeDeviceName()</span> 関数を実装し、制御文字の空白置換、タイポグラフィック引用符（‘, ’, “, ”）の ASCII 記号（', "）への正規化、ImGui で描画できない 4 バイト絵文字（U+10000 以上）の除去、連続空白の圧縮およびトリミングを行い、UI 表示の堅牢性を高めた。</li>
+<li><span class="tt"><a class="el" href="CamAvf_8mm.html">CamAvf.mm</a></span> に、AV Foundation のアーキテクチャ、PIMPL 設計の意図、各 OS バージョンでのデバイス列挙処理、パーミッション待機セマフォ、遅延初期化、フォーマット抽出、ハードウェア設定ロック、レイテンシ制御方針、GCD シリアルディスパッチキューの同期停止、ストライド・パディングを考慮したフレームバッファコピーなど、処理の目的と意図を詳述した教育的コメントを追加した。</li>
+<li><span class="tt"><a class="el" href="GEMINI_8md.html">GEMINI.md</a></span>、<span class="tt"><a class="el" href="REQUESTS_8md.html">REQUESTS.md</a></span>、<span class="tt"><a class="el" href="README_8md.html">README.md</a></span> を更新し、C++ ソースの UTF-8 BOM 整合性、Clang 構文チェック、Doxygen 整合性を検証した。</li>
+</ul>
+</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md108"></a>
+22. ドキュメントの整理、LaTeX 特殊文字エラー解消、および Doxygen マニュアル (HTML/PDF) 作成</h2>
+<ul>
+<li><b>指示</b>:<ul>
+<li><span class="tt"><a class="el" href="GEMINI_8md.html">GEMINI.md</a></span>、<span class="tt"><a class="el" href="REQUESTS_8md.html">REQUESTS.md</a></span>、<span class="tt"><a class="el" href="README_8md.html">README.md</a></span> の不要・冗長な記述を整理する。</li>
+<li>Doxygen によるマニュアル（HTML および <span class="tt">refman.pdf</span>）を作成・更新する。</li>
+</ul>
+</li>
+<li><b>対応</b>:<ul>
+<li><span class="tt"><a class="el" href="GEMINI_8md.html">GEMINI.md</a></span> においてセクション3内の <span class="tt">CamAvf</span> 重複記述をセクション14へ集約・整理した。</li>
+<li><span class="tt"><a class="el" href="README_8md.html">README.md</a></span> において開発時確認事項の誤字を修正した。</li>
+<li><span class="tt"><a class="el" href="Menu_8cpp.html">Menu.cpp</a></span>、<span class="tt"><a class="el" href="CamAvf_8mm.html">CamAvf.mm</a></span>、<span class="tt"><a class="el" href="CamMf_8cpp.html">CamMf.cpp</a></span> のコメント中に含まれていた丸数字（囲み英数字等）や特殊引用符・商標記号などの特殊 Unicode 文字が pdfLaTeX (CJKutf8) の TFM フォント読み込みエラー（<span class="tt">udmj24</span> 未定義等）を引き起こしていたため、ASCII / 標準語句へ置換した。</li>
+<li>Doxygen を再実行し、最新の HTML マニュアルおよび <span class="tt">docs/pdf/refman.pdf</span>（916ページ）を正常にビルド・作成した。 </li>
+</ul>
+</li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">構築: <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.15.0 </li>
+  </ul>
+</div>
+</body>
+</html>

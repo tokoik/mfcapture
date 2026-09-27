@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['r_20t_20_24_0',['2. カメラ外部行列 (Extrinsic Parameters $[R | t]$)',['../md_workshop__handbook.html#autotoc_md118',1,'']]],
+  ['radial_20distortion_1',['1. 放射歪み (Radial Distortion)',['../md_presentation.html#autotoc_md25',1,'']]],
+  ['raspberry_20pi_20組み込み環境対応方針_2',['11. Raspberry Pi / 組み込み環境対応方針',['../md_GEMINI.html#autotoc_md11',1,'']]],
+  ['raspberry_20pi_20camlibcam_20および_20linux_20arm_20gles_203_201_20のサポート_3',['14. Raspberry Pi (&lt;span class=&quot;tt&quot;&gt;CamLibcam&lt;/span&gt;) および Linux ARM (GLES 3.1) のサポート',['../md_REQUESTS.html#autotoc_md100',1,'']]],
+  ['raspberry_20pi_20linux_20arm_20でのビルド例_4',['Raspberry Pi (Linux ARM) でのビルド例',['../md_README.html#autotoc_md77',1,'']]],
+  ['read_5',['read',['../classgg_1_1GgBuffer.html#a42fb5b6c8f42841b6054d3313033b7c5',1,'gg::GgBuffer::read()'],['../classgg_1_1GgUniformBuffer.html#ae9cc42d251faad15a2f506777d280c67',1,'gg::GgUniformBuffer::read()']]],
+  ['readme_2emd_6',['README.md',['../README_8md.html',1,'']]],
+  ['readpixels_7',['readPixels',['../classTexture.html#af69eef7b7ecc71a812dbd2774a64093f',1,'Texture::readPixels(GLuint buffer) const'],['../classTexture.html#a0ac1c5f74e3d2ff0a810eab3aceb9220',1,'Texture::readPixels(Buffer &amp;buffer) const'],['../classTexture.html#a5aa559f34a8562c3aaa98020f32becf6',1,'Texture::readPixels() const']]],
+  ['ready_8',['ready',['../classUndistortion.html#aafeab832dd2dbc18a585795eec66a713',1,'Undistortion']]],
+  ['region_9',['region',['../classgg_1_1GgTrackball.html#ab6d959db5ef9b8405da2f5ded29766d0',1,'gg::GgTrackball::region(GLfloat w, GLfloat h)'],['../classgg_1_1GgTrackball.html#af0ff2b315542776b0b465f5e166c4c8a',1,'gg::GgTrackball::region(int w, int h)']]],
+  ['requests_2emd_10',['REQUESTS.md',['../REQUESTS_8md.html',1,'']]],
+  ['reset_11',['reset',['../classgg_1_1GgTrackball.html#aaaa41ddff91ff91173133d478356b836',1,'gg::GgTrackball::reset()'],['../classGgApp_1_1Window.html#a7931a21c03bd1865a90f7b05964f7cdc',1,'GgApp::Window::reset()']]],
+  ['resetrotation_12',['resetRotation',['../classGgApp_1_1Window.html#aa0e5bf92c55529a7ac9b5722528ae2b6',1,'GgApp::Window']]],
+  ['resettranslation_13',['resetTranslation',['../classGgApp_1_1Window.html#a7fbe5cd9550549cce2eb0c148653ac39',1,'GgApp::Window']]],
+  ['resize_14',['resize',['../classBuffer.html#afc49fafeb87cdbc08c7e522b08eba058',1,'Buffer::resize(GLsizei width, GLsizei height, int channels)'],['../classBuffer.html#a023492b5a0d6587fbdb75d3aa26d00a4',1,'Buffer::resize(const Buffer &amp;buffer)']]],
+  ['resolution_15',['resolution',['../structCaptureFormat.html#ae89e51617da7f3cdd955daff1f04fd17',1,'CaptureFormat']]],
+  ['restoreviewport_16',['restoreViewport',['../classGgApp_1_1Window.html#a515578a995bb8d3e37ce1767f4095efd',1,'GgApp::Window']]],
+  ['retrieve_17',['retrieve',['../classCapture.html#a3ff6cbdf0042cc8d0f60e5376b443262',1,'Capture::retrieve(Buffer &amp;buffer)'],['../classCapture.html#ad101c094ac1a4e0dbbafde712f255d24',1,'Capture::retrieve(cv::Mat &amp;frame)']]],
+  ['rotate_18',['rotate',['../classgg_1_1GgMatrix.html#a80f59d17bddcffd528ea6b99e4a2ed75',1,'gg::GgMatrix::rotate(GLfloat x, GLfloat y, GLfloat z, GLfloat a) const'],['../classgg_1_1GgMatrix.html#a1c381883fc9dc2f3303dd729432c586d',1,'gg::GgMatrix::rotate(const GLfloat *r, GLfloat a) const'],['../classgg_1_1GgMatrix.html#a36727b319fb0b3d1e6d77ec81eccb8a7',1,'gg::GgMatrix::rotate(const GgVector &amp;r, GLfloat a) const'],['../classgg_1_1GgMatrix.html#a74cd637f02dfcd18961c01a8137dd5f3',1,'gg::GgMatrix::rotate(const GLfloat *r) const'],['../classgg_1_1GgMatrix.html#a9eac11bd0316439ca0038b69ab3b7a9e',1,'gg::GgMatrix::rotate(const GgVector &amp;r) const'],['../classgg_1_1GgQuaternion.html#ab0bf5792aa2d8f141e90a0f37ea2ff2a',1,'gg::GgQuaternion::rotate(GLfloat x, GLfloat y, GLfloat z, GLfloat a) const'],['../classgg_1_1GgQuaternion.html#a76e923f92644fa559d24040ff994ea08',1,'gg::GgQuaternion::rotate(const GLfloat *v, GLfloat a) const'],['../classgg_1_1GgQuaternion.html#a95b9078ffd6b9724aff62e9628f09b4c',1,'gg::GgQuaternion::rotate(const GLfloat *v) const'],['../classgg_1_1GgTrackball.html#adbf3c13a6442309c79bd3185fa74a0a4',1,'gg::GgTrackball::rotate()']]],
+  ['rotatex_19',['rotateX',['../classgg_1_1GgMatrix.html#a673d91ac86c3109a0fc6c0839e5bebee',1,'gg::GgMatrix::rotateX()'],['../classgg_1_1GgQuaternion.html#ab9eaade499ecbc3a8de7dea494f3b7c6',1,'gg::GgQuaternion::rotateX()']]],
+  ['rotatey_20',['rotateY',['../classgg_1_1GgMatrix.html#a9fc25e411f5fc0ca8cd6bc2d03f06570',1,'gg::GgMatrix::rotateY()'],['../classgg_1_1GgQuaternion.html#a014d3ef2b47e5981860388ef3119077a',1,'gg::GgQuaternion::rotateY()']]],
+  ['rotatez_21',['rotateZ',['../classgg_1_1GgMatrix.html#a5de975c07013aff7f31b0a45c58e9998',1,'gg::GgMatrix::rotateZ()'],['../classgg_1_1GgQuaternion.html#a5640308c334e9de115adc573ac33f3ce',1,'gg::GgQuaternion::rotateZ()']]],
+  ['running_22',['running',['../classCamera.html#ac652a8a77b511bae1fbcdc8778ce2662',1,'Camera']]]
+];

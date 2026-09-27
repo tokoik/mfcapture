@@ -1,0 +1,14 @@
+<map id="Undistortion::ready" name="Undistortion::ready">
+<area shape="rect" id="Node000001" title=" " alt="" coords="526,81,658,108"/>
+<area shape="rect" id="Node000002" href="$classUndistortion.html#a785dfb55b481c6175f0e32edf0fc08b9" title=" " alt="" coords="298,5,428,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="541,75,477,53,418,35,418,30,479,48,546,75"/>
+<area shape="rect" id="Node000003" href="$classGgApp.html#ad2e50a5e84d4fd6162e03039ac00c7ae" title=" " alt="" coords="103,31,200,57"/>
+<area shape="poly" id="edge6_Node000001_Node000003" title=" " alt="" coords="509,88,201,52,201,47,512,83"/>
+<area shape="rect" id="Node000005" href="$classUndistortion.html#a37b2802fba9d6228e2549197fb8c4e5a" title=" " alt="" coords="248,107,478,133"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="508,104,479,110,478,105,514,103"/>
+<area shape="rect" id="Node000006" href="$classUndistortion.html#ab776ab64d315da8c52afdd0429bcc221" title=" " alt="" coords="276,157,450,200"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="552,114,479,148,445,159,444,154,477,143,547,116"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="280,30,201,41,200,36,285,27"/>
+<area shape="rect" id="Node000004" href="$main_8cpp.html#a110745d0e996bc19a8c8e8cacbadd525" title=" " alt="" coords="5,31,55,57"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="85,46,56,46,54,42,89,42"/>
+</map>

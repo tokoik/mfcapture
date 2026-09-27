@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.15.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mfcapture: Undistortion.h ソースファイル</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="gg.ico"/></td>
+  <td id="projectalign">
+   <div id="projectname">mfcapture<span id="projectnumber">&#160;0.0.1</span>
+   </div>
+   <div id="projectbrief">Microsoft Media Foundation によるビデオキャプチャサンプル</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.15.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','検索',true);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('Undistortion_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Undistortion.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Undistortion_8h.html">[詳解]</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">// OpenCV による画像処理</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="opencv__link_8h.html">opencv_link.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">// 標準ライブラリ</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span></div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="};">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="Undistortion_8h.html#a1c0b022fd4a20d577245609904271dd1">   21</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="Undistortion_8h.html#a1c0b022fd4a20d577245609904271dd1">UndistortionMode</a></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>{</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="Undistortion_8h.html#a1c0b022fd4a20d577245609904271dd1a6adf97f83acf6453d4a6a4b1070f3754">   23</a></span>  <a class="code hl_enumvalue" href="Undistortion_8h.html#a1c0b022fd4a20d577245609904271dd1a6adf97f83acf6453d4a6a4b1070f3754">None</a>,   </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="Undistortion_8h.html#a1c0b022fd4a20d577245609904271dd1a5bd4c87976f48e6a53919d53e14025e9">   24</a></span>  <a class="code hl_enumvalue" href="Undistortion_8h.html#a1c0b022fd4a20d577245609904271dd1a5bd4c87976f48e6a53919d53e14025e9">OpenCV</a>, </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="Undistortion_8h.html#a1c0b022fd4a20d577245609904271dd1a760716b590ee7c0adc25f434f577d8be">   25</a></span>  <a class="code hl_enumvalue" href="Undistortion_8h.html#a1c0b022fd4a20d577245609904271dd1a760716b590ee7c0adc25f434f577d8be">OpenGL</a>  </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span></div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classUndistortion.html">   36</a></span><span class="keyword">class </span><a class="code hl_class" href="classUndistortion.html">Undistortion</a></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>{</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  cv::Mat cameraMatrix;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  cv::Mat distortion;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  cv::Mat mapX;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  cv::Mat mapY;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  cv::Size mapSize{ 0, 0 };</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classUndistortion.html#a5d6c64513df7bfa1b8263671821fe3be">load</a>(<span class="keyword">const</span> std::string&amp; filename);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classUndistortion.html#aafeab832dd2dbc18a585795eec66a713">ready</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classUndistortion.html#a785dfb55b481c6175f0e32edf0fc08b9">apply</a>(<span class="keyword">const</span> cv::Mat&amp; source, cv::Mat&amp; destination);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>  std::array&lt;float, 4&gt; <a class="code hl_function" href="classUndistortion.html#a37b2802fba9d6228e2549197fb8c4e5a">getCameraParameters</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>  std::array&lt;float, 5&gt; <a class="code hl_function" href="classUndistortion.html#ab776ab64d315da8c52afdd0429bcc221">getDistortionParameters</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span></div>
+<div class="foldopen" id="foldopen00101" data-start="{" data-end="}">
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classUndistortion.html#af03c1f30016a64cd4c45b05a657c9c9a">  101</a></span>  <span class="keyword">const</span> cv::Mat&amp; <a class="code hl_function" href="classUndistortion.html#af03c1f30016a64cd4c45b05a657c9c9a">getCameraMatrix</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">return</span> cameraMatrix;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  }</div>
+</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span></div>
+<div class="foldopen" id="foldopen00111" data-start="{" data-end="}">
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="classUndistortion.html#a317ee625284da8a324758ada518a8963">  111</a></span>  <span class="keyword">const</span> cv::Mat&amp; <a class="code hl_function" href="classUndistortion.html#a317ee625284da8a324758ada518a8963">getDistortion</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">return</span> distortion;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>  }</div>
+</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>};</div>
+</div>
+<div class="ttc" id="aUndistortion_8h_html_a1c0b022fd4a20d577245609904271dd1"><div class="ttname"><a href="Undistortion_8h.html#a1c0b022fd4a20d577245609904271dd1">UndistortionMode</a></div><div class="ttdeci">UndistortionMode</div><div class="ttdef"><b>Definition</b> <a href="#l00021">Undistortion.h:22</a></div></div>
+<div class="ttc" id="aUndistortion_8h_html_a1c0b022fd4a20d577245609904271dd1a5bd4c87976f48e6a53919d53e14025e9"><div class="ttname"><a href="Undistortion_8h.html#a1c0b022fd4a20d577245609904271dd1a5bd4c87976f48e6a53919d53e14025e9">UndistortionMode::OpenCV</a></div><div class="ttdeci">@ OpenCV</div><div class="ttdoc">CPU 上で OpenCV の remap() を使って補正する</div><div class="ttdef"><b>Definition</b> <a href="#l00024">Undistortion.h:24</a></div></div>
+<div class="ttc" id="aUndistortion_8h_html_a1c0b022fd4a20d577245609904271dd1a6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="Undistortion_8h.html#a1c0b022fd4a20d577245609904271dd1a6adf97f83acf6453d4a6a4b1070f3754">UndistortionMode::None</a></div><div class="ttdeci">@ None</div><div class="ttdoc">歪み補正を行わない</div><div class="ttdef"><b>Definition</b> <a href="#l00023">Undistortion.h:23</a></div></div>
+<div class="ttc" id="aUndistortion_8h_html_a1c0b022fd4a20d577245609904271dd1a760716b590ee7c0adc25f434f577d8be"><div class="ttname"><a href="Undistortion_8h.html#a1c0b022fd4a20d577245609904271dd1a760716b590ee7c0adc25f434f577d8be">UndistortionMode::OpenGL</a></div><div class="ttdeci">@ OpenGL</div><div class="ttdoc">GPU 上で GLSL のサンプリング座標を変換して補正する</div><div class="ttdef"><b>Definition</b> <a href="#l00025">Undistortion.h:25</a></div></div>
+<div class="ttc" id="aclassUndistortion_html"><div class="ttname"><a href="classUndistortion.html">Undistortion</a></div><div class="ttdef"><b>Definition</b> <a href="#l00036">Undistortion.h:37</a></div></div>
+<div class="ttc" id="aclassUndistortion_html_a317ee625284da8a324758ada518a8963"><div class="ttname"><a href="classUndistortion.html#a317ee625284da8a324758ada518a8963">Undistortion::getDistortion</a></div><div class="ttdeci">const cv::Mat &amp; getDistortion() const</div><div class="ttdef"><b>Definition</b> <a href="#l00111">Undistortion.h:111</a></div></div>
+<div class="ttc" id="aclassUndistortion_html_a37b2802fba9d6228e2549197fb8c4e5a"><div class="ttname"><a href="classUndistortion.html#a37b2802fba9d6228e2549197fb8c4e5a">Undistortion::getCameraParameters</a></div><div class="ttdeci">std::array&lt; float, 4 &gt; getCameraParameters() const</div><div class="ttdef"><b>Definition</b> <a href="Undistortion_8cpp_source.html#l00131">Undistortion.cpp:131</a></div></div>
+<div class="ttc" id="aclassUndistortion_html_a5d6c64513df7bfa1b8263671821fe3be"><div class="ttname"><a href="classUndistortion.html#a5d6c64513df7bfa1b8263671821fe3be">Undistortion::load</a></div><div class="ttdeci">bool load(const std::string &amp;filename)</div><div class="ttdef"><b>Definition</b> <a href="Undistortion_8cpp_source.html#l00061">Undistortion.cpp:61</a></div></div>
+<div class="ttc" id="aclassUndistortion_html_a785dfb55b481c6175f0e32edf0fc08b9"><div class="ttname"><a href="classUndistortion.html#a785dfb55b481c6175f0e32edf0fc08b9">Undistortion::apply</a></div><div class="ttdeci">void apply(const cv::Mat &amp;source, cv::Mat &amp;destination)</div><div class="ttdef"><b>Definition</b> <a href="Undistortion_8cpp_source.html#l00106">Undistortion.cpp:106</a></div></div>
+<div class="ttc" id="aclassUndistortion_html_aafeab832dd2dbc18a585795eec66a713"><div class="ttname"><a href="classUndistortion.html#aafeab832dd2dbc18a585795eec66a713">Undistortion::ready</a></div><div class="ttdeci">bool ready() const</div><div class="ttdef"><b>Definition</b> <a href="Undistortion_8cpp_source.html#l00098">Undistortion.cpp:98</a></div></div>
+<div class="ttc" id="aclassUndistortion_html_ab776ab64d315da8c52afdd0429bcc221"><div class="ttname"><a href="classUndistortion.html#ab776ab64d315da8c52afdd0429bcc221">Undistortion::getDistortionParameters</a></div><div class="ttdeci">std::array&lt; float, 5 &gt; getDistortionParameters() const</div><div class="ttdef"><b>Definition</b> <a href="Undistortion_8cpp_source.html#l00148">Undistortion.cpp:148</a></div></div>
+<div class="ttc" id="aclassUndistortion_html_af03c1f30016a64cd4c45b05a657c9c9a"><div class="ttname"><a href="classUndistortion.html#af03c1f30016a64cd4c45b05a657c9c9a">Undistortion::getCameraMatrix</a></div><div class="ttdeci">const cv::Mat &amp; getCameraMatrix() const</div><div class="ttdef"><b>Definition</b> <a href="#l00101">Undistortion.h:101</a></div></div>
+<div class="ttc" id="aopencv__link_8h_html"><div class="ttname"><a href="opencv__link_8h.html">opencv_link.h</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="Undistortion_8h.html">Undistortion.h</a></li>
+    <li class="footer">構築: <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.15.0 </li>
+  </ul>
+</div>
+</body>
+</html>

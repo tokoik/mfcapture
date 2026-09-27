@@ -1,0 +1,365 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.15.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mfcapture: 実践カメラキャリブレーション &amp; レンズ歪み補正 スライド構成</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="gg.ico"/></td>
+  <td id="projectalign">
+   <div id="projectname">mfcapture<span id="projectnumber">&#160;0.0.1</span>
+   </div>
+   <div id="projectbrief">Microsoft Media Foundation によるビデオキャプチャサンプル</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.15.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','検索',true);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('md_presentation.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">実践カメラキャリブレーション &amp; レンズ歪み補正 スライド構成 </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p><a class="anchor" id="autotoc_md15"></a></p>
+<p>ChArUco Board と OpenGL/GLSL によるリアルタイム高精度画像補正技術</p>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md17"></a>
+1. アジェンダ</h1>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md18"></a>
+前半: 理論と基礎</h2>
+<ul>
+<li>カメラモデリングの基礎（ピンホールモデル・透視投影・内部/外部パラメータ）</li>
+<li>レンズ歪みの数理（放射歪み・接線歪み）</li>
+<li>ChArUco Board 原理と特徴（チェスボード＋ArUco）</li>
+<li>C++ OpenCV 実装の詳細関数と引数構造 (<span class="tt">CharucoBoard</span>, <span class="tt">detectBoard</span>, <span class="tt">matchImagePoints</span>, <span class="tt">calibrateCamera</span>)</li>
+<li>全体システム構成 (<span class="tt">calib</span> &amp; <span class="tt">mfcapture</span>)</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md19"></a>
+後半: 実装とハンズオン</h2>
+<ul>
+<li>CPU (OpenCV <span class="tt">remap</span>) vs GPU (GLSL) 補正パイプライン</li>
+<li>C++ CPU 補正の画像マップ生成実装 (<span class="tt">initUndistortRectifyMap</span>)</li>
+<li><span class="tt">undistortion.frag</span> シェーダー解読</li>
+<li>逆写像 (Backward Mapping) の座標変換</li>
+<li>Windows Media Foundation (MSMF) 低遅延キャプチャ設計</li>
+<li>Windows / VS2022 実習ハンズオン A / B</li>
+</ul>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md21"></a>
+2. カメラモデリングの基礎原理</h1>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md22"></a>
+ピンホールモデルと透視投影 (Perspective Projection)</h2>
+<p>3次元世界座標系 $(X_w, Y_w, Z_w)$ から2次元画像平面 $(u, v)$ への透視投影方程式：</p>
+<p>$$s \begin{bmatrix} u \ v \ 1 \end{bmatrix} = K \begin{bmatrix} R &amp; t \end{bmatrix} \begin{bmatrix} X_w \ Y_w \ Z_w \ 1 \end{bmatrix}$$</p>
+<ul>
+<li><b>カメラ内部行列 (<a class="el" href="classCamera.html">Camera</a> Matrix $K$):</b> $$K = \begin{bmatrix} f_x &amp; 0 &amp; c_x \ 0 &amp; f_y &amp; c_y \ 0 &amp; 0 &amp; 1 \end{bmatrix}$$ $f_x, f_y$: 画素単位の焦点距離、$c_x, c_y$: 主点（光学中心）</li>
+<li><b>カメラ外部行列 (Extrinsic Parameters $[R | t]$):</b><ul>
+<li>**回転行列 $R$ ($3 \times 3$):** 世界座標系に対するカメラの向き（回転）を表す直交行列。</li>
+<li>**並進ベクトル $t$ ($3 \times 1$):** 世界座標系原点に対するカメラの位置オフセット。</li>
+<li>姿勢変換式: $P_c = R P_w + t$</li>
+</ul>
+</li>
+</ul>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md24"></a>
+3. レンズ歪みの数理モデル</h1>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md25"></a>
+1. 放射歪み (Radial Distortion)</h2>
+<p>$$x_{\text{distorted}} = x(1 + k_1 r^2 + k_2 r^4 + k_3 r^6)$$ $$y_{\text{distorted}} = y(1 + k_1 r^2 + k_2 r^4 + k_3 r^6)$$</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md26"></a>
+2. 接線歪み (Tangential Distortion)</h2>
+<p>$$\delta x = 2 p_1 x y + p_2(r^2 + 2x^2)$$ $$\delta y = p_1(r^2 + 2y^2) + 2 p_2 x y$$</p>
+<p>本システムでは $[k_1, k_2, p_1, p_2, k_3]$ の 5 係数モデルを使用。</p>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md28"></a>
+4. ChArUco Board によるキャリブレーション</h1>
+<ul>
+<li><b>チェスボード</b>: サブピクセル精度の交点検出。ただしパターン一部遮蔽で検出不能。</li>
+<li><b>ArUco マーカー</b>: 個別 ID によるオクルージョン耐性。</li>
+<li><b>ChArUco Board</b>: ArUco で交点 ID を特定し、チェスボード交点で超高精度検出。</li>
+</ul>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md30"></a>
+4.1 キャリブレーションで推定するもの</h1>
+<div class="fragment"><div class="line">flowchart TD</div>
+<div class="line">    A[&quot;既知の3D点 (X,Y,0)&quot;] --&gt; C[&quot;投影モデル K, d, R, t&quot;]</div>
+<div class="line">    B[&quot;検出2D点 (u,v)&quot;] --&gt; D[&quot;再投影誤差 (Reprojection Error)&quot;]</div>
+<div class="line">    C --&gt; D</div>
+<div class="line">    D --&gt;|&quot;全標本でLM法最小化&quot;| E[&quot;カメラ行列 K &amp; 歪み係数 d&quot;]</div>
+</div><!-- fragment --><ul>
+<li><b>全画像共通</b>: カメラ内部行列 $K$, 歪み係数 $d$</li>
+<li><b>画像ごと（標本ごと）</b>: 外部パラメータ $R_i, t_i$</li>
+<li><b>観測量</b>: 検出 2D 画素座標 $(u, v)$</li>
+<li><b>既知量</b>: 設計 3D ボード座標 $(X, Y, 0)$</li>
+</ul>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md32"></a>
+4.2 C++ 実装：ChArUco Board の定義と構成</h1>
+<div class="fragment"><div class="line">cv::aruco::Dictionary dictionary =</div>
+<div class="line">  cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// CharucoBoard コンストラクタ呼び出し</span></div>
+<div class="line">cv::aruco::CharucoBoard board{</div>
+<div class="line">  cv::Size{10, 7},   <span class="comment">// size (横マス数, 縦マス数)</span></div>
+<div class="line">  0.030f,            <span class="comment">// squareLength [m]</span></div>
+<div class="line">  0.022f,            <span class="comment">// markerLength [m]</span></div>
+<div class="line">  dictionary         <span class="comment">// ArUco 辞書</span></div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line">cv::aruco::CharucoDetector detector{board};</div>
+</div><!-- fragment --><p><img src="images/charuco_board.png" alt="ChArUco Board" class="inline"/></p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md33"></a>
+ChArUco Board とは (OpenCV チュートリアル準拠)</h2>
+<p>チェスボードの「高精度交点検出」と ArUco の「個体識別・遮蔽耐性」を組み合わせたハイブリッドパターン。黒マス内に固有 ID マーカーが交互配置され、**ボードの一部が画面外や物体の陰に隠れていても交点座標と位置関係を正確に決定可能**。</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md34"></a>
+<span class="tt">cv::aruco::CharucoBoard</span> 引数解説</h2>
+<ul>
+<li><span class="tt">size</span> (<span class="tt">cv::Size</span>): チェスボードのマス数 (横, 縦)</li>
+<li><span class="tt">squareLength</span> (<span class="tt">float</span>): マス目一辺の物理長 [m]</li>
+<li><span class="tt">markerLength</span> (<span class="tt">float</span>): 内包 ArUco マーカー一辺の物理長 [m] (<span class="tt">markerLength &lt; squareLength</span>)</li>
+<li><span class="tt">dictionary</span>: マーカー識別用辞書パターン</li>
+</ul>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md36"></a>
+4.3 C++ 実装：検出と標本座標マッチング</h1>
+<div class="fragment"><div class="line">std::vector&lt;cv::Point2f&gt; charucoCorners;</div>
+<div class="line">std::vector&lt;int&gt; charucoIds;</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// 1. ボード交点検出</span></div>
+<div class="line">detector.detectBoard(frame, charucoCorners, charucoIds);</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordflow">if</span> (charucoCorners.size() &gt;= 4) {</div>
+<div class="line">  std::vector&lt;cv::Point3f&gt; objectPoints;</div>
+<div class="line">  std::vector&lt;cv::Point2f&gt; imagePoints;</div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">// 2. 3D-2D 対応点の抽出</span></div>
+<div class="line">  board.matchImagePoints(</div>
+<div class="line">    charucoCorners, charucoIds,</div>
+<div class="line">    objectPoints, imagePoints);</div>
+<div class="line"> </div>
+<div class="line">  allObjectPoints.push_back(std::move(objectPoints));</div>
+<div class="line">  allImagePoints.push_back(std::move(imagePoints));</div>
+<div class="line">}</div>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md37"></a>
+処理概略と <span class="tt">corners.size() &gt;= 4</span> の理由</h2>
+<p>平面オブジェクトと 2D 画像との間の姿勢変換 (PnP / ホモグラフィ) を幾何学的に決定するには**最低 4 点の対応点が必要**となるためです。4点未満では自由度が不足するため処理をスキップします。</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md38"></a>
+関数の引数解説</h2>
+<ul>
+<li><span class="tt">detector.detectBoard(image, corners, ids)</span>:<ul>
+<li><span class="tt">image</span>: 入力画像 (<span class="tt">cv::Mat</span>)</li>
+<li><span class="tt">corners</span>: 検出された交点の 2D 画素座標（出力）</li>
+<li><span class="tt">ids</span>: 検出された交点 ID 配列（出力）</li>
+</ul>
+</li>
+<li><span class="tt">board.matchImagePoints(cCorners, cIds, objPts, imgPts)</span>:<ul>
+<li><span class="tt">cCorners</span> / <span class="tt">cIds</span>: 検出交点座標および ID 配列（入力）</li>
+<li><span class="tt">objPts</span>: 対応する理論 3D ボード座標 $(X, Y, 0)$（出力）</li>
+<li><span class="tt">imgPts</span>: <span class="tt">objPts</span> と 1 対 1 対応する 2D 観測画素座標（出力）</li>
+</ul>
+</li>
+</ul>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md40"></a>
+4.4 C++ 実装：最適化計算 (<span class="tt">calibrateCamera</span>)</h1>
+<div class="fragment"><div class="line">cv::Mat K, distortion;</div>
+<div class="line">std::vector&lt;cv::Mat&gt; rvecs, tvecs;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">double</span> rms = cv::calibrateCamera(</div>
+<div class="line">  allObjectPoints,  <span class="comment">// 全標本の 3D 点群</span></div>
+<div class="line">  allImagePoints,   <span class="comment">// 全標本の 2D 画素点群</span></div>
+<div class="line">  imageSize,        <span class="comment">// 画像サイズ</span></div>
+<div class="line">  K,                <span class="comment">// カメラ内部行列 (出力)</span></div>
+<div class="line">  distortion,       <span class="comment">// 歪み係数 (出力)</span></div>
+<div class="line">  rvecs, tvecs,     <span class="comment">// 各標本の姿勢 [R|t] (出力)</span></div>
+<div class="line">  cv::noArray(), cv::noArray(), cv::noArray(),</div>
+<div class="line">  0                 <span class="comment">// 較正オプションフラグ</span></div>
+<div class="line">);</div>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md41"></a>
+「最適化計算」の意味</h2>
+<p>実測された 2D 画素座標 $p$ と、推定パラメータ $(K, d, R_i, t_i)$ で 3D 点を画像上に再投影した座標 $\hat{p}$ との差（**再投影誤差 Reprojection Error**）の自乗和を最小化する非線形最小二乗問題です。**Levenberg-Marquardt (LM) 法**による反復計算により内部行列 $K$、歪み係数 $d$、各標本姿勢 $[R_i | t_i]$ を同時一括推定します。</p>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md43"></a>
+5. 全体システムアーキテクチャ</h1>
+<p><img src="images/system_architecture.jpg" alt="全体システムアーキテクチャ" class="inline"/></p>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md45"></a>
+6. 歪み補正パイプラインの比較 (CPU vs GPU)</h1>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadLeft">評価項目  </th><th class="markdownTableHeadLeft">OpenCV 歪み補正 (CPU)  </th><th class="markdownTableHeadLeft">OpenGL 歪み補正 (GPU / GLSL)  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft"><b>実行エンジン</b>  </td><td class="markdownTableBodyLeft">CPU (<span class="tt">cv::remap</span>)  </td><td class="markdownTableBodyLeft">GPU (<span class="tt">undistortion.frag</span>)  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft"><b>パイプライン位置</b>  </td><td class="markdownTableBodyLeft">キャプチャ直後、OpenGL 転送前に実行  </td><td class="markdownTableBodyLeft">OpenGL テクスチャ描画時にシェーダーで実行  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft"><b>CPU 負荷</b>  </td><td class="markdownTableBodyLeft">解像度に比例して高い  </td><td class="markdownTableBodyLeft"><b>ほぼゼロ</b>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft"><b>事前準備</b>  </td><td class="markdownTableBodyLeft"><span class="tt">cv::initUndistortRectifyMap</span> でマップ構築  </td><td class="markdownTableBodyLeft">Uniform へ焦点距離・主点・係数を転送  </td></tr>
+</table>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md47"></a>
+7. OpenCV (CPU) による C++ 歪み補正処理</h1>
+<div class="fragment"><div class="line"><span class="comment">// 1. 初期化・マップ作成（解像度変更時のみ1回実行）</span></div>
+<div class="line">cv::Mat map1, map2;</div>
+<div class="line">cv::initUndistortRectifyMap(</div>
+<div class="line">    cameraMatrix, distCoeffs,</div>
+<div class="line">    cv::Mat(),       <span class="comment">// 補正回転 R (単位行列)</span></div>
+<div class="line">    cameraMatrix,    <span class="comment">// 新しいカメラ行列 New K</span></div>
+<div class="line">    imageSize,       <span class="comment">// 画像サイズ</span></div>
+<div class="line">    CV_32FC1,        <span class="comment">// マップの型</span></div>
+<div class="line">    map1, map2       <span class="comment">// 出力参照座標マップ</span></div>
+<div class="line">);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// 2. 毎フレームの補正実行 (CPU)</span></div>
+<div class="line">cv::Mat srcFrame, dstFrame;</div>
+<div class="line">cv::remap(</div>
+<div class="line">    srcFrame, dstFrame,</div>
+<div class="line">    map1, map2,</div>
+<div class="line">    cv::INTER_LINEAR  <span class="comment">// 双線形補間</span></div>
+<div class="line">);</div>
+</div><!-- fragment --><hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md49"></a>
+8. GLSL 歪み補正シェーダー (<span class="tt">undistortion.frag</span>)</h1>
+<div class="fragment"><div class="line">// 理想的な正規化座標 p = (x, y) の算出</div>
+<div class="line">vec2 p = (v_texcoord * size - center) / focal;</div>
+<div class="line"> </div>
+<div class="line">// 放射歪み &amp; 接線歪みモデル適用</div>
+<div class="line">float r2 = dot(p, p);</div>
+<div class="line">float radial = 1.0 + dist_k.x * r2 + dist_k.y * r2 * r2 + dist_k3 * r2 * r2 * r2;</div>
+<div class="line">vec2 tangential = vec2(</div>
+<div class="line">    2.0 * dist_k.z * p.x * p.y + dist_k.w * (r2 + 2.0 * p.x * p.x),</div>
+<div class="line">    dist_k.z * (r2 + 2.0 * p.y * p.y) + 2.0 * dist_k.w * p.x * p.y</div>
+<div class="line">);</div>
+<div class="line">vec2 pd = p * radial + tangential;</div>
+<div class="line"> </div>
+<div class="line">// 歪んだ位置の UV 座標でテクスチャ参照</div>
+<div class="line">vec2 uv = (pd * focal + center) / size;</div>
+<div class="line">fragment = texture(image, uv);</div>
+</div><!-- fragment --><hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md51"></a>
+9. なぜ「逆向き」に座標を求めるのか (逆写像)</h1>
+<div class="fragment"><div class="line">flowchart TD</div>
+<div class="line">    O[&quot;補正後出力画素 (u, v)&quot;] --&gt; N[&quot;K⁻¹ 正規化座標 (x, y)&quot;]</div>
+<div class="line">    N --&gt; M[&quot;歪みモデル (xd, yd)&quot;]</div>
+<div class="line">    M --&gt; P[&quot;K 入力画素 (ud, vd)&quot;]</div>
+<div class="line">    P --&gt; S[&quot;入力画像をサンプル&quot;]</div>
+<div class="line">    S --&gt; O2[&quot;出力色&quot;]</div>
+</div><!-- fragment --><hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md53"></a>
+10. C++ クラス設計と安全なカプセル化</h1>
+<ul>
+<li><b>インクラスメンバ初期化 (Default Member Initializers)</b>: メンバ変数の初期値をヘッダ（クラス定義内）に集約し、初期化漏れを防止</li>
+<li><b><span class="tt">const_cast</span> / <span class="tt">friend</span> の完全排除</b>: <span class="tt">getSettings()</span> / <span class="tt">setSettings()</span> 等の公開 getter / setter API で UI (<span class="tt"><a class="el" href="classMenu.html">Menu</a></span>) と構成 (<span class="tt"><a class="el" href="classConfig.html">Config</a></span>) を安全に疎結合化</li>
+<li><b>構造統一</b>: 共通処理の変数名・関数名は <span class="tt">mfcapture</span>、Doxygen/実装コメントスタイルは <span class="tt">calib</span> に統一</li>
+</ul>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md55"></a>
+11. Windows Media Foundation (MSMF) による低遅延キャプチャ</h1>
+<ul>
+<li><span class="tt"><a class="el" href="classCamMf.html">CamMf</a></span> クラスによる MSMF 直接操作</li>
+<li><span class="tt">CODECAPI_AVLowLatencyMode</span> で MFT 内部バッファリングを排除</li>
+<li>レイテンシ優先モード (<span class="tt">prioritizeLatency == true</span>)</li>
+</ul>
+<hr  />
+<h1 class="doxsection"><a class="anchor" id="autotoc_md57"></a>
+12. まとめ</h1>
+<ul>
+<li>ChArUco Board による高精度な交点認識</li>
+<li>透視投影モデルと内部 $K$・外部 $[R|t]$ パラメータの最適化</li>
+<li>CPU 補正 (OpenCV <span class="tt">remap</span>) と GPU 補正 (GLSL シェーダー) の実装構造</li>
+<li>堅牢な C++ クラス設計とカプセル化（インクラス初期化・公開 API）</li>
+<li>MSMF による超低遅延映像処理 </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">構築: <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.15.0 </li>
+  </ul>
+</div>
+</body>
+</html>

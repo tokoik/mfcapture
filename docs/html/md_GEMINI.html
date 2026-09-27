@@ -1,0 +1,327 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.15.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mfcapture: プロジェクト開発方針と環境定義 (GEMINI.md)</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="gg.ico"/></td>
+  <td id="projectalign">
+   <div id="projectname">mfcapture<span id="projectnumber">&#160;0.0.1</span>
+   </div>
+   <div id="projectbrief">Microsoft Media Foundation によるビデオキャプチャサンプル</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.15.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','検索',true);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('md_GEMINI.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">プロジェクト開発方針と環境定義 (GEMINI.md) </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p><a class="anchor" id="autotoc_md0"></a></p>
+<p>本ドキュメントは、<span class="tt">mfcapture</span> の設計方針、実装上維持すべき条件、および 開発・動作環境を定義します。</p>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md1"></a>
+1. プロジェクトの目的</h1>
+<ul>
+<li>画像処理プログラミングの勉強会で使用できる、読みやすいサンプルを作成します。</li>
+<li>入力画像に対する処理の位置と、CPU（OpenCV）と GPU（OpenGL／GLSL）の役割の違いを コードから追える構成にします。</li>
+<li>本プログラムは画像の取得、GLSL による変形、既存の較正結果による歪み補正に 責務を限定します。</li>
+<li>カメラ較正、ChArUco Board の作成、標本取得、較正値の算出は実装しません。</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md2"></a>
+2. 開発環境</h1>
+<ul>
+<li>統合開発環境: Visual Studio 2022 以降（Windows）、VS Code / Clang（macOS）、VS Code / GCC（Linux）</li>
+<li>開発言語: C++17</li>
+<li>ターゲット: 64 bit（x64 / arm64 / aarch64）</li>
+<li>ビルドシステム: CMake 3.13 以降</li>
+<li>C++ ソース（&lt;tt&gt;.h</li>
+</ul>
+<p>、&lt;tt&gt;.cpp）: UTF-8、BOM 付き</p><ul>
+<li>GLSL ソース（&lt;tt&gt;.vert</li>
+</ul>
+<p>、&lt;tt&gt;.frag、&lt;tt&gt;.comp）: UTF-8、BOM なし</p>
+<p>外部依存ライブラリは CMake がプロジェクト直下の <span class="tt">libs</span> へ取得します。 <span class="tt">libs</span> を別ディレクトリへのジャンクションにしてはいけません。インクルードパス、 ライブラリパス、DLL コピー、Visual Studio のデバッグ環境は <span class="tt">CMakeLists.txt</span> に 集約します。生成された Visual Studio プロジェクトファイルはソース直下へ置かず、 out-of-source build を使用します。</p>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
+3. 入力とキャプチャ</h1>
+<ul>
+<li>Windows のカメラ入力は Microsoft Media Foundation を使用します (<span class="tt"><a class="el" href="classCamMf.html">CamMf</a></span>)。</li>
+<li>macOS のカメラ入力は AV Foundation ネイティブバックエンドを使用します (<span class="tt">CamAvf</span>)。</li>
+<li>Android のカメラ入力は Camera2 NDK バックエンドを使用します (<span class="tt">CamAndroid</span>)。</li>
+<li>Raspberry Pi のカメラ入力は libcamera ネイティブバックエンドを使用します (<span class="tt">CamLibcam</span>)。</li>
+<li>その他のプラットフォームのカメラ入力と動画入力は OpenCV を使用します (<span class="tt"><a class="el" href="classCamCv.html">CamCv</a></span>)。</li>
+<li>GStreamer パイプライン入力はサポート対象外とし、構成ファイルや UI に GStreamer 固有の設定を追加しません。</li>
+<li>静止画像は <span class="tt"><a class="el" href="classCamImage.html">CamImage</a></span> を通して扱います。</li>
+<li><span class="tt"><a class="el" href="Camera_8h.html">Camera.h</a></span> は純粋なフレーム取得レイヤとし、OpenGL (<span class="tt"><a class="el" href="gg_8h.html">gg.h</a></span>)、OpenCV、GLFW への依存を完全に排除して標準 C++ ライブラリのみで構成します。</li>
+<li>NVI (Non-Virtual Interface) パターンを採用し、公開インターフェース <span class="tt">start()</span>, <span class="tt">stop()</span>, <span class="tt">close()</span> で排他制御、スレッド状態フラグ（<span class="tt">running</span>）、およびスレッド合流（<span class="tt">thr.join()</span>）などの共通ライフサイクルを一元管理します。派生クラスは保護フック関数 <span class="tt">onStart()</span>, <span class="tt">onStop()</span>, <span class="tt">onClose()</span> にハードウェア固有処理のみを実装します。</li>
+<li>従来の二重バッファ（<span class="tt">frame</span> と <span class="tt">image</span>）を廃止し、単一バッファ（<span class="tt">std::vector&lt;std::uint8_t&gt; image</span>）へ集約してメモリ使用量と不要な内部コピーを排除します。</li>
+<li>上位層へのフレーム転送はテンプレートメソッド <span class="tt">lockFrame(F&amp;&amp; func)</span> によるコールバック方式とし、非ブロッキング排他ロック（<span class="tt">try_to_lock</span>）成功時のみデータポインタを渡して直接 PBO 転送や <span class="tt">cv::Mat</span> へのコピーを行うゼロコピー設計とします。</li>
+<li>上位層での <span class="tt">dynamic_cast</span> による具象クラス依存を排除し、<span class="tt">isStillImage()</span>, <span class="tt">getFormatList()</span>, <span class="tt">selectFormat()</span> 等の基底クラス仮想関数を介して疎結合に連携します。</li>
+<li>プラットフォーム固有処理は <span class="tt"><a class="el" href="classCamMf.html">CamMf</a></span>、<span class="tt">CamAvf</span>、<span class="tt">CamAndroid</span>、<span class="tt">CamLibcam</span>、<span class="tt"><a class="el" href="classCamCv.html">CamCv</a></span>、<span class="tt"><a class="el" href="classCapture.html">Capture</a></span> に閉じ込め、UI と 描画ループへプラットフォーム固有型を露出させません。</li>
+<li><span class="tt"><a class="el" href="classCamMf.html">CamMf</a></span> は MFT デコーダとカラーコンバータを使い、CPU メモリ上のフレームへ変換します。</li>
+<li><span class="tt">CamAvf</span> は AV Foundation を用い、CPU メモリ上の BGRA フレームへ直接変換します。</li>
+<li>フォーマット列挙時には重いデコーダ初期化やセッション開始を行わず、開始時に選択フォーマットを 適用する遅延初期化を維持します。</li>
+<li>レイテンシ優先時は古いフレームを破棄し、全フレーム処理時は取得前のフレームを 上書きしません。</li>
+<li>スレッド間で共有する状態は atomic、mutex、condition variable を用途に応じて使い、 データレースと待機漏れを防ぎます。</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md4"></a>
+4. 画像処理パイプライン</h1>
+<p>一フレームの基本順序は、入力取得、第 1 パス（歪み補正）、第 2 パス（Preference 展開）、 最終表示の 2 パス構成とします。</p>
+<ul>
+<li><b>第 1 パス (歪み補正)</b>:<ul>
+<li>OpenCV 歪み補正はキャプチャ直後、OpenGL テクスチャへ転送する前に行います。GPU から CPU への読み戻しを追加してはいけません。</li>
+<li>OpenGL 歪み補正は生画像テクスチャを入力とし、中間フレームバッファ (<span class="tt">undistortedFramebuffer</span>) へ <span class="tt">undistortion.vert</span> と <span class="tt">undistortion.frag</span> で GPU 補正描画を行います。</li>
+<li>補正なしの場合は、生画像テクスチャをそのまま第 2 パスへ渡します。</li>
+<li>補正なしと OpenGL 補正では Pixel <a class="el" href="classBuffer.html">Buffer</a> Object を使用する高速な転送経路を維持します。</li>
+</ul>
+</li>
+<li><b>第 2 パス (<a class="el" href="classPreference.html">Preference</a> 展開)</b>:<ul>
+<li>歪み補正モード（なし／OpenCV／OpenGL）に関わらず、補正済み（または未補正）のフレームテクスチャを入力として、共通の <a class="el" href="classPreference.html">Preference</a> 展開シェーダー（<span class="tt">orthographic.vert</span> + <span class="tt">normal.frag</span> など）で最終フレームバッファ (<span class="tt">framebuffer</span>) へ展開します。</li>
+<li>これにより、CPU 補正と GPU 補正で同一の画角、焦点距離、回転、アスペクト比が保証され、補正結果が完全に一致します。</li>
+</ul>
+</li>
+<li><b>最終表示</b>:<ul>
+<li><span class="tt">framebuffer.draw(window.getFboWidth(), window.getFboHeight())</span> を用い、実 <a class="el" href="classFramebuffer.html">Framebuffer</a> サイズに基づいて縦横比を維持した中央表示（contain 方式）を行います。</li>
+</ul>
+</li>
+<li><span class="tt"><a class="el" href="classUndistortion.html">Undistortion</a></span> の補正マップは入力サイズが変化した場合だけ再構築します。</li>
+<li><span class="tt"><a class="el" href="classBuffer.html#afc49fafeb87cdbc08c7e522b08eba058">Framebuffer::resize()</a></span> は毎フレーム呼び出せますが、同じサイズでは GPU リソースを再確保しないキャッシュ実装を維持します。</li>
+<li>CPU 側のフレーム形式と GLSL が期待する色成分の対応を変更する場合は、最終表示シェーダーまで含めて確認します。</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
+5. 較正ファイルと歪み補正</h1>
+<ul>
+<li>入力は <span class="tt">calib</span> が出力する JSON 形式とし、<span class="tt">camera matrix</span>（3×3）と <span class="tt">distortion</span>（5×1）を必須とします。</li>
+<li>行列は一時領域へ読み込み、形状と全要素を検証してから現在値を置き換えます。</li>
+<li>読み込み失敗時は補正方式を「なし」に戻し、不完全なパラメータを使用しません。</li>
+<li>JSON 配列から <span class="tt">cv::Mat</span> を作成するときは、行列サイズを指定する通常の コンストラクタを使用します。波括弧による初期化で initializer-list コンストラクタを誤選択しないよう注意します。</li>
+<li>OpenCV と GLSL は同じカメラ行列および 5 係数 <span class="tt">k1, k2, p1, p2, k3</span> を使用します。</li>
+<li>OpenGL 用 uniform へ渡すときは、画素単位の焦点距離と主点、および実際の 入力解像度の関係を崩さないようにします。</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md6"></a>
+6. シェーダーと構成</h1>
+<ul>
+<li>各 <span class="tt"><a class="el" href="classPreference.html">Preference</a></span> は通常展開用の <span class="tt">shader</span> と、歪み補正用の <span class="tt">undistortion</span> を 構成ファイルから読み込みます。</li>
+<li><span class="tt">Default</span> を含む投影方式は、起動時に必要なシェーダーを構築します。</li>
+<li>歪み補正パス（第 1 パス）の設定は <span class="tt"><a class="el" href="classMenu.html#a4f36a627c2bbe5c84d9722779dab5ed9">Menu::setupUndistortion()</a></span> を使用し、<span class="tt">undistortion.vert</span> と <span class="tt">undistortion.frag</span> を設定します。</li>
+<li>展開パス（第 2 パス）の設定は <span class="tt"><a class="el" href="classMenu.html#a144b100568382513c749f88bd7b92495">Menu::setup()</a></span> を使用し、現在選択されている投影方式の展開シェーダー（<span class="tt">preference.getShader()</span>）を設定します。</li>
+<li>両シェーダーで共通の設定処理を使用します。存在しない uniform の location が <span class="tt">-1</span> の場合に OpenGL が更新を無視する性質を利用し、不要な分岐を増やしません。</li>
+<li>構成の読み込みに失敗した場合は、使用可能な既定シェーダーを維持します。</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md7"></a>
+7. UI と状態管理</h1>
+<ul>
+<li>ファイル選択には Native File Dialog Extended を使用します。</li>
+<li>較正ファイルの読み込みは「ファイル」メニューから行います。</li>
+<li>歪み補正方式は「なし」「OpenCV」「OpenGL」のラジオボタンで選択します。</li>
+<li>較正値が未読み込みの場合は OpenCV／OpenGL 補正へ遷移させません。</li>
+<li><span class="tt"><a class="el" href="classMenu.html#a2cd7ab9901a8f42a3ae977d0774398a6">Menu::draw()</a></span> は UI の描画と入力受付を担当し、実際の画像処理は <span class="tt"><a class="el" href="mfcapture_8cpp.html">mfcapture.cpp</a></span>、<span class="tt"><a class="el" href="classUndistortion.html">Undistortion</a></span>、シェーダーへ委譲します。</li>
+<li>同じ状態遷移を複数の UI ブロックへ重複実装せず、補助関数へ集約します。</li>
+<li><span class="tt">const_cast</span> や <span class="tt">friend</span> によるクラスの不変条件迂回を一切禁止し、<span class="tt">getSettings()</span> や <span class="tt">setSettings()</span> などの明示的な公開 API を介して状態変更と連携を行います。</li>
+<li>メンバ変数の初期化はコンストラクタの初期化子リストではなくクラス定義（ヘッダ内）のデフォルトメンバ初期化構文（インクラス初期化）へ集約します。</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md8"></a>
+8. リソース管理と安全性</h1>
+<ul>
+<li>COM オブジェクト、OpenGL オブジェクト、MFT バッファ、libcamera 要求オブジェクトは RAII または明示的な対称処理で解放し、早期 return や <span class="tt">continue</span> でも漏らしません。</li>
+<li>コピー長は入力と出力の実容量から決め、バッファ境界を越えないようにします。</li>
+<li>画像サイズが 0、較正値が未設定、シェーダー構築失敗などの状態を公開関数の 入口で検査します。</li>
+<li>ファイル読み込みは、成功した部分だけが現在状態へ残る更新を行いません。</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md9"></a>
+9. コメントと Doxygen</h1>
+<ul>
+<li>コメントにはコードの逐語的な説明ではなく、「何のために」「どの状態を保つために」 その処理を行うかを記述します。</li>
+<li>教材として処理単位を追えるよう、ファイル読み込み、検証、キャッシュ更新、 CPU／GPU 転送、座標変換の各ブロックに説明を付けます。</li>
+<li><span class="tt">calib</span> と <span class="tt">mfcapture</span> 間で共通する変数名・関数名は <span class="tt">mfcapture</span> の命名に統一し、コメントおよび Doxygen の表現スタイルは <span class="tt">calib</span> に統一します。</li>
+<li>公開型と公開関数、重要な非公開関数には Doxygen コメントを付けます。</li>
+<li><span class="tt">@param</span> は宣言の引数名と一致させ、戻り値がある関数には <span class="tt">@return</span> を記述します。</li>
+<li>実装を変更したときは、コメント、Doxygen、README、必要なら REQUESTS を同時に 更新します。</li>
+<li>Doxygen の引数名不一致、未記載引数、未知のコマンドに関する警告を残しません。</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md10"></a>
+10. 検証方針</h1>
+<ul>
+<li>Windows の Debug と Release の両構成をビルドします。</li>
+<li><span class="tt">git diff --check</span> で差分の空白エラーを確認します。</li>
+<li>Doxygen を実行し、プロジェクトコードのコメント警告を確認します。</li>
+<li>較正ファイルの正常系、必須行列欠落、行列サイズ不正を確認します。</li>
+<li>同じ入力について、補正なし、OpenCV、OpenGL の切り替えを確認します。</li>
+<li>入力解像度変更時だけ補正マップと <a class="el" href="classFramebuffer.html">Framebuffer</a> が再構築されることを確認します。</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md11"></a>
+11. Raspberry Pi / 組み込み環境対応方針</h1>
+<ul>
+<li><b>グラフィックス API (OpenGL ES 3.1)</b>:<ul>
+<li>Raspberry Pi 4/5 の GPU (VideoCore VI/VII) および Mesa ドライバに最適化するため、OpenGL ES 3.1 (<span class="tt">GL_GLES_PROTOTYPES</span>, <span class="tt">IMGUI_IMPL_OPENGL_ES3</span>) をサポートします。</li>
+<li>CMake オプション <span class="tt">USE_GLES</span> を提供し、ARM 環境 (<span class="tt">arm|aarch64</span>) では既定値を <span class="tt">ON</span> とします（デスクトップ OpenGL への切り替えも可能）。</li>
+</ul>
+</li>
+<li><b>シェーダーコードの統一と GLES 前処理</b>:<ul>
+<li>シェーダーファイル自体の宣言は Desktop OpenGL 3.3 準拠の <span class="tt">#version 330</span> に統一します。</li>
+<li><span class="tt">ggCreateShader</span> において、<span class="tt">GL_GLES_PROTOTYPES</span> 有効時は先頭のバージョン宣言を <span class="tt">#version 310 es</span> に置換し、精度修飾子（<span class="tt">precision highp float; precision highp int;</span>）を自動付与します。これにより、シェーダーファイルの複製・二重管理を防ぎます。</li>
+</ul>
+</li>
+<li><b>カメラ入力 (libcamera および V4L2 サポート)</b>:<ul>
+<li>Raspberry Pi のネイティブカメラスタックとして <span class="tt">CamLibcam</span> (libcamera バックエンド) を提供します。</li>
+<li>Linux 環境における汎用 UVC カメラ入力バックエンドとして <span class="tt">cv::CAP_V4L2</span> を追加します。</li>
+<li><span class="tt">/sys/class/video4linux</span> を走査して接続されたカメラデバイスの一覧と実際のデバイス番号を取得し、SoC 内部処理ノード（bcm2835-codec, bcm2835-isp, pisp 等）を除外した上で、USB カメラおよび Raspberry Pi <a class="el" href="classCamera.html">Camera</a> Module を選択可能にします。</li>
+</ul>
+</li>
+<li><b>アセット・リソースの配置</b>:<ul>
+<li>Linux 環境でも POST_BUILD コマンドにより、シェーダー、構成ファイル、画像アセットを実行バイナリディレクトリへ自動配置します。</li>
+</ul>
+</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md12"></a>
+12. OpenXR サポート方針</h1>
+<ul>
+<li><span class="tt">GgApp::OpenXR</span> により、VR / MR ヘッドセットへのステレオ展開出力をサポートします。</li>
+<li>OpenXR API への依存は <span class="tt"><a class="el" href="classGgApp.html">GgApp</a></span> 内にカプセル化し、メインアプリケーションや画像パイプラインの独立性を保ちます。</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md13"></a>
+13. Android スマートフォン対応方針</h1>
+<ul>
+<li><b>NativeActivity &amp; EGL/GLES 3.1</b>:<ul>
+<li>Android アプリケーションは NativeActivity (<span class="tt">android_main</span>) をエントリーポイントとし、EGL を用いて OpenGL ES 3.1 コンテキストを初期化します。</li>
+<li><span class="tt"><a class="el" href="classGgApp.html">GgApp</a></span> は Android 上で EGL サーフェスライフサイクル、イベントループ（<span class="tt">android_app</span>）、およびタッチ入力イベント（<span class="tt">ImGui_ImplAndroid_HandleInputEvent</span>）を管理します。</li>
+</ul>
+</li>
+<li><b>カメラ入力 (<span class="tt">CamAndroid</span>)</b>:<ul>
+<li>Android NDK の Camera2 API (<span class="tt">ACameraManager</span>, <span class="tt">ACameraDevice</span>, <span class="tt">ACaptureSessionOutputContainer</span>, <span class="tt">ACaptureRequest</span>, <span class="tt">AImageReader</span>) を使用してカメラ入力を行います。</li>
+<li>バックエンドとして <span class="tt">CamAndroid</span> を提供し、<span class="tt"><a class="el" href="classCamera.html">Camera</a></span> 基底クラスの NVI 設計に従って非ブロッキング排他ロック（<span class="tt">lockFrame</span>）によるゼロコピーフレーム転送を行います。</li>
+<li>フォーマットとしては YUV420_888 または RGBA_8888 (<span class="tt">AIMAGE_FORMAT_RGBA_8888</span>) をサポートし、直接内部画像バッファへ格納します。</li>
+</ul>
+</li>
+<li><b>ファイルアクセスと UI モーダル</b>:<ul>
+<li>Android 環境ではデスクトップの Native File Dialog (NFD) が利用できないため、ImGui によるインアプリモーダルダイアログ (<span class="tt">Menu::drawFileModal()</span>) を提供します。</li>
+<li>アプリ内部ストレージ（<span class="tt">internalDataPath</span>）内のファイル一覧を表示し、構成ファイル、画像ファイル、較正データの読み込みを可能にします。</li>
+</ul>
+</li>
+<li><b>アセットの自動展開</b>:<ul>
+<li>APK 内の <span class="tt">assets/</span> に同梱されたリソース（シェーダー、構成 JSON、フォント、初期画像等）は、起動時に <span class="tt">AAssetManager</span> を介してアプリ内部ストレージへ自動展開され、デスクトップ版と同様の相対パスで透過的にアクセスできます。</li>
+</ul>
+</li>
+<li><b>ビルドシステム</b>:<ul>
+<li><span class="tt">android/</span> ディレクトリ配下に Gradle プロジェクトを構成し、トップレベルの <span class="tt">CMakeLists.txt</span> を外部ネイティブビルドとして直接参照します。</li>
+<li>OpenCV Android SDK (<span class="tt">opencv-4.11.0-android-sdk.zip</span>) を自動取得・構成します。</li>
+</ul>
+</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md14"></a>
+14. macOS (AV Foundation) 対応方針</h1>
+<ul>
+<li><b>カメラ入力 (<span class="tt">CamAvf</span>)</b>:<ul>
+<li>macOS のカメラ入力には AV Foundation を直接使用し、OpenCV (<span class="tt"><a class="el" href="classCamCv.html">CamCv</a></span>) から完全に独立させます。</li>
+<li><span class="tt">AVCaptureDeviceDiscoverySession</span> により接続されたカメラデバイス一覧を取得し、<span class="tt">AVCaptureDeviceFormat</span> から解像度、フレームレート、コーデックを抽出して <span class="tt"><a class="el" href="structCaptureFormat.html">CaptureFormat</a></span> に集約します。</li>
+<li><span class="tt">AVCaptureVideoDataOutput</span> の <span class="tt">videoSettings</span> で <span class="tt">kCVPixelFormatType_32BGRA</span> を指定し、ハードウェアまたは OS 内部で BGRA に変換して CPU メモリ（<span class="tt">std::vector&lt;std::uint8_t&gt;</span>）へ直接出力します。</li>
+<li><span class="tt">alwaysDiscardsLateVideoFrames</span> と連携し、<span class="tt">prioritizeLatency</span> に応じた低遅延フレーム破棄を制御します。</li>
+<li>カメラ認識時やフォーマットリスト取得時にはセッション開始等の重い処理を行わず、開始指示のタイミングで適用する遅延初期化（Lazy Initialization）を維持します。</li>
+<li><span class="tt">CMakeLists.txt</span> において、macOS 環境 (<span class="tt">APPLE</span>) では <span class="tt">-framework AVFoundation</span> および <span class="tt">-framework CoreMedia</span> を自動的にリンクします。</li>
+</ul>
+</li>
+<li><b>Homebrew 非依存の完全自己完結ビルド</b>:<ul>
+<li>外部パッケージマネージャ（Homebrew 等）の導入有無に関わらずビルドできるよう、<span class="tt">CMakeLists.txt</span> における OpenCV ビルド設定で不要な外部依存（Protobuf, FFmpeg, GStreamer, VTK, OpenEXR, libavif, Eigen, OpenJPEG, JasPer, Qt, TBB, IPP 等）の探索を明示的に無効化し、組み込み 3rdparty ライブラリ（ZLIB, JPEG, PNG, TIFF, WEBP）を強制します。</li>
+<li>生成される <span class="tt">opencv_world</span> バイナリは macOS 標準フレームワークおよび C++ ランタイムのみに依存する完全自己完結バイナリとします。</li>
+</ul>
+</li>
+<li><b>デバイス名サニタイズと ImGui グリフ範囲拡張</b>:<ul>
+<li>カメラデバイス名に含まれる制御文字の置換、タイポグラフィック引用符（‘, ’, “, ”）の標準 ASCII 記号（', "）への正規化、および 4 バイト絵文字等の除外を行うサニタイズ処理を <span class="tt">CamAvf</span> / <span class="tt"><a class="el" href="classCamMf.html">CamMf</a></span> に設けます。</li>
+<li>ImGui のフォント初期化時に、一般的な句読点（<span class="tt">0x2000-0x206F</span>）、文字様記号（<span class="tt">0x2100-0x214F</span>）、矢印（<span class="tt">0x2190-0x21FF</span>）、囲み英数字（<span class="tt">0x2460-0x24FF</span>）、幾何学模様（<span class="tt">0x25A0-0x25FF</span>）のグリフ範囲を追加登録し、フォントファイル内の記号・特殊文字の表示欠落や文字化けを防止します。 </li>
+</ul>
+</li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">構築: <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.15.0 </li>
+  </ul>
+</div>
+</body>
+</html>

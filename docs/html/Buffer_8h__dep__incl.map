@@ -1,0 +1,25 @@
+<map id="Buffer.h" name="Buffer.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="149,5,215,32"/>
+<area shape="rect" id="Node000002" href="$Buffer_8cpp.html" title=" " alt="" coords="38,80,118,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="150,43,98,81,95,77,153,39"/>
+<area shape="rect" id="Node000003" href="$Capture_8h.html" title=" " alt="" coords="143,80,221,107"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="183,45,185,80,180,79,181,50"/>
+<area shape="rect" id="Node000008" href="$Texture_8h.html" title=" " alt="" coords="274,80,349,107"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="218,37,291,79,286,80,218,43"/>
+<area shape="rect" id="Node000004" href="$Capture_8cpp.html" title=" " alt="" coords="5,155,98,181"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="145,117,76,156,73,152,147,112"/>
+<area shape="rect" id="Node000005" href="$Menu_8h.html" title=" " alt="" coords="122,155,186,181"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="174,119,161,156,157,153,170,123"/>
+<area shape="rect" id="Node000007" href="$mfcapture_8cpp.html" title=" " alt="" coords="171,229,276,256"/>
+<area shape="poly" id="edge7_Node000003_Node000007" title=" " alt="" coords="192,120,223,229,217,228,188,124"/>
+<area shape="rect" id="Node000006" href="$Menu_8cpp.html" title=" " alt="" coords="68,229,147,256"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="140,193,117,231,114,227,135,196"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="178,190,214,229,209,229,175,195"/>
+<area shape="rect" id="Node000009" href="$Framebuffer_8h.html" title=" " alt="" coords="261,155,362,181"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="313,120,314,156,309,153,310,125"/>
+<area shape="rect" id="Node000011" href="$Texture_8cpp.html" title=" " alt="" coords="387,155,476,181"/>
+<area shape="poly" id="edge12_Node000008_Node000011" title=" " alt="" coords="346,112,413,154,408,154,345,118"/>
+<area shape="poly" id="edge11_Node000009_Node000007" title=" " alt="" coords="287,191,240,231,237,227,282,192"/>
+<area shape="rect" id="Node000010" href="$Framebuffer_8cpp.html" title=" " alt="" coords="299,229,414,256"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="329,193,352,230,347,228,326,197"/>
+</map>

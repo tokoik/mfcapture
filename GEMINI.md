@@ -44,7 +44,7 @@ out-of-source build を使用します。
 - プラットフォーム固有処理は `CamMf`、`CamAvf`、`CamAndroid`、`CamLibcam`、`CamCv`、`Capture` に閉じ込め、UI と
   描画ループへプラットフォーム固有型を露出させません。
 - `CamMf` は MFT デコーダとカラーコンバータを使い、CPU メモリ上のフレームへ変換します。
-- `CamAvf` は AV Foundation を用い、`AVCaptureDeviceDiscoverySession` によるデバイス列挙、`AVCaptureDeviceFormat` による特性列挙、遅延初期化、`kCVPixelFormatType_32BGRA` によるゼロコピーフレーム取得を行います。
+- `CamAvf` は AV Foundation を用い、CPU メモリ上の BGRA フレームへ直接変換します。
 - フォーマット列挙時には重いデコーダ初期化やセッション開始を行わず、開始時に選択フォーマットを
   適用する遅延初期化を維持します。
 - レイテンシ優先時は古いフレームを破棄し、全フレーム処理時は取得前のフレームを

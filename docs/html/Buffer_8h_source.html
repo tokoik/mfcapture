@@ -1,0 +1,327 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.15.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mfcapture: Buffer.h ソースファイル</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="gg.ico"/></td>
+  <td id="projectalign">
+   <div id="projectname">mfcapture<span id="projectnumber">&#160;0.0.1</span>
+   </div>
+   <div id="projectbrief">Microsoft Media Foundation によるビデオキャプチャサンプル</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.15.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','検索',true);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('Buffer_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Buffer.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Buffer_8h.html">[詳解]</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">// 補助プログラム</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="gg_8h.html">gg.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespacegg.html">gg</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">// ピクセルバッファオブジェクトを使うとき</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="Buffer_8h.html#aae553f6211bef385e43db5597910e341">   16</a></span><span class="preprocessor">#define USE_PIXEL_BUFFER_OBJECT</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span></div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classBuffer.html">   24</a></span><span class="keyword">class </span><a class="code hl_function" href="classBuffer.html#a92fd371409790ee64d2ca9bdaec2dd1a">Buffer</a></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>{</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  std::array&lt;int, 2&gt; bufferSize{ 0, 0 };</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  <span class="keywordtype">int</span> bufferChannels{ 0 };</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#if defined(USE_PIXEL_BUFFER_OBJECT)</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  GLsizei bufferLength{ 0 };</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  GLuint</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  std::vector&lt;GLubyte&gt;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    bufferName{ 0 };</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span></div>
+<div class="foldopen" id="foldopen00052" data-start="{" data-end="}">
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classBuffer.html#a9f5458d3d3efc617685614764cbac539">   52</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="classBuffer.html#a9f5458d3d3efc617685614764cbac539">channelsToFormat</a>(<span class="keywordtype">int</span> channels)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="comment">// OpenGL のテクスチャフォーマットのリスト</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> GLenum toFormat[]{ GL_RED, GL_RG, GL_RGB, GL_RGBA };</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="comment">// フォーマットを返す</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> toFormat[(channels - 1) &amp; 3];</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>  }</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>  <span class="keywordtype">int</span> <a class="code hl_function" href="classBuffer.html#abb2a8da89620b204be36f42654065f3f">formatToChannels</a>(GLenum format) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classBuffer.html#aeca0f794d3e52c7eda294c08d0e94562">copyBuffer</a>(<span class="keyword">const</span> <a class="code hl_class" href="classBuffer.html">Buffer</a>&amp; buffer) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classBuffer.html#a92fd371409790ee64d2ca9bdaec2dd1a">   81</a></span>  <a class="code hl_function" href="classBuffer.html#a92fd371409790ee64d2ca9bdaec2dd1a">Buffer</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span></div>
+<div class="foldopen" id="foldopen00094" data-start="{" data-end="}">
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classBuffer.html#af154e91266bb87ed712e3674b31145b3">   94</a></span>  <a class="code hl_function" href="classBuffer.html#af154e91266bb87ed712e3674b31145b3">Buffer</a>(GLsizei width, GLsizei height, <span class="keywordtype">int</span> channels)</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>  {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <a class="code hl_function" href="classBuffer.html#a2728fd76723391d9906e56ada039840c">Buffer::create</a>(width, height, channels);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  }</div>
+</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span></div>
+<div class="foldopen" id="foldopen00104" data-start="{" data-end="}">
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classBuffer.html#a643d3e0342efb9cf7c9c3bbfc67906e6">  104</a></span>  <a class="code hl_function" href="classBuffer.html#a643d3e0342efb9cf7c9c3bbfc67906e6">Buffer</a>(<span class="keyword">const</span> <a class="code hl_function" href="classBuffer.html#a92fd371409790ee64d2ca9bdaec2dd1a">Buffer</a>&amp; buffer)</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>  {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <a class="code hl_function" href="classBuffer.html#a645dd3b6aed7c9976f257426a75798f4">Buffer::copy</a>(buffer);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>  }</div>
+</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span></div>
+<div class="foldopen" id="foldopen00114" data-start="{" data-end="}">
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classBuffer.html#ab7d82b1d06555d5511dd5dbec3fbf134">  114</a></span>  <a class="code hl_function" href="classBuffer.html#ab7d82b1d06555d5511dd5dbec3fbf134">Buffer</a>(<a class="code hl_function" href="classBuffer.html#a92fd371409790ee64d2ca9bdaec2dd1a">Buffer</a>&amp;&amp; buffer) noexcept</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    : bufferSize{ buffer.bufferSize }</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    , bufferChannels{ buffer.bufferChannels }</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="preprocessor">#if defined(USE_PIXEL_BUFFER_OBJECT)</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    , bufferLength{ buffer.bufferLength }</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    , bufferName{ buffer.bufferName }</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>  {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    buffer.bufferSize = { 0, 0 };</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    buffer.bufferChannels = 0;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span><span class="preprocessor">#if defined(USE_PIXEL_BUFFER_OBJECT)</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    buffer.bufferLength = 0;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="comment">// ムーブ元のデストラクタでバッファが削除されないよう 0 にする</span></div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    buffer.bufferName = 0;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>  }</div>
+</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span></div>
+<div class="foldopen" id="foldopen00135" data-start="{" data-end="}">
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno"><a class="line" href="classBuffer.html#a781aa3047b5dc0b48777138a54b5f562">  135</a></span>  <span class="keyword">virtual</span> <a class="code hl_function" href="classBuffer.html#a781aa3047b5dc0b48777138a54b5f562">~Buffer</a>()</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>  {</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <a class="code hl_function" href="classBuffer.html#a73d7d5f904e12d2983e855cc41c58628">Buffer::discard</a>();</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>  }</div>
+</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span></div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>  <a class="code hl_class" href="classBuffer.html">Buffer</a>&amp; <a class="code hl_function" href="classBuffer.html#af4400faaad780ef42b4cf4956aefb189">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classBuffer.html">Buffer</a>&amp; buffer);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>  <a class="code hl_class" href="classBuffer.html">Buffer</a>&amp; <a class="code hl_function" href="classBuffer.html#af4400faaad780ef42b4cf4956aefb189">operator=</a>(<a class="code hl_class" href="classBuffer.html">Buffer</a>&amp;&amp; buffer) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span></div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classBuffer.html#a2728fd76723391d9906e56ada039840c">create</a>(GLsizei width, GLsizei height, <span class="keywordtype">int</span> channels);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span></div>
+<div class="foldopen" id="foldopen00180" data-start="{" data-end="}">
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno"><a class="line" href="classBuffer.html#afc49fafeb87cdbc08c7e522b08eba058">  180</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classBuffer.html#afc49fafeb87cdbc08c7e522b08eba058">resize</a>(GLsizei width, GLsizei height, <span class="keywordtype">int</span> channels)</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>  {</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <a class="code hl_function" href="classBuffer.html#a2728fd76723391d9906e56ada039840c">create</a>(width, height, channels);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>  }</div>
+</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span></div>
+<div class="foldopen" id="foldopen00194" data-start="{" data-end="}">
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno"><a class="line" href="classBuffer.html#a023492b5a0d6587fbdb75d3aa26d00a4">  194</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classBuffer.html#a023492b5a0d6587fbdb75d3aa26d00a4">resize</a>(<span class="keyword">const</span> <a class="code hl_function" href="classBuffer.html#a92fd371409790ee64d2ca9bdaec2dd1a">Buffer</a>&amp; buffer)</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>  {</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <a class="code hl_function" href="classBuffer.html#a2728fd76723391d9906e56ada039840c">create</a>(buffer.<a class="code hl_function" href="classBuffer.html#a4c657e4076b43a5584ce4e9f24eaa303">getWidth</a>(), buffer.<a class="code hl_function" href="classBuffer.html#a2907b67db791b248819ae02eff2b15a3">getHeight</a>(), buffer.<a class="code hl_function" href="classBuffer.html#a05bd037ea6a9c6b754ed1a1ff3ae079f">getChannels</a>());</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>  }</div>
+</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span></div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classBuffer.html#a645dd3b6aed7c9976f257426a75798f4">copy</a>(<span class="keyword">const</span> <a class="code hl_class" href="classBuffer.html">Buffer</a>&amp; buffer) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span></div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classBuffer.html#a73d7d5f904e12d2983e855cc41c58628">discard</a>();</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span></div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span><span class="preprocessor">#if defined(USE_PIXEL_BUFFER_OBJECT)</span></div>
+<div class="foldopen" id="foldopen00221" data-start="{" data-end="}">
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno"><a class="line" href="classBuffer.html#ad3c6a59d8003b456dbbdff6b7dcd36c5">  221</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="classBuffer.html#ad3c6a59d8003b456dbbdff6b7dcd36c5">getBufferName</a>() const</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>  <span class="keyword">auto</span>&amp; <a class="code hl_function" href="classBuffer.html#ad3c6a59d8003b456dbbdff6b7dcd36c5">getBufferName</a>()</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>  {</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keywordflow">return</span> bufferName;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>  }</div>
+</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span></div>
+<div class="foldopen" id="foldopen00234" data-start="{" data-end="}">
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno"><a class="line" href="classBuffer.html#ab229a27631b130958d17551cb486c5d5">  234</a></span>  <span class="keyword">virtual</span> <span class="keyword">const</span> std::array&lt;GLsizei, 2&gt;&amp; <a class="code hl_function" href="classBuffer.html#ab229a27631b130958d17551cb486c5d5">getSize</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keywordflow">return</span> bufferSize;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>  }</div>
+</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span></div>
+<div class="foldopen" id="foldopen00244" data-start="{" data-end="}">
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno"><a class="line" href="classBuffer.html#a4c657e4076b43a5584ce4e9f24eaa303">  244</a></span>  GLsizei <a class="code hl_function" href="classBuffer.html#a4c657e4076b43a5584ce4e9f24eaa303">getWidth</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classBuffer.html#ab229a27631b130958d17551cb486c5d5">getSize</a>()[0];</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>  }</div>
+</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span></div>
+<div class="foldopen" id="foldopen00254" data-start="{" data-end="}">
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno"><a class="line" href="classBuffer.html#a2907b67db791b248819ae02eff2b15a3">  254</a></span>  GLsizei <a class="code hl_function" href="classBuffer.html#a2907b67db791b248819ae02eff2b15a3">getHeight</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classBuffer.html#ab229a27631b130958d17551cb486c5d5">getSize</a>()[1];</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>  }</div>
+</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span></div>
+<div class="foldopen" id="foldopen00264" data-start="{" data-end="}">
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno"><a class="line" href="classBuffer.html#a05bd037ea6a9c6b754ed1a1ff3ae079f">  264</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classBuffer.html#a05bd037ea6a9c6b754ed1a1ff3ae079f">getChannels</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    <span class="keywordflow">return</span> bufferChannels;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>  }</div>
+</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span></div>
+<div class="foldopen" id="foldopen00274" data-start="{" data-end="}">
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno"><a class="line" href="classBuffer.html#a3bfc6057069087da798490307ca13f22">  274</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="classBuffer.html#a3bfc6057069087da798490307ca13f22">getFormat</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classBuffer.html#a9f5458d3d3efc617685614764cbac539">channelsToFormat</a>(<a class="code hl_function" href="classBuffer.html#a05bd037ea6a9c6b754ed1a1ff3ae079f">getChannels</a>());</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>  }</div>
+</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span></div>
+<div class="foldopen" id="foldopen00284" data-start="{" data-end="}">
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno"><a class="line" href="classBuffer.html#a886c34bbbcbb485a8d0eef65b1bbae50">  284</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="classBuffer.html#a886c34bbbcbb485a8d0eef65b1bbae50">getAspect</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>GLfloat<span class="keyword">&gt;</span>(<a class="code hl_function" href="classBuffer.html#a4c657e4076b43a5584ce4e9f24eaa303">getWidth</a>()) / <span class="keyword">static_cast&lt;</span>GLfloat<span class="keyword">&gt;</span>(<a class="code hl_function" href="classBuffer.html#a2907b67db791b248819ae02eff2b15a3">getHeight</a>());</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>  }</div>
+</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span></div>
+<div class="foldopen" id="foldopen00294" data-start="{" data-end="}">
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno"><a class="line" href="classBuffer.html#a4b1b3c1985a9dbf81b3e9af61e4eef99">  294</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classBuffer.html#a4b1b3c1985a9dbf81b3e9af61e4eef99">bindBuffer</a>(GLenum target = GL_PIXEL_PACK_BUFFER)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span><span class="preprocessor">#if defined(USE_PIXEL_BUFFER_OBJECT)</span></div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    glBindBuffer(target, bufferName);</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>  }</div>
+</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span></div>
+<div class="foldopen" id="foldopen00306" data-start="{" data-end="}">
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno"><a class="line" href="classBuffer.html#a4405f69021b4a2e7ec409614efa6eb3e">  306</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classBuffer.html#a4405f69021b4a2e7ec409614efa6eb3e">unbindBuffer</a>(GLenum target = GL_PIXEL_PACK_BUFFER)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span><span class="preprocessor">#if defined(USE_PIXEL_BUFFER_OBJECT)</span></div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    glBindBuffer(target, 0);</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>  }</div>
+</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span></div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>  GLvoid* <a class="code hl_function" href="classBuffer.html#af63b0de94eb3beab4af3af69d8cd2ac3">map</a>()</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span><span class="preprocessor">#if defined(USE_PIXEL_BUFFER_OBJECT)</span></div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    <span class="keyword">const</span></div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    ;</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span></div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classBuffer.html#a9b26c912f685095a2d8ffe6705fb64a8">unmap</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>};</div>
+</div>
+<div class="ttc" id="aclassBuffer_html"><div class="ttname"><a href="classBuffer.html">Buffer</a></div><div class="ttdef"><b>Definition</b> <a href="#l00024">Buffer.h:25</a></div></div>
+<div class="ttc" id="aclassBuffer_html_a023492b5a0d6587fbdb75d3aa26d00a4"><div class="ttname"><a href="classBuffer.html#a023492b5a0d6587fbdb75d3aa26d00a4">Buffer::resize</a></div><div class="ttdeci">void resize(const Buffer &amp;buffer)</div><div class="ttdef"><b>Definition</b> <a href="#l00194">Buffer.h:194</a></div></div>
+<div class="ttc" id="aclassBuffer_html_a05bd037ea6a9c6b754ed1a1ff3ae079f"><div class="ttname"><a href="classBuffer.html#a05bd037ea6a9c6b754ed1a1ff3ae079f">Buffer::getChannels</a></div><div class="ttdeci">virtual int getChannels() const</div><div class="ttdef"><b>Definition</b> <a href="#l00264">Buffer.h:264</a></div></div>
+<div class="ttc" id="aclassBuffer_html_a2728fd76723391d9906e56ada039840c"><div class="ttname"><a href="classBuffer.html#a2728fd76723391d9906e56ada039840c">Buffer::create</a></div><div class="ttdeci">virtual void create(GLsizei width, GLsizei height, int channels)</div><div class="ttdef"><b>Definition</b> <a href="Buffer_8cpp_source.html#l00060">Buffer.cpp:60</a></div></div>
+<div class="ttc" id="aclassBuffer_html_a2907b67db791b248819ae02eff2b15a3"><div class="ttname"><a href="classBuffer.html#a2907b67db791b248819ae02eff2b15a3">Buffer::getHeight</a></div><div class="ttdeci">GLsizei getHeight() const</div><div class="ttdef"><b>Definition</b> <a href="#l00254">Buffer.h:254</a></div></div>
+<div class="ttc" id="aclassBuffer_html_a3bfc6057069087da798490307ca13f22"><div class="ttname"><a href="classBuffer.html#a3bfc6057069087da798490307ca13f22">Buffer::getFormat</a></div><div class="ttdeci">auto getFormat() const</div><div class="ttdef"><b>Definition</b> <a href="#l00274">Buffer.h:274</a></div></div>
+<div class="ttc" id="aclassBuffer_html_a4405f69021b4a2e7ec409614efa6eb3e"><div class="ttname"><a href="classBuffer.html#a4405f69021b4a2e7ec409614efa6eb3e">Buffer::unbindBuffer</a></div><div class="ttdeci">void unbindBuffer(GLenum target=GL_PIXEL_PACK_BUFFER) const</div><div class="ttdef"><b>Definition</b> <a href="#l00306">Buffer.h:306</a></div></div>
+<div class="ttc" id="aclassBuffer_html_a4b1b3c1985a9dbf81b3e9af61e4eef99"><div class="ttname"><a href="classBuffer.html#a4b1b3c1985a9dbf81b3e9af61e4eef99">Buffer::bindBuffer</a></div><div class="ttdeci">void bindBuffer(GLenum target=GL_PIXEL_PACK_BUFFER) const</div><div class="ttdef"><b>Definition</b> <a href="#l00294">Buffer.h:294</a></div></div>
+<div class="ttc" id="aclassBuffer_html_a4c657e4076b43a5584ce4e9f24eaa303"><div class="ttname"><a href="classBuffer.html#a4c657e4076b43a5584ce4e9f24eaa303">Buffer::getWidth</a></div><div class="ttdeci">GLsizei getWidth() const</div><div class="ttdef"><b>Definition</b> <a href="#l00244">Buffer.h:244</a></div></div>
+<div class="ttc" id="aclassBuffer_html_a643d3e0342efb9cf7c9c3bbfc67906e6"><div class="ttname"><a href="classBuffer.html#a643d3e0342efb9cf7c9c3bbfc67906e6">Buffer::Buffer</a></div><div class="ttdeci">Buffer(const Buffer &amp;buffer)</div><div class="ttdef"><b>Definition</b> <a href="#l00104">Buffer.h:104</a></div></div>
+<div class="ttc" id="aclassBuffer_html_a645dd3b6aed7c9976f257426a75798f4"><div class="ttname"><a href="classBuffer.html#a645dd3b6aed7c9976f257426a75798f4">Buffer::copy</a></div><div class="ttdeci">virtual void copy(const Buffer &amp;buffer) noexcept</div><div class="ttdef"><b>Definition</b> <a href="Buffer_8cpp_source.html#l00093">Buffer.cpp:93</a></div></div>
+<div class="ttc" id="aclassBuffer_html_a73d7d5f904e12d2983e855cc41c58628"><div class="ttname"><a href="classBuffer.html#a73d7d5f904e12d2983e855cc41c58628">Buffer::discard</a></div><div class="ttdeci">virtual void discard()</div><div class="ttdef"><b>Definition</b> <a href="Buffer_8cpp_source.html#l00187">Buffer.cpp:187</a></div></div>
+<div class="ttc" id="aclassBuffer_html_a781aa3047b5dc0b48777138a54b5f562"><div class="ttname"><a href="classBuffer.html#a781aa3047b5dc0b48777138a54b5f562">Buffer::~Buffer</a></div><div class="ttdeci">virtual ~Buffer()</div><div class="ttdef"><b>Definition</b> <a href="#l00135">Buffer.h:135</a></div></div>
+<div class="ttc" id="aclassBuffer_html_a886c34bbbcbb485a8d0eef65b1bbae50"><div class="ttname"><a href="classBuffer.html#a886c34bbbcbb485a8d0eef65b1bbae50">Buffer::getAspect</a></div><div class="ttdeci">auto getAspect() const</div><div class="ttdef"><b>Definition</b> <a href="#l00284">Buffer.h:284</a></div></div>
+<div class="ttc" id="aclassBuffer_html_a92fd371409790ee64d2ca9bdaec2dd1a"><div class="ttname"><a href="classBuffer.html#a92fd371409790ee64d2ca9bdaec2dd1a">Buffer::Buffer</a></div><div class="ttdeci">Buffer()=default</div></div>
+<div class="ttc" id="aclassBuffer_html_a9b26c912f685095a2d8ffe6705fb64a8"><div class="ttname"><a href="classBuffer.html#a9b26c912f685095a2d8ffe6705fb64a8">Buffer::unmap</a></div><div class="ttdeci">void unmap() const</div><div class="ttdef"><b>Definition</b> <a href="Buffer_8cpp_source.html#l00173">Buffer.cpp:173</a></div></div>
+<div class="ttc" id="aclassBuffer_html_a9f5458d3d3efc617685614764cbac539"><div class="ttname"><a href="classBuffer.html#a9f5458d3d3efc617685614764cbac539">Buffer::channelsToFormat</a></div><div class="ttdeci">auto channelsToFormat(int channels) const</div><div class="ttdef"><b>Definition</b> <a href="#l00052">Buffer.h:52</a></div></div>
+<div class="ttc" id="aclassBuffer_html_ab229a27631b130958d17551cb486c5d5"><div class="ttname"><a href="classBuffer.html#ab229a27631b130958d17551cb486c5d5">Buffer::getSize</a></div><div class="ttdeci">virtual const std::array&lt; GLsizei, 2 &gt; &amp; getSize() const</div><div class="ttdef"><b>Definition</b> <a href="#l00234">Buffer.h:234</a></div></div>
+<div class="ttc" id="aclassBuffer_html_ab7d82b1d06555d5511dd5dbec3fbf134"><div class="ttname"><a href="classBuffer.html#ab7d82b1d06555d5511dd5dbec3fbf134">Buffer::Buffer</a></div><div class="ttdeci">Buffer(Buffer &amp;&amp;buffer) noexcept</div><div class="ttdef"><b>Definition</b> <a href="#l00114">Buffer.h:114</a></div></div>
+<div class="ttc" id="aclassBuffer_html_abb2a8da89620b204be36f42654065f3f"><div class="ttname"><a href="classBuffer.html#abb2a8da89620b204be36f42654065f3f">Buffer::formatToChannels</a></div><div class="ttdeci">int formatToChannels(GLenum format) const</div><div class="ttdef"><b>Definition</b> <a href="Buffer_8cpp_source.html#l00016">Buffer.cpp:16</a></div></div>
+<div class="ttc" id="aclassBuffer_html_ad3c6a59d8003b456dbbdff6b7dcd36c5"><div class="ttname"><a href="classBuffer.html#ad3c6a59d8003b456dbbdff6b7dcd36c5">Buffer::getBufferName</a></div><div class="ttdeci">auto getBufferName() const</div><div class="ttdef"><b>Definition</b> <a href="#l00221">Buffer.h:221</a></div></div>
+<div class="ttc" id="aclassBuffer_html_aeca0f794d3e52c7eda294c08d0e94562"><div class="ttname"><a href="classBuffer.html#aeca0f794d3e52c7eda294c08d0e94562">Buffer::copyBuffer</a></div><div class="ttdeci">void copyBuffer(const Buffer &amp;buffer) noexcept</div><div class="ttdef"><b>Definition</b> <a href="Buffer_8cpp_source.html#l00039">Buffer.cpp:39</a></div></div>
+<div class="ttc" id="aclassBuffer_html_af154e91266bb87ed712e3674b31145b3"><div class="ttname"><a href="classBuffer.html#af154e91266bb87ed712e3674b31145b3">Buffer::Buffer</a></div><div class="ttdeci">Buffer(GLsizei width, GLsizei height, int channels)</div><div class="ttdef"><b>Definition</b> <a href="#l00094">Buffer.h:94</a></div></div>
+<div class="ttc" id="aclassBuffer_html_af4400faaad780ef42b4cf4956aefb189"><div class="ttname"><a href="classBuffer.html#af4400faaad780ef42b4cf4956aefb189">Buffer::operator=</a></div><div class="ttdeci">Buffer &amp; operator=(const Buffer &amp;buffer)</div><div class="ttdef"><b>Definition</b> <a href="Buffer_8cpp_source.html#l00106">Buffer.cpp:106</a></div></div>
+<div class="ttc" id="aclassBuffer_html_af63b0de94eb3beab4af3af69d8cd2ac3"><div class="ttname"><a href="classBuffer.html#af63b0de94eb3beab4af3af69d8cd2ac3">Buffer::map</a></div><div class="ttdeci">GLvoid * map() const</div><div class="ttdef"><b>Definition</b> <a href="Buffer_8cpp_source.html#l00152">Buffer.cpp:152</a></div></div>
+<div class="ttc" id="aclassBuffer_html_afc49fafeb87cdbc08c7e522b08eba058"><div class="ttname"><a href="classBuffer.html#afc49fafeb87cdbc08c7e522b08eba058">Buffer::resize</a></div><div class="ttdeci">void resize(GLsizei width, GLsizei height, int channels)</div><div class="ttdef"><b>Definition</b> <a href="#l00180">Buffer.h:180</a></div></div>
+<div class="ttc" id="agg_8h_html"><div class="ttname"><a href="gg_8h.html">gg.h</a></div></div>
+<div class="ttc" id="anamespacegg_html"><div class="ttname"><a href="namespacegg.html">gg</a></div><div class="ttdef"><b>Definition</b> <a href="gg_8h_source.html#l01362">gg.h:1363</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="Buffer_8h.html">Buffer.h</a></li>
+    <li class="footer">構築: <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.15.0 </li>
+  </ul>
+</div>
+</body>
+</html>

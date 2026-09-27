@@ -1,0 +1,299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.15.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mfcapture: Config.h ソースファイル</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="gg.ico"/></td>
+  <td id="projectalign">
+   <div id="projectname">mfcapture<span id="projectnumber">&#160;0.0.1</span>
+   </div>
+   <div id="projectbrief">Microsoft Media Foundation によるビデオキャプチャサンプル</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.15.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','検索',true);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('Config_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Config.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Config_8h.html">[詳解]</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">// キャプチャデバイスの構成</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Preference_8h.html">Preference.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span></div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="};">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structSettings.html">   17</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structSettings.html">Settings</a></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structSettings.html#a357ee6d242d0e600cbcf8456384416d6">   20</a></span>  <span class="keywordtype">int</span> <a class="code hl_variable" href="structSettings.html#a357ee6d242d0e600cbcf8456384416d6">samples</a>{ 57600 };</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structSettings.html#a1d5c8eb0b4c9989e4c9811ad96ed99f5">   23</a></span>  std::array&lt;float, 3&gt; <a class="code hl_variable" href="structSettings.html#a1d5c8eb0b4c9989e4c9811ad96ed99f5">euler</a>{ <a class="code hl_variable" href="structSettings.html#a14f9bd0cb3b9aa5f4abe83d8e3acbd94">defaultEuler</a> };</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structSettings.html#a14f9bd0cb3b9aa5f4abe83d8e3acbd94">   26</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">decltype</span>(<a class="code hl_variable" href="structSettings.html#a1d5c8eb0b4c9989e4c9811ad96ed99f5">euler</a>) <a class="code hl_variable" href="structSettings.html#a14f9bd0cb3b9aa5f4abe83d8e3acbd94">defaultEuler</a>{ 0.0f, 0.0f, 0.0f };</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structSettings.html#adb2147f6dfa67bb8cabf3bbd7768e6cd">   29</a></span>  <span class="keywordtype">float</span> <a class="code hl_variable" href="structSettings.html#adb2147f6dfa67bb8cabf3bbd7768e6cd">focal</a>{ <a class="code hl_variable" href="structSettings.html#a9501f761d477ab43876358c78cba1263">defaultFocal</a> };</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structSettings.html#a9501f761d477ab43876358c78cba1263">   32</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">decltype</span>(<a class="code hl_variable" href="structSettings.html#adb2147f6dfa67bb8cabf3bbd7768e6cd">focal</a>) <a class="code hl_variable" href="structSettings.html#a9501f761d477ab43876358c78cba1263">defaultFocal</a>{ 50.0f };</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structSettings.html#aaa48e8b7fcc49cacbff566d73bd6c72a">   35</a></span>  std::array&lt;float, 2&gt; <a class="code hl_variable" href="structSettings.html#aaa48e8b7fcc49cacbff566d73bd6c72a">focalRange</a>{ <a class="code hl_variable" href="structSettings.html#af9e048f6a561f3cd4601451ee369d426">defaultFocalRange</a> };</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structSettings.html#af9e048f6a561f3cd4601451ee369d426">   38</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">decltype</span>(<a class="code hl_variable" href="structSettings.html#aaa48e8b7fcc49cacbff566d73bd6c72a">focalRange</a>) <a class="code hl_variable" href="structSettings.html#af9e048f6a561f3cd4601451ee369d426">defaultFocalRange</a>{ 10.0f, 200.0f };</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structSettings.html#ac8ca73a827467a8372a8c18f1ef5a248">   41</a></span>  std::string <a class="code hl_variable" href="structSettings.html#ac8ca73a827467a8372a8c18f1ef5a248">dictionaryName</a>{ <span class="stringliteral">&quot;DICT_4X4_50&quot;</span> };</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structSettings.html#ad1de802cb1af94f2ae4473bb2af1e066">   44</a></span>  std::array&lt;float, 2&gt; <a class="code hl_variable" href="structSettings.html#ad1de802cb1af94f2ae4473bb2af1e066">checkerLength</a>{ 4.0f, 2.0f };</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structSettings.html#a3f779adbc9b0beefff11c470931b0833">   47</a></span>  <span class="keywordtype">float</span> <a class="code hl_variable" href="structSettings.html#a3f779adbc9b0beefff11c470931b0833">markerLength</a>{ <a class="code hl_variable" href="structSettings.html#a1e1bddce0297c0778776e3a85d9197ab">defaultMarkerLength</a> };</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structSettings.html#a1e1bddce0297c0778776e3a85d9197ab">   50</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">decltype</span>(<a class="code hl_variable" href="structSettings.html#a3f779adbc9b0beefff11c470931b0833">markerLength</a>) <a class="code hl_variable" href="structSettings.html#a1e1bddce0297c0778776e3a85d9197ab">defaultMarkerLength</a>{ 5.0f };</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span></div>
+<div class="foldopen" id="foldopen00055" data-start="{" data-end="}">
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structSettings.html#a406163658e39c866cebcf1c74325d684">   55</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="structSettings.html#a406163658e39c866cebcf1c74325d684">getFocal</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="comment">// 投影面の対角線長は 35mm (17.5mm × 2) とする</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="structSettings.html#adb2147f6dfa67bb8cabf3bbd7768e6cd">focal</a> / 17.5f;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>  }</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>};</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span></div>
+<div class="foldopen" id="foldopen00065" data-start="{" data-end="};">
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classConfig.html">   65</a></span><span class="keyword">class </span><a class="code hl_function" href="classConfig.html#abc51a2c710c8666d27b53cc03597201d">Config</a></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>{</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  std::string title{ PROJECT_NAME };</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  std::array&lt;GLsizei, 2&gt; windowSize{ 1280, 720 };</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  std::array&lt;GLfloat, 4&gt; background{ 0.2f, 0.3f, 0.4f, 1.0f };</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  <a class="code hl_struct" href="structSettings.html">Settings</a> settings{};</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>  std::string menuFont{ <span class="stringliteral">&quot;Mplus1-Regular.ttf&quot;</span> };</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  <span class="keywordtype">float</span> menuFontSize{ 20.0f };</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>  <span class="keyword">static</span> std::string initialImage;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>  std::vector&lt;Preference&gt; preferenceList;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>  <span class="keywordtype">bool</span> initialized{ <span class="keyword">false</span> };</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="preprocessor">#if defined(_WIN32) || defined(__ANDROID__) || defined(__APPLE__)</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>  <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; deviceList;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  <a class="code hl_function" href="classConfig.html#abc51a2c710c8666d27b53cc03597201d">Config</a>(<span class="keyword">const</span> std::string&amp; filename);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>  <span class="keyword">virtual</span> <a class="code hl_function" href="classConfig.html#a543dce59b66475c5108088ee4ce1cdfc">~Config</a>();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classConfig.html#a25b4d011cfed6f3157560fc4b44ff547">initialize</a>();</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span></div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classConfig.html#a75eae5cf03e3105be3f3503b5014b814">load</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="gg_8h.html#a79e8f410a97d0a6e7bf6c4d3fe6b58fb">pathString</a>&amp; filename);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span></div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classConfig.html#a4410a2eb30485f0308aff79e36cc0a1d">save</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="gg_8h.html#a79e8f410a97d0a6e7bf6c4d3fe6b58fb">pathString</a>&amp; filename) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span></div>
+<div class="foldopen" id="foldopen00144" data-start="{" data-end="}">
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno"><a class="line" href="classConfig.html#a345504abd37d5988ee94575372a53aa4">  144</a></span>  <span class="keyword">const</span> <a class="code hl_struct" href="structSettings.html">Settings</a>&amp; <a class="code hl_function" href="classConfig.html#a345504abd37d5988ee94575372a53aa4">getSettings</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordflow">return</span> settings;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>  }</div>
+</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span></div>
+<div class="foldopen" id="foldopen00154" data-start="{" data-end="}">
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="classConfig.html#a1cbcccfa08e9f8c3cd426ca97a75111b">  154</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classConfig.html#a1cbcccfa08e9f8c3cd426ca97a75111b">setSettings</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structSettings.html">Settings</a>&amp; value)</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>  {</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    settings = value;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>  }</div>
+</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span></div>
+<div class="foldopen" id="foldopen00164" data-start="{" data-end="}">
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="classConfig.html#ae636c3e3f376b01e5ac96dff2c84eea7">  164</a></span>  <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_function" href="classConfig.html#ae636c3e3f376b01e5ac96dff2c84eea7">getPreferences</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keywordflow">return</span> preferenceList;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>  }</div>
+</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span></div>
+<div class="foldopen" id="foldopen00174" data-start="{" data-end="}">
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="classConfig.html#a7497207fff7ab8d9d345412cdd3f11fd">  174</a></span>  <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_function" href="classConfig.html#a7497207fff7ab8d9d345412cdd3f11fd">getBackground</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordflow">return</span> background;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>  }</div>
+</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span></div>
+<div class="foldopen" id="foldopen00184" data-start="{" data-end="}">
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno"><a class="line" href="classConfig.html#a9f9679169de64693739c1abb1fce4851">  184</a></span>  <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_function" href="classConfig.html#a9f9679169de64693739c1abb1fce4851">getMenuFont</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordflow">return</span> menuFont;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>  }</div>
+</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span></div>
+<div class="foldopen" id="foldopen00194" data-start="{" data-end="}">
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno"><a class="line" href="classConfig.html#a372a2578e4a66bab2d368330f5395bb0">  194</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="classConfig.html#a372a2578e4a66bab2d368330f5395bb0">getMenuFontSize</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordflow">return</span> menuFontSize;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>  }</div>
+</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span></div>
+<div class="foldopen" id="foldopen00204" data-start="{" data-end="}">
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno"><a class="line" href="classConfig.html#a2efdd4aff6469b23fe2b8296096291d9">  204</a></span>  <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_function" href="classConfig.html#a2efdd4aff6469b23fe2b8296096291d9">getTitle</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordflow">return</span> title;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>  }</div>
+</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span></div>
+<div class="foldopen" id="foldopen00214" data-start="{" data-end="}">
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno"><a class="line" href="classConfig.html#a3dc0108805ae6c4c8d0ce90853504f1f">  214</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="classConfig.html#a3dc0108805ae6c4c8d0ce90853504f1f">getWidth</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordflow">return</span> windowSize[0];</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>  }</div>
+</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span></div>
+<div class="foldopen" id="foldopen00224" data-start="{" data-end="}">
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno"><a class="line" href="classConfig.html#aaa87cc9fc950c37081b7e26280d159b5">  224</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="classConfig.html#aaa87cc9fc950c37081b7e26280d159b5">getHeight</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keywordflow">return</span> windowSize[1];</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>  }</div>
+</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span></div>
+<div class="foldopen" id="foldopen00234" data-start="{" data-end="}">
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno"><a class="line" href="classConfig.html#ae4185a9d663dd62c9b85d20b14fb4126">  234</a></span>  <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_function" href="classConfig.html#ae4185a9d663dd62c9b85d20b14fb4126">getInitialImage</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keywordflow">return</span> initialImage;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>  }</div>
+</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span> </div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span><span class="preprocessor">#if defined(_WIN32) || defined(__ANDROID__) || defined(__APPLE__)</span></div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>  <span class="keyword">const</span> <span class="keyword">auto</span>&amp; getDeviceList()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    <span class="keywordflow">return</span> deviceList;</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>  }</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span></div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>  <span class="keyword">const</span> <span class="keyword">auto</span>&amp; getDeviceName(<span class="keywordtype">int</span> number)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    <span class="keyword">static</span> <span class="keyword">const</span> std::string empty{};</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    <span class="keywordflow">return</span> deviceList.empty() ? empty : deviceList[number];</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>  }</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>};</div>
+</div>
+<div class="ttc" id="aPreference_8h_html"><div class="ttname"><a href="Preference_8h.html">Preference.h</a></div></div>
+<div class="ttc" id="aclassConfig_html_a1cbcccfa08e9f8c3cd426ca97a75111b"><div class="ttname"><a href="classConfig.html#a1cbcccfa08e9f8c3cd426ca97a75111b">Config::setSettings</a></div><div class="ttdeci">void setSettings(const Settings &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="#l00154">Config.h:154</a></div></div>
+<div class="ttc" id="aclassConfig_html_a25b4d011cfed6f3157560fc4b44ff547"><div class="ttname"><a href="classConfig.html#a25b4d011cfed6f3157560fc4b44ff547">Config::initialize</a></div><div class="ttdeci">void initialize()</div><div class="ttdef"><b>Definition</b> <a href="Config_8cpp_source.html#l00096">Config.cpp:96</a></div></div>
+<div class="ttc" id="aclassConfig_html_a2efdd4aff6469b23fe2b8296096291d9"><div class="ttname"><a href="classConfig.html#a2efdd4aff6469b23fe2b8296096291d9">Config::getTitle</a></div><div class="ttdeci">const auto &amp; getTitle() const</div><div class="ttdef"><b>Definition</b> <a href="#l00204">Config.h:204</a></div></div>
+<div class="ttc" id="aclassConfig_html_a345504abd37d5988ee94575372a53aa4"><div class="ttname"><a href="classConfig.html#a345504abd37d5988ee94575372a53aa4">Config::getSettings</a></div><div class="ttdeci">const Settings &amp; getSettings() const</div><div class="ttdef"><b>Definition</b> <a href="#l00144">Config.h:144</a></div></div>
+<div class="ttc" id="aclassConfig_html_a372a2578e4a66bab2d368330f5395bb0"><div class="ttname"><a href="classConfig.html#a372a2578e4a66bab2d368330f5395bb0">Config::getMenuFontSize</a></div><div class="ttdeci">auto getMenuFontSize() const</div><div class="ttdef"><b>Definition</b> <a href="#l00194">Config.h:194</a></div></div>
+<div class="ttc" id="aclassConfig_html_a3dc0108805ae6c4c8d0ce90853504f1f"><div class="ttname"><a href="classConfig.html#a3dc0108805ae6c4c8d0ce90853504f1f">Config::getWidth</a></div><div class="ttdeci">auto getWidth() const</div><div class="ttdef"><b>Definition</b> <a href="#l00214">Config.h:214</a></div></div>
+<div class="ttc" id="aclassConfig_html_a4410a2eb30485f0308aff79e36cc0a1d"><div class="ttname"><a href="classConfig.html#a4410a2eb30485f0308aff79e36cc0a1d">Config::save</a></div><div class="ttdeci">bool save(const pathString &amp;filename) const</div><div class="ttdef"><b>Definition</b> <a href="Config_8cpp_source.html#l00214">Config.cpp:214</a></div></div>
+<div class="ttc" id="aclassConfig_html_a543dce59b66475c5108088ee4ce1cdfc"><div class="ttname"><a href="classConfig.html#a543dce59b66475c5108088ee4ce1cdfc">Config::~Config</a></div><div class="ttdeci">virtual ~Config()</div><div class="ttdef"><b>Definition</b> <a href="Config_8cpp_source.html#l00089">Config.cpp:89</a></div></div>
+<div class="ttc" id="aclassConfig_html_a7497207fff7ab8d9d345412cdd3f11fd"><div class="ttname"><a href="classConfig.html#a7497207fff7ab8d9d345412cdd3f11fd">Config::getBackground</a></div><div class="ttdeci">const auto &amp; getBackground() const</div><div class="ttdef"><b>Definition</b> <a href="#l00174">Config.h:174</a></div></div>
+<div class="ttc" id="aclassConfig_html_a75eae5cf03e3105be3f3503b5014b814"><div class="ttname"><a href="classConfig.html#a75eae5cf03e3105be3f3503b5014b814">Config::load</a></div><div class="ttdeci">bool load(const pathString &amp;filename)</div><div class="ttdef"><b>Definition</b> <a href="Config_8cpp_source.html#l00111">Config.cpp:111</a></div></div>
+<div class="ttc" id="aclassConfig_html_a9f9679169de64693739c1abb1fce4851"><div class="ttname"><a href="classConfig.html#a9f9679169de64693739c1abb1fce4851">Config::getMenuFont</a></div><div class="ttdeci">const auto &amp; getMenuFont() const</div><div class="ttdef"><b>Definition</b> <a href="#l00184">Config.h:184</a></div></div>
+<div class="ttc" id="aclassConfig_html_aaa87cc9fc950c37081b7e26280d159b5"><div class="ttname"><a href="classConfig.html#aaa87cc9fc950c37081b7e26280d159b5">Config::getHeight</a></div><div class="ttdeci">auto getHeight() const</div><div class="ttdef"><b>Definition</b> <a href="#l00224">Config.h:224</a></div></div>
+<div class="ttc" id="aclassConfig_html_abc51a2c710c8666d27b53cc03597201d"><div class="ttname"><a href="classConfig.html#abc51a2c710c8666d27b53cc03597201d">Config::Config</a></div><div class="ttdeci">Config(const std::string &amp;filename)</div><div class="ttdef"><b>Definition</b> <a href="Config_8cpp_source.html#l00039">Config.cpp:39</a></div></div>
+<div class="ttc" id="aclassConfig_html_ae4185a9d663dd62c9b85d20b14fb4126"><div class="ttname"><a href="classConfig.html#ae4185a9d663dd62c9b85d20b14fb4126">Config::getInitialImage</a></div><div class="ttdeci">const auto &amp; getInitialImage() const</div><div class="ttdef"><b>Definition</b> <a href="#l00234">Config.h:234</a></div></div>
+<div class="ttc" id="aclassConfig_html_ae636c3e3f376b01e5ac96dff2c84eea7"><div class="ttname"><a href="classConfig.html#ae636c3e3f376b01e5ac96dff2c84eea7">Config::getPreferences</a></div><div class="ttdeci">const auto &amp; getPreferences() const</div><div class="ttdef"><b>Definition</b> <a href="#l00164">Config.h:164</a></div></div>
+<div class="ttc" id="agg_8h_html_a79e8f410a97d0a6e7bf6c4d3fe6b58fb"><div class="ttname"><a href="gg_8h.html#a79e8f410a97d0a6e7bf6c4d3fe6b58fb">pathString</a></div><div class="ttdeci">std::string pathString</div><div class="ttdef"><b>Definition</b> <a href="gg_8h_source.html#l00077">gg.h:77</a></div></div>
+<div class="ttc" id="astructSettings_html"><div class="ttname"><a href="structSettings.html">Settings</a></div><div class="ttdef"><b>Definition</b> <a href="#l00017">Config.h:18</a></div></div>
+<div class="ttc" id="astructSettings_html_a14f9bd0cb3b9aa5f4abe83d8e3acbd94"><div class="ttname"><a href="structSettings.html#a14f9bd0cb3b9aa5f4abe83d8e3acbd94">Settings::defaultEuler</a></div><div class="ttdeci">static constexpr decltype(euler) defaultEuler</div><div class="ttdoc">キャプチャデバイスの姿勢のデフォルト値</div><div class="ttdef"><b>Definition</b> <a href="#l00026">Config.h:26</a></div></div>
+<div class="ttc" id="astructSettings_html_a1d5c8eb0b4c9989e4c9811ad96ed99f5"><div class="ttname"><a href="structSettings.html#a1d5c8eb0b4c9989e4c9811ad96ed99f5">Settings::euler</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; euler</div><div class="ttdoc">キャプチャデバイスの姿勢のオイラー角</div><div class="ttdef"><b>Definition</b> <a href="#l00023">Config.h:23</a></div></div>
+<div class="ttc" id="astructSettings_html_a1e1bddce0297c0778776e3a85d9197ab"><div class="ttname"><a href="structSettings.html#a1e1bddce0297c0778776e3a85d9197ab">Settings::defaultMarkerLength</a></div><div class="ttdeci">static constexpr decltype(markerLength) defaultMarkerLength</div><div class="ttdoc">検出する ArUco Marker の一辺の長さのデフォルト値</div><div class="ttdef"><b>Definition</b> <a href="#l00050">Config.h:50</a></div></div>
+<div class="ttc" id="astructSettings_html_a357ee6d242d0e600cbcf8456384416d6"><div class="ttname"><a href="structSettings.html#a357ee6d242d0e600cbcf8456384416d6">Settings::samples</a></div><div class="ttdeci">int samples</div><div class="ttdoc">展開に用いるメッシュのサンプル数</div><div class="ttdef"><b>Definition</b> <a href="#l00020">Config.h:20</a></div></div>
+<div class="ttc" id="astructSettings_html_a3f779adbc9b0beefff11c470931b0833"><div class="ttname"><a href="structSettings.html#a3f779adbc9b0beefff11c470931b0833">Settings::markerLength</a></div><div class="ttdeci">float markerLength</div><div class="ttdoc">検出する ArUco Marker の一辺の長さ (単位 cm)</div><div class="ttdef"><b>Definition</b> <a href="#l00047">Config.h:47</a></div></div>
+<div class="ttc" id="astructSettings_html_a406163658e39c866cebcf1c74325d684"><div class="ttname"><a href="structSettings.html#a406163658e39c866cebcf1c74325d684">Settings::getFocal</a></div><div class="ttdeci">auto getFocal() const</div><div class="ttdef"><b>Definition</b> <a href="#l00055">Config.h:55</a></div></div>
+<div class="ttc" id="astructSettings_html_a9501f761d477ab43876358c78cba1263"><div class="ttname"><a href="structSettings.html#a9501f761d477ab43876358c78cba1263">Settings::defaultFocal</a></div><div class="ttdeci">static constexpr decltype(focal) defaultFocal</div><div class="ttdoc">展開時の焦点距離のデフォルト値</div><div class="ttdef"><b>Definition</b> <a href="#l00032">Config.h:32</a></div></div>
+<div class="ttc" id="astructSettings_html_aaa48e8b7fcc49cacbff566d73bd6c72a"><div class="ttname"><a href="structSettings.html#aaa48e8b7fcc49cacbff566d73bd6c72a">Settings::focalRange</a></div><div class="ttdeci">std::array&lt; float, 2 &gt; focalRange</div><div class="ttdoc">描画時の焦点距離の範囲</div><div class="ttdef"><b>Definition</b> <a href="#l00035">Config.h:35</a></div></div>
+<div class="ttc" id="astructSettings_html_ac8ca73a827467a8372a8c18f1ef5a248"><div class="ttname"><a href="structSettings.html#ac8ca73a827467a8372a8c18f1ef5a248">Settings::dictionaryName</a></div><div class="ttdeci">std::string dictionaryName</div><div class="ttdoc">使用中の ArUco Marker 辞書名</div><div class="ttdef"><b>Definition</b> <a href="#l00041">Config.h:41</a></div></div>
+<div class="ttc" id="astructSettings_html_ad1de802cb1af94f2ae4473bb2af1e066"><div class="ttname"><a href="structSettings.html#ad1de802cb1af94f2ae4473bb2af1e066">Settings::checkerLength</a></div><div class="ttdeci">std::array&lt; float, 2 &gt; checkerLength</div><div class="ttdoc">検出する ChArUco Board のマス目一辺の長さと ArUco Marker の一辺の長さ (単位 cm)</div><div class="ttdef"><b>Definition</b> <a href="#l00044">Config.h:44</a></div></div>
+<div class="ttc" id="astructSettings_html_adb2147f6dfa67bb8cabf3bbd7768e6cd"><div class="ttname"><a href="structSettings.html#adb2147f6dfa67bb8cabf3bbd7768e6cd">Settings::focal</a></div><div class="ttdeci">float focal</div><div class="ttdoc">描画時の焦点距離</div><div class="ttdef"><b>Definition</b> <a href="#l00029">Config.h:29</a></div></div>
+<div class="ttc" id="astructSettings_html_af9e048f6a561f3cd4601451ee369d426"><div class="ttname"><a href="structSettings.html#af9e048f6a561f3cd4601451ee369d426">Settings::defaultFocalRange</a></div><div class="ttdeci">static constexpr decltype(focalRange) defaultFocalRange</div><div class="ttdoc">描画時の焦点距離の範囲のデフォルト値</div><div class="ttdef"><b>Definition</b> <a href="#l00038">Config.h:38</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="Config_8h.html">Config.h</a></li>
+    <li class="footer">構築: <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.15.0 </li>
+  </ul>
+</div>
+</body>
+</html>

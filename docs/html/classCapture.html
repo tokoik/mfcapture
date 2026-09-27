@@ -1,0 +1,746 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.15.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mfcapture: Capture クラス</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="gg.ico"/></td>
+  <td id="projectalign">
+   <div id="projectname">mfcapture<span id="projectnumber">&#160;0.0.1</span>
+   </div>
+   <div id="projectbrief">Microsoft Media Foundation によるビデオキャプチャサンプル</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.15.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','検索',true);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('classCapture.html','','classCapture-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Capture クラス</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Capture_8h_source.html">Capture.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+公開メンバ関数</h2></td></tr>
+<tr class="memitem:a7b841b149d6e21cbce796f2ac085899b" id="r_a7b841b149d6e21cbce796f2ac085899b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b841b149d6e21cbce796f2ac085899b">Capture</a> ()=default</td></tr>
+<tr class="memitem:af534af6dec79be834cee8c81d8fb75e6" id="r_af534af6dec79be834cee8c81d8fb75e6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af534af6dec79be834cee8c81d8fb75e6">Capture</a> (const std::string &amp;filename)</td></tr>
+<tr class="memitem:a86c67a19b4717af198f5aff5af7dbf45" id="r_a86c67a19b4717af198f5aff5af7dbf45"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a86c67a19b4717af198f5aff5af7dbf45">~Capture</a> ()</td></tr>
+<tr class="memitem:a5f832bf82fe52dc71cb0b0bee5329e5b" id="r_a5f832bf82fe52dc71cb0b0bee5329e5b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5f832bf82fe52dc71cb0b0bee5329e5b">openImage</a> (const std::string &amp;filename)</td></tr>
+<tr class="memitem:a8e2d3ea567b686e9e9fb2a69739b1ce2" id="r_a8e2d3ea567b686e9e9fb2a69739b1ce2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e2d3ea567b686e9e9fb2a69739b1ce2">openMovie</a> (const std::string &amp;filename, cv::VideoCaptureAPIs backend=cv::CAP_FFMPEG)</td></tr>
+<tr class="memitem:ac58f216d1716e911c0be95820e5f5698" id="r_ac58f216d1716e911c0be95820e5f5698"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac58f216d1716e911c0be95820e5f5698">openDevice</a> (int deviceNumber, std::array&lt; int, 2 &gt; &amp;size, double &amp;fps, cv::VideoCaptureAPIs backend, char *fourcc)</td></tr>
+<tr class="memitem:a2ffe4eeac4caa296f4fcc75cc82c1436" id="r_a2ffe4eeac4caa296f4fcc75cc82c1436"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ffe4eeac4caa296f4fcc75cc82c1436">start</a> ()</td></tr>
+<tr class="memitem:ab632f1927461a909b18cce71ec96f76d" id="r_ab632f1927461a909b18cce71ec96f76d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab632f1927461a909b18cce71ec96f76d">stop</a> ()</td></tr>
+<tr class="memitem:a1397490a44ca5a7ec38f969803610092" id="r_a1397490a44ca5a7ec38f969803610092"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1397490a44ca5a7ec38f969803610092">close</a> ()</td></tr>
+<tr class="memitem:a0911ee2ff060001b06aadd1359dd05e4" id="r_a0911ee2ff060001b06aadd1359dd05e4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0911ee2ff060001b06aadd1359dd05e4">operator bool</a> () const</td></tr>
+<tr class="memitem:ab757ed241aa335af62c615510e075015" id="r_ab757ed241aa335af62c615510e075015"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab757ed241aa335af62c615510e075015">isOpened</a> () const</td></tr>
+<tr class="memitem:aadd402065eb5c2ce6b36a3986531467a" id="r_aadd402065eb5c2ce6b36a3986531467a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aadd402065eb5c2ce6b36a3986531467a">isImage</a> () const</td></tr>
+<tr class="memitem:a73024a1fbaea69c368f74c8cedba1603" id="r_a73024a1fbaea69c368f74c8cedba1603"><td class="memItemLeft" align="right" valign="top">std::array&lt; int, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73024a1fbaea69c368f74c8cedba1603">getSize</a> () const</td></tr>
+<tr class="memitem:aa27920f378786c1ea2e3192a7bbcf395" id="r_aa27920f378786c1ea2e3192a7bbcf395"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa27920f378786c1ea2e3192a7bbcf395">getFps</a> () const</td></tr>
+<tr class="memitem:a3ff6cbdf0042cc8d0f60e5376b443262" id="r_a3ff6cbdf0042cc8d0f60e5376b443262"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3ff6cbdf0042cc8d0f60e5376b443262">retrieve</a> (<a class="el" href="classBuffer.html">Buffer</a> &amp;buffer)</td></tr>
+<tr class="memitem:ad101c094ac1a4e0dbbafde712f255d24" id="r_ad101c094ac1a4e0dbbafde712f255d24"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad101c094ac1a4e0dbbafde712f255d24">retrieve</a> (cv::Mat &amp;frame)</td></tr>
+<tr class="memitem:a6b03091397da898c6a6e9460cd809ea1" id="r_a6b03091397da898c6a6e9460cd809ea1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6b03091397da898c6a6e9460cd809ea1">setPrioritizeLatency</a> (bool mode)</td></tr>
+<tr class="memitem:ad320f7badd9c8c96ed8572f1c0573802" id="r_ad320f7badd9c8c96ed8572f1c0573802"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad320f7badd9c8c96ed8572f1c0573802">getPrioritizeLatency</a> () const</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">詳解</h2>
+<div class="textblock"><p>キャプチャクラス </p>
+
+<p class="definition"> <a class="el" href="Capture_8h_source.html">Capture.h</a> の <a class="el" href="Capture_8h_source.html#l00044">44</a> 行目に定義があります。</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">構築子と解体子</h2>
+<a id="a7b841b149d6e21cbce796f2ac085899b" name="a7b841b149d6e21cbce796f2ac085899b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b841b149d6e21cbce796f2ac085899b">&#9670;&#160;</a></span>Capture() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Capture::Capture </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>キャプチャーオブジェクトのデフォルトコンストラクタ </p>
+
+</div>
+</div>
+<a id="af534af6dec79be834cee8c81d8fb75e6" name="af534af6dec79be834cee8c81d8fb75e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af534af6dec79be834cee8c81d8fb75e6">&#9670;&#160;</a></span>Capture() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Capture::Capture </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>filename</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>キャプチャするファイルを指定するコンストラクタ</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>キャプチャするファイルのパス名 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="Capture_8h_source.html">Capture.h</a> の <a class="el" href="Capture_8h_source.html#l00069">69</a> 行目に定義があります。</p>
+<div class="dynheader">
+呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classCapture_af534af6dec79be834cee8c81d8fb75e6_cgraph.png" border="0" usemap="#aclassCapture_af534af6dec79be834cee8c81d8fb75e6_cgraph" loading="lazy" alt=""/></div>
+<map name="aclassCapture_af534af6dec79be834cee8c81d8fb75e6_cgraph" id="aclassCapture_af534af6dec79be834cee8c81d8fb75e6_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,127,32"/>
+<area shape="rect" href="classCapture.html#a5f832bf82fe52dc71cb0b0bee5329e5b" title=" " alt="" coords="175,5,314,32"/>
+<area shape="poly" title=" " alt="" coords="127,16,162,18,156,19,127,21"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a86c67a19b4717af198f5aff5af7dbf45" name="a86c67a19b4717af198f5aff5af7dbf45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86c67a19b4717af198f5aff5af7dbf45">&#9670;&#160;</a></span>~Capture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual Capture::~Capture </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>デストラクタ </p>
+
+<p class="definition"> <a class="el" href="Capture_8h_source.html">Capture.h</a> の <a class="el" href="Capture_8h_source.html#l00077">77</a> 行目に定義があります。</p>
+<div class="dynheader">
+呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classCapture_a86c67a19b4717af198f5aff5af7dbf45_cgraph.png" border="0" usemap="#aclassCapture_a86c67a19b4717af198f5aff5af7dbf45_cgraph" loading="lazy" alt=""/></div>
+<map name="aclassCapture_a86c67a19b4717af198f5aff5af7dbf45_cgraph" id="aclassCapture_a86c67a19b4717af198f5aff5af7dbf45_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,135,32"/>
+<area shape="rect" href="classCapture.html#a1397490a44ca5a7ec38f969803610092" title=" " alt="" coords="183,5,289,32"/>
+<area shape="poly" title=" " alt="" coords="135,16,170,18,164,19,135,21"/>
+</map>
+</div>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">関数詳解</h2>
+<a id="a1397490a44ca5a7ec38f969803610092" name="a1397490a44ca5a7ec38f969803610092"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1397490a44ca5a7ec38f969803610092">&#9670;&#160;</a></span>close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Capture::close </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>キャプチャデバイスを閉じる </p>
+
+<p class="definition"> <a class="el" href="Capture_8cpp_source.html">Capture.cpp</a> の <a class="el" href="Capture_8cpp_source.html#l00268">268</a> 行目に定義があります。</p>
+<div class="dynheader">
+被呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classCapture_a1397490a44ca5a7ec38f969803610092_icgraph.png" border="0" usemap="#aclassCapture_a1397490a44ca5a7ec38f969803610092_icgraph" loading="lazy" alt=""/></div>
+<map name="aclassCapture_a1397490a44ca5a7ec38f969803610092_icgraph" id="aclassCapture_a1397490a44ca5a7ec38f969803610092_icgraph">
+<area shape="rect" title=" " alt="" coords="183,5,289,32"/>
+<area shape="rect" href="classCapture.html#a86c67a19b4717af198f5aff5af7dbf45" title=" " alt="" coords="5,5,135,32"/>
+<area shape="poly" title=" " alt="" coords="164,19,135,21,135,16,170,18"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="aa27920f378786c1ea2e3192a7bbcf395" name="aa27920f378786c1ea2e3192a7bbcf395"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa27920f378786c1ea2e3192a7bbcf395">&#9670;&#160;</a></span>getFps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Capture::getFps </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>キャプチャデバイスのフレームレートを得る</p>
+<dl class="section return"><dt>戻り値</dt><dd>キャプチャデバイスのフレームレート </dd></dl>
+
+<p class="definition"> <a class="el" href="Capture_8cpp_source.html">Capture.cpp</a> の <a class="el" href="Capture_8cpp_source.html#l00290">290</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ad320f7badd9c8c96ed8572f1c0573802" name="ad320f7badd9c8c96ed8572f1c0573802"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad320f7badd9c8c96ed8572f1c0573802">&#9670;&#160;</a></span>getPrioritizeLatency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Capture::getPrioritizeLatency </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>レイテンシ優先モードかどうか調べる</p>
+<dl class="section return"><dt>戻り値</dt><dd>レイテンシを優先する場合は true </dd></dl>
+
+<p class="definition"> <a class="el" href="Capture_8h_source.html">Capture.h</a> の <a class="el" href="Capture_8h_source.html#l00241">241</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a73024a1fbaea69c368f74c8cedba1603" name="a73024a1fbaea69c368f74c8cedba1603"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73024a1fbaea69c368f74c8cedba1603">&#9670;&#160;</a></span>getSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt; int, 2 &gt; Capture::getSize </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>キャプチャデバイスのフレームの解像度を得る</p>
+<dl class="section return"><dt>戻り値</dt><dd>キャプチャデバイスのフレームの解像度 </dd></dl>
+
+<p class="definition"> <a class="el" href="Capture_8cpp_source.html">Capture.cpp</a> の <a class="el" href="Capture_8cpp_source.html#l00281">281</a> 行目に定義があります。</p>
+<div class="dynheader">
+被呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classCapture_a73024a1fbaea69c368f74c8cedba1603_icgraph.png" border="0" usemap="#aclassCapture_a73024a1fbaea69c368f74c8cedba1603_icgraph" loading="lazy" alt=""/></div>
+<map name="aclassCapture_a73024a1fbaea69c368f74c8cedba1603_icgraph" id="aclassCapture_a73024a1fbaea69c368f74c8cedba1603_icgraph">
+<area shape="rect" title=" " alt="" coords="248,5,367,32"/>
+<area shape="rect" href="classGgApp.html#ad2e50a5e84d4fd6162e03039ac00c7ae" title=" " alt="" coords="103,5,200,32"/>
+<area shape="poly" title=" " alt="" coords="230,19,200,21,200,16,235,19"/>
+<area shape="rect" href="main_8cpp.html#a110745d0e996bc19a8c8e8cacbadd525" title=" " alt="" coords="5,5,55,32"/>
+<area shape="poly" title=" " alt="" coords="85,20,55,21,55,16,90,18"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="aadd402065eb5c2ce6b36a3986531467a" name="aadd402065eb5c2ce6b36a3986531467a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadd402065eb5c2ce6b36a3986531467a">&#9670;&#160;</a></span>isImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Capture::isImage </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>現在開いているのが静止画像かどうか </p>
+
+<p class="definition"> <a class="el" href="Capture_8h_source.html">Capture.h</a> の <a class="el" href="Capture_8h_source.html#l00190">190</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ab757ed241aa335af62c615510e075015" name="ab757ed241aa335af62c615510e075015"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab757ed241aa335af62c615510e075015">&#9670;&#160;</a></span>isOpened()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Capture::isOpened </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>キャプチャデバイスが有効かどうか </p>
+
+<p class="definition"> <a class="el" href="Capture_8h_source.html">Capture.h</a> の <a class="el" href="Capture_8h_source.html#l00182">182</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ac58f216d1716e911c0be95820e5f5698" name="ac58f216d1716e911c0be95820e5f5698"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac58f216d1716e911c0be95820e5f5698">&#9670;&#160;</a></span>openDevice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Capture::openDevice </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>deviceNumber</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::array&lt; int, 2 &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>size</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;</td>          <td class="paramname"><span class="paramname"><em>fps</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">cv::VideoCaptureAPIs</td>          <td class="paramname"><span class="paramname"><em>backend</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>fourcc</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>キャプチャデバイスを開く (その他用: OpenCV)</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">deviceNumber</td><td>開くデバイス番号 </td></tr>
+    <tr><td class="paramname">size</td><td>キャプチャデバイスのフレームの解像度 </td></tr>
+    <tr><td class="paramname">fps</td><td>キャプチャデバイスのフレームレート </td></tr>
+    <tr><td class="paramname">backend</td><td>バックエンドの種類 </td></tr>
+    <tr><td class="paramname">fourcc</td><td>コーデックの 4 文字 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>戻り値</dt><dd>開くことができたら true </dd></dl>
+
+<p class="definition"> <a class="el" href="Capture_8cpp_source.html">Capture.cpp</a> の <a class="el" href="Capture_8cpp_source.html#l00196">196</a> 行目に定義があります。</p>
+<div class="dynheader">
+呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classCapture_ac58f216d1716e911c0be95820e5f5698_cgraph.png" border="0" usemap="#aclassCapture_ac58f216d1716e911c0be95820e5f5698_cgraph" loading="lazy" alt=""/></div>
+<map name="aclassCapture_ac58f216d1716e911c0be95820e5f5698_cgraph" id="aclassCapture_ac58f216d1716e911c0be95820e5f5698_cgraph">
+<area shape="rect" title=" " alt="" coords="5,31,150,57"/>
+<area shape="rect" href="classCamera.html#a19b8e56ddba3acc0f7f963360418bf44" title=" " alt="" coords="198,31,304,57"/>
+<area shape="poly" title=" " alt="" coords="150,41,185,44,179,44,150,47"/>
+<area shape="rect" href="classCamera.html#ae3e0311cf6c53c90e2d2168418de652e" title=" " alt="" coords="352,5,475,32"/>
+<area shape="poly" title=" " alt="" coords="304,33,334,31,339,30,305,38"/>
+<area shape="rect" href="classCamera.html#ae6c6aeaf70ad261f3c188c50e8701b0b" title=" " alt="" coords="364,56,464,83"/>
+<area shape="poly" title=" " alt="" coords="305,50,351,59,346,59,304,55"/>
+<area shape="rect" href="classCamera.html#a9365ea57e455c8799dbb496f50e9dae0" title=" " alt="" coords="523,56,640,83"/>
+<area shape="poly" title=" " alt="" coords="464,67,510,69,505,69,464,72"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a5f832bf82fe52dc71cb0b0bee5329e5b" name="a5f832bf82fe52dc71cb0b0bee5329e5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f832bf82fe52dc71cb0b0bee5329e5b">&#9670;&#160;</a></span>openImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Capture::openImage </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>filename</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>画像ファイルを開く</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>開く画像ファイル名 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>戻り値</dt><dd>開くことができたら true </dd></dl>
+
+<p class="definition"> <a class="el" href="Capture_8cpp_source.html">Capture.cpp</a> の <a class="el" href="Capture_8cpp_source.html#l00018">18</a> 行目に定義があります。</p>
+<div class="dynheader">
+被呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classCapture_a5f832bf82fe52dc71cb0b0bee5329e5b_icgraph.png" border="0" usemap="#aclassCapture_a5f832bf82fe52dc71cb0b0bee5329e5b_icgraph" loading="lazy" alt=""/></div>
+<map name="aclassCapture_a5f832bf82fe52dc71cb0b0bee5329e5b_icgraph" id="aclassCapture_a5f832bf82fe52dc71cb0b0bee5329e5b_icgraph">
+<area shape="rect" title=" " alt="" coords="272,31,411,57"/>
+<area shape="rect" href="classCapture.html#af534af6dec79be834cee8c81d8fb75e6" title=" " alt="" coords="103,5,224,32"/>
+<area shape="poly" title=" " alt="" coords="254,32,224,30,224,25,259,32"/>
+<area shape="rect" href="classGgApp.html#ad2e50a5e84d4fd6162e03039ac00c7ae" title=" " alt="" coords="115,56,212,83"/>
+<area shape="poly" title=" " alt="" coords="259,56,213,65,212,60,254,56"/>
+<area shape="rect" href="main_8cpp.html#a110745d0e996bc19a8c8e8cacbadd525" title=" " alt="" coords="5,56,55,83"/>
+<area shape="poly" title=" " alt="" coords="97,71,55,72,55,67,101,68"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a8e2d3ea567b686e9e9fb2a69739b1ce2" name="a8e2d3ea567b686e9e9fb2a69739b1ce2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e2d3ea567b686e9e9fb2a69739b1ce2">&#9670;&#160;</a></span>openMovie()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Capture::openMovie </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>filename</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">cv::VideoCaptureAPIs</td>          <td class="paramname"><span class="paramname"><em>backend</em></span><span class="paramdefsep"> = </span><span class="paramdefval">cv::CAP_FFMPEG</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>動画ファイルを開く</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>開く動画ファイル名 </td></tr>
+    <tr><td class="paramname">backend</td><td>バックエンドの種類 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>戻り値</dt><dd>開くことができたら true </dd></dl>
+
+<p class="definition"> <a class="el" href="Capture_8cpp_source.html">Capture.cpp</a> の <a class="el" href="Capture_8cpp_source.html#l00038">38</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a0911ee2ff060001b06aadd1359dd05e4" name="a0911ee2ff060001b06aadd1359dd05e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0911ee2ff060001b06aadd1359dd05e4">&#9670;&#160;</a></span>operator bool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Capture::operator bool </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>キャプチャ中か否か</p>
+<dl class="section return"><dt>戻り値</dt><dd>キャプチャ中なら true </dd></dl>
+
+<p class="definition"> <a class="el" href="Capture_8h_source.html">Capture.h</a> の <a class="el" href="Capture_8h_source.html#l00174">174</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a3ff6cbdf0042cc8d0f60e5376b443262" name="a3ff6cbdf0042cc8d0f60e5376b443262"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ff6cbdf0042cc8d0f60e5376b443262">&#9670;&#160;</a></span>retrieve() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Capture::retrieve </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classBuffer.html">Buffer</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>新しいフレームを GPU の PBO に取得する</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>取得したフレームを格納するバッファ </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>戻り値</dt><dd>新しいフレームを取得できたら true </dd></dl>
+
+<p class="definition"> <a class="el" href="Capture_8cpp_source.html">Capture.cpp</a> の <a class="el" href="Capture_8cpp_source.html#l00299">299</a> 行目に定義があります。</p>
+<div class="dynheader">
+呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classCapture_a3ff6cbdf0042cc8d0f60e5376b443262_cgraph.png" border="0" usemap="#aclassCapture_a3ff6cbdf0042cc8d0f60e5376b443262_cgraph" loading="lazy" alt=""/></div>
+<map name="aclassCapture_a3ff6cbdf0042cc8d0f60e5376b443262_cgraph" id="aclassCapture_a3ff6cbdf0042cc8d0f60e5376b443262_cgraph">
+<area shape="rect" title=" " alt="" coords="5,31,124,57"/>
+<area shape="rect" href="classBuffer.html#a2728fd76723391d9906e56ada039840c" title=" " alt="" coords="197,5,296,32"/>
+<area shape="poly" title=" " alt="" coords="124,33,185,27,180,28,125,38"/>
+<area shape="rect" href="classBuffer.html#ad3c6a59d8003b456dbbdff6b7dcd36c5" title=" " alt="" coords="172,56,322,83"/>
+<area shape="poly" title=" " alt="" coords="124,50,159,56,153,57,124,55"/>
+</map>
+</div>
+<div class="dynheader">
+被呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classCapture_a3ff6cbdf0042cc8d0f60e5376b443262_icgraph.png" border="0" usemap="#aclassCapture_a3ff6cbdf0042cc8d0f60e5376b443262_icgraph" loading="lazy" alt=""/></div>
+<map name="aclassCapture_a3ff6cbdf0042cc8d0f60e5376b443262_icgraph" id="aclassCapture_a3ff6cbdf0042cc8d0f60e5376b443262_icgraph">
+<area shape="rect" title=" " alt="" coords="248,5,366,32"/>
+<area shape="rect" href="classGgApp.html#ad2e50a5e84d4fd6162e03039ac00c7ae" title=" " alt="" coords="103,5,200,32"/>
+<area shape="poly" title=" " alt="" coords="230,19,200,21,200,16,235,19"/>
+<area shape="rect" href="main_8cpp.html#a110745d0e996bc19a8c8e8cacbadd525" title=" " alt="" coords="5,5,55,32"/>
+<area shape="poly" title=" " alt="" coords="85,20,55,21,55,16,90,18"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ad101c094ac1a4e0dbbafde712f255d24" name="ad101c094ac1a4e0dbbafde712f255d24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad101c094ac1a4e0dbbafde712f255d24">&#9670;&#160;</a></span>retrieve() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Capture::retrieve </td>
+          <td>(</td>
+          <td class="paramtype">cv::Mat &amp;</td>          <td class="paramname"><span class="paramname"><em>frame</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>新しいフレームを CPU のメモリに取得する</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">frame</td><td>取得したフレーム </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>戻り値</dt><dd>新しいフレームを取得できたら true </dd></dl>
+<dl class="section note"><dt>覚え書き</dt><dd>OpenCV で処理する場合。 </dd></dl>
+
+<p class="definition"> <a class="el" href="Capture_8cpp_source.html">Capture.cpp</a> の <a class="el" href="Capture_8cpp_source.html#l00316">316</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a6b03091397da898c6a6e9460cd809ea1" name="a6b03091397da898c6a6e9460cd809ea1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b03091397da898c6a6e9460cd809ea1">&#9670;&#160;</a></span>setPrioritizeLatency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Capture::setPrioritizeLatency </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>mode</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>レイテンシ優先モードを設定する</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mode</td><td>レイテンシを優先する場合は true </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="Capture_8h_source.html">Capture.h</a> の <a class="el" href="Capture_8h_source.html#l00231">231</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a2ffe4eeac4caa296f4fcc75cc82c1436" name="a2ffe4eeac4caa296f4fcc75cc82c1436"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ffe4eeac4caa296f4fcc75cc82c1436">&#9670;&#160;</a></span>start()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Capture::start </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>キャプチャ開始 </p>
+
+<p class="definition"> <a class="el" href="Capture_8cpp_source.html">Capture.cpp</a> の <a class="el" href="Capture_8cpp_source.html#l00250">250</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ab632f1927461a909b18cce71ec96f76d" name="ab632f1927461a909b18cce71ec96f76d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab632f1927461a909b18cce71ec96f76d">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Capture::stop </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>キャプチャ終了 </p>
+
+<p class="definition"> <a class="el" href="Capture_8cpp_source.html">Capture.cpp</a> の <a class="el" href="Capture_8cpp_source.html#l00259">259</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<hr/>このクラス詳解は次のファイルから抽出されました:<ul>
+<li><a class="el" href="Capture_8h_source.html">Capture.h</a></li>
+<li><a class="el" href="Capture_8cpp_source.html">Capture.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classCapture.html">Capture</a></li>
+    <li class="footer">構築: <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.15.0 </li>
+  </ul>
+</div>
+</body>
+</html>

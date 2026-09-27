@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.15.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mfcapture: Preference.cpp ファイル</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="gg.ico"/></td>
+  <td id="projectalign">
+   <div id="projectname">mfcapture<span id="projectnumber">&#160;0.0.1</span>
+   </div>
+   <div id="projectbrief">Microsoft Media Foundation によるビデオキャプチャサンプル</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.15.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','検索',true);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('Preference_8cpp.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Preference.cpp ファイル</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="Preference_8h_source.html">Preference.h</a>&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Preference.cpp の依存先関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="Preference_8cpp__incl.png" border="0" usemap="#aPreference_8cpp" loading="lazy" alt=""/></div>
+<map name="aPreference_8cpp" id="aPreference_8cpp">
+<area shape="rect" title=" " alt="" coords="317,5,426,32"/>
+<area shape="rect" href="Preference_8h.html" title=" " alt="" coords="324,80,419,107"/>
+<area shape="poly" title=" " alt="" coords="373,30,374,65,369,63,370,35"/>
+<area shape="rect" href="Expand_8h.html" title=" " alt="" coords="281,155,358,181"/>
+<area shape="poly" title=" " alt="" coords="364,105,339,144,335,140,360,109"/>
+<area shape="rect" href="Intrinsics_8h.html" title=" " alt="" coords="410,155,495,181"/>
+<area shape="poly" title=" " alt="" coords="386,105,430,144,425,144,385,110"/>
+<area shape="rect" href="gg_8h.html" title=" " alt="" coords="267,229,313,256"/>
+<area shape="poly" title=" " alt="" coords="316,180,303,217,299,213,312,184"/>
+<area shape="rect" title=" " alt="" coords="347,304,404,331"/>
+<area shape="poly" title=" " alt="" coords="306,254,352,294,347,294,304,259"/>
+<area shape="rect" title=" " alt="" coords="428,304,478,331"/>
+<area shape="poly" title=" " alt="" coords="314,252,416,298,410,299,313,257"/>
+<area shape="rect" title=" " alt="" coords="5,304,63,331"/>
+<area shape="poly" title=" " alt="" coords="267,253,78,306,77,301,266,248"/>
+<area shape="rect" title=" " alt="" coords="87,304,141,331"/>
+<area shape="poly" title=" " alt="" coords="269,254,156,302,154,297,264,254"/>
+<area shape="rect" title=" " alt="" coords="165,304,234,331"/>
+<area shape="poly" title=" " alt="" coords="277,256,228,297,225,292,272,257"/>
+<area shape="rect" title=" " alt="" coords="258,304,322,331"/>
+<area shape="poly" title=" " alt="" coords="292,255,292,290,288,287,288,258"/>
+<area shape="poly" title=" " alt="" coords="455,180,455,290,450,287,451,184"/>
+<area shape="rect" href="parseconfig_8h.html" title=" " alt="" coords="491,229,590,256"/>
+<area shape="poly" title=" " alt="" coords="469,179,516,220,511,219,467,184"/>
+<area shape="rect" title=" " alt="" coords="502,304,582,331"/>
+<area shape="poly" title=" " alt="" coords="543,255,544,290,539,287,539,258"/>
+</map>
+</div>
+</div>
+<p><a href="Preference_8cpp_source.html">[ソースコード]</a></p>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">詳解</h2>
+<div class="textblock"><p>キャプチャデバイスの構成データクラスの実装</p>
+<dl class="section author"><dt>著者</dt><dd>Kohe Tokoi </dd></dl>
+<dl class="section date"><dt>日付</dt><dd>January 23, 2025 </dd></dl>
+
+<p class="definition"> <a class="el" href="Preference_8cpp_source.html">Preference.cpp</a> に定義があります。</p>
+</div></div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="Preference_8cpp.html">Preference.cpp</a></li>
+    <li class="footer">構築: <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.15.0 </li>
+  </ul>
+</div>
+</body>
+</html>

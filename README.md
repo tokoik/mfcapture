@@ -228,7 +228,7 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 - 較正ファイルの読み込みに失敗した場合、以前の値を部分的に更新しないこと。
 - 通常シェーダーと補正シェーダーは同じ投影設定から選択できること。
 - プラットフォーム固有処理は `CamMf`、`CamAvf`、`CamAndroid`、`CamLibcam`、`CamCv`、`Capture` に閉じ込め、`Menu` に固有型を露出させないこと。
-- `const_cast` や `friend` による不変条件迂回を排出し、`getSettings()` / `setSettings()` 等の公開 API で状態連携すること。
+- `const_cast` や `friend` による不変条件迂回を排除し、`getSettings()` / `setSettings()` 等の公開 API で状態連携すること。
 - クラスメンバ変数の初期化はコンストラクタの初期化子リストではなくクラス定義（ヘッダ内）のデフォルトメンバ初期化構文（インクラス初期化）へ集約すること。
 - `calib` との共通処理で変数名・関数名は `mfcapture`、コメント・Doxygen 表現は `calib` に統一すること。
 - C++ ソースは `UTF-8 with BOM`、GLSL ソースは `UTF-8 without BOM` の文字コード規約を厳守すること。

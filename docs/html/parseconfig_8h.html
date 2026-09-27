@@ -1,0 +1,681 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.15.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>mfcapture: parseconfig.h ファイル</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="gg.ico"/></td>
+  <td id="projectalign">
+   <div id="projectname">mfcapture<span id="projectnumber">&#160;0.0.1</span>
+   </div>
+   <div id="projectbrief">Microsoft Media Foundation によるビデオキャプチャサンプル</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.15.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','検索',true);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('parseconfig_8h.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">parseconfig.h ファイル</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;picojson.h&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+parseconfig.h の依存先関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="parseconfig_8h__incl.png" border="0" usemap="#aparseconfig_8h" loading="lazy" alt=""/></div>
+<map name="aparseconfig_8h" id="aparseconfig_8h">
+<area shape="rect" title=" " alt="" coords="5,5,105,32"/>
+<area shape="rect" title=" " alt="" coords="15,80,95,107"/>
+<area shape="poly" title=" " alt="" coords="57,30,58,65,52,64,53,35"/>
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+被依存関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="parseconfig_8h__dep__incl.png" border="0" usemap="#aparseconfig_8hdep" loading="lazy" alt=""/></div>
+<map name="aparseconfig_8hdep" id="aparseconfig_8hdep">
+<area shape="rect" title=" " alt="" coords="92,5,192,32"/>
+<area shape="rect" href="Intrinsics_8h.html" title=" " alt="" coords="100,80,185,107"/>
+<area shape="poly" title=" " alt="" coords="143,45,145,80,140,79,142,50"/>
+<area shape="rect" href="Intrinsics_8cpp.html" title=" " alt="" coords="32,155,132,181"/>
+<area shape="poly" title=" " alt="" coords="121,121,95,156,90,153,123,116"/>
+<area shape="rect" href="Preference_8h.html" title=" " alt="" coords="156,155,251,181"/>
+<area shape="poly" title=" " alt="" coords="163,116,196,154,190,155,162,121"/>
+<area shape="rect" href="Config_8h.html" title=" " alt="" coords="111,229,181,256"/>
+<area shape="poly" title=" " alt="" coords="186,192,158,231,154,227,182,196"/>
+<area shape="rect" href="Preference_8cpp.html" title=" " alt="" coords="205,229,314,256"/>
+<area shape="poly" title=" " alt="" coords="223,191,253,229,247,229,222,196"/>
+<area shape="rect" href="Config_8cpp.html" title=" " alt="" coords="5,304,90,331"/>
+<area shape="poly" title=" " alt="" coords="116,268,66,306,63,302,118,263"/>
+<area shape="rect" href="Menu_8h.html" title=" " alt="" coords="114,304,178,331"/>
+<area shape="poly" title=" " alt="" coords="148,270,149,305,144,303,145,274"/>
+<area shape="rect" href="mfcapture_8cpp.html" title=" " alt="" coords="163,379,268,405"/>
+<area shape="poly" title=" " alt="" coords="168,266,193,303,208,343,216,380,211,377,203,345,188,305,166,271"/>
+<area shape="rect" href="Menu_8cpp.html" title=" " alt="" coords="60,379,139,405"/>
+<area shape="poly" title=" " alt="" coords="132,343,109,380,106,376,127,345"/>
+<area shape="poly" title=" " alt="" coords="170,339,206,378,201,378,167,344"/>
+</map>
+</div>
+</div>
+<p><a href="parseconfig_8h_source.html">[ソースコード]</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+関数</h2></td></tr>
+<tr class="memitem:ad7387beefe783ec9f01caa7ee49e60db" id="r_ad7387beefe783ec9f01caa7ee49e60db"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:ad7387beefe783ec9f01caa7ee49e60db template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad7387beefe783ec9f01caa7ee49e60db">getValue</a> (const picojson::object &amp;object, const std::string &amp;key, T &amp;scalar)</td></tr>
+<tr class="memitem:a472b54f6db40dac853feeca79826be6f" id="r_a472b54f6db40dac853feeca79826be6f"><td class="memTemplParams" colspan="2">template&lt;typename T, std::size_t U&gt; </td></tr>
+<tr class="memitem:a472b54f6db40dac853feeca79826be6f template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a472b54f6db40dac853feeca79826be6f">getValue</a> (const picojson::object &amp;object, const std::string &amp;key, std::array&lt; T, U &gt; &amp;vector)</td></tr>
+<tr class="memitem:aa526c0c2f6ac0f2d8e25de0a8a1300ff" id="r_aa526c0c2f6ac0f2d8e25de0a8a1300ff"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa526c0c2f6ac0f2d8e25de0a8a1300ff">getString</a> (const picojson::object &amp;object, const std::string &amp;key, std::string &amp;string)</td></tr>
+<tr class="memitem:a700d3523bb3bad5f952ca1fc2b5744aa" id="r_a700d3523bb3bad5f952ca1fc2b5744aa"><td class="memTemplParams" colspan="2">template&lt;std::size_t U&gt; </td></tr>
+<tr class="memitem:a700d3523bb3bad5f952ca1fc2b5744aa template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a700d3523bb3bad5f952ca1fc2b5744aa">getString</a> (const picojson::object &amp;object, const std::string &amp;key, std::array&lt; std::string, U &gt; &amp;strings)</td></tr>
+<tr class="memitem:a41ddce214cad1ed0bf389012a589f0c5" id="r_a41ddce214cad1ed0bf389012a589f0c5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a41ddce214cad1ed0bf389012a589f0c5">getString</a> (const picojson::object &amp;object, const std::string &amp;key, std::vector&lt; std::string &gt; &amp;strings)</td></tr>
+<tr class="memitem:ab6753f500daf700e3db65f17b841ce2d" id="r_ab6753f500daf700e3db65f17b841ce2d"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:ab6753f500daf700e3db65f17b841ce2d template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab6753f500daf700e3db65f17b841ce2d">setValue</a> (picojson::object &amp;object, const std::string &amp;key, const T &amp;scalar)</td></tr>
+<tr class="memitem:a88f3cec9a5d43c9a4292b9768daf67f7" id="r_a88f3cec9a5d43c9a4292b9768daf67f7"><td class="memTemplParams" colspan="2">template&lt;typename T, std::size_t U&gt; </td></tr>
+<tr class="memitem:a88f3cec9a5d43c9a4292b9768daf67f7 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88f3cec9a5d43c9a4292b9768daf67f7">setValue</a> (picojson::object &amp;object, const std::string &amp;key, const std::array&lt; T, U &gt; &amp;vector)</td></tr>
+<tr class="memitem:a6d1cf7a5f56fa09883319b5afb48502f" id="r_a6d1cf7a5f56fa09883319b5afb48502f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d1cf7a5f56fa09883319b5afb48502f">setString</a> (picojson::object &amp;object, const std::string &amp;key, const std::string &amp;string)</td></tr>
+<tr class="memitem:a47ae8a74b49d33f074ebfa150204ec95" id="r_a47ae8a74b49d33f074ebfa150204ec95"><td class="memTemplParams" colspan="2">template&lt;std::size_t U&gt; </td></tr>
+<tr class="memitem:a47ae8a74b49d33f074ebfa150204ec95 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a47ae8a74b49d33f074ebfa150204ec95">setString</a> (picojson::object &amp;object, const std::string &amp;key, const std::array&lt; std::string, U &gt; &amp;strings)</td></tr>
+<tr class="memitem:a4cad273831a9de460651017a9bfe6500" id="r_a4cad273831a9de460651017a9bfe6500"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4cad273831a9de460651017a9bfe6500">setString</a> (picojson::object &amp;object, const std::string &amp;key, const std::vector&lt; std::string &gt; &amp;strings)</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">詳解</h2>
+<div class="textblock"><p>構成ファイルの読み取り補助</p>
+<dl class="section author"><dt>著者</dt><dd>Kohe Tokoi </dd></dl>
+<dl class="section date"><dt>日付</dt><dd>November 15, 2022 </dd></dl>
+
+<p class="definition"> <a class="el" href="parseconfig_8h_source.html">parseconfig.h</a> に定義があります。</p>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">関数詳解</h2>
+<a id="a700d3523bb3bad5f952ca1fc2b5744aa" name="a700d3523bb3bad5f952ca1fc2b5744aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a700d3523bb3bad5f952ca1fc2b5744aa">&#9670;&#160;</a></span>getString() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::size_t U&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool getString </td>
+          <td>(</td>
+          <td class="paramtype">const picojson::object &amp;</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::array&lt; std::string, U &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>strings</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>構成ファイルの JSON オブジェクトから文字列の配列を取得する</p>
+<dl class="tparams"><dt>テンプレート引数</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">U</td><td>構成ファイルから取得する配列の要素の文字列の数 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">object</td><td>構成ファイルの JSON オブジェクト </td></tr>
+    <tr><td class="paramname">key</td><td>取得する JSON オブジェクトのキー </td></tr>
+    <tr><td class="paramname">strings</td><td>取得した文字列の配列を格納する変数 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="parseconfig_8h_source.html">parseconfig.h</a> の <a class="el" href="parseconfig_8h_source.html#l00105">105</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="aa526c0c2f6ac0f2d8e25de0a8a1300ff" name="aa526c0c2f6ac0f2d8e25de0a8a1300ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa526c0c2f6ac0f2d8e25de0a8a1300ff">&#9670;&#160;</a></span>getString() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool getString </td>
+          <td>(</td>
+          <td class="paramtype">const picojson::object &amp;</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>string</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>構成ファイルの JSON オブジェクトから文字列を取得する</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">object</td><td>構成ファイルの JSON オブジェクト </td></tr>
+    <tr><td class="paramname">key</td><td>取得する JSON オブジェクトのキー </td></tr>
+    <tr><td class="paramname">string</td><td>取得した文字列を格納する変数 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="parseconfig_8h_source.html">parseconfig.h</a> の <a class="el" href="parseconfig_8h_source.html#l00081">81</a> 行目に定義があります。</p>
+<div class="dynheader">
+被呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="parseconfig_8h_aa526c0c2f6ac0f2d8e25de0a8a1300ff_icgraph.png" border="0" usemap="#aparseconfig_8h_aa526c0c2f6ac0f2d8e25de0a8a1300ff_icgraph" loading="lazy" alt=""/></div>
+<map name="aparseconfig_8h_aa526c0c2f6ac0f2d8e25de0a8a1300ff_icgraph" id="aparseconfig_8h_aa526c0c2f6ac0f2d8e25de0a8a1300ff_icgraph">
+<area shape="rect" title=" " alt="" coords="209,31,282,57"/>
+<area shape="rect" href="classConfig.html#a75eae5cf03e3105be3f3503b5014b814" title=" " alt="" coords="37,5,129,32"/>
+<area shape="poly" title=" " alt="" coords="191,37,129,28,129,23,196,35"/>
+<area shape="rect" href="classPreference.html#a3c7805e8b64c1df24fd2003b33cb2009" title=" " alt="" coords="5,56,161,83"/>
+<area shape="poly" title=" " alt="" coords="191,52,162,60,161,55,196,52"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a41ddce214cad1ed0bf389012a589f0c5" name="a41ddce214cad1ed0bf389012a589f0c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41ddce214cad1ed0bf389012a589f0c5">&#9670;&#160;</a></span>getString() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool getString </td>
+          <td>(</td>
+          <td class="paramtype">const picojson::object &amp;</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::string &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>strings</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>構成ファイルの JSON オブジェクトから文字列のベクトルを取得する</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">object</td><td>構成ファイルの JSON オブジェクト </td></tr>
+    <tr><td class="paramname">key</td><td>取得する JSON オブジェクトのキー </td></tr>
+    <tr><td class="paramname">strings</td><td>取得した文字列の配列を格納する変数 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="parseconfig_8h_source.html">parseconfig.h</a> の <a class="el" href="parseconfig_8h_source.html#l00138">138</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a472b54f6db40dac853feeca79826be6f" name="a472b54f6db40dac853feeca79826be6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a472b54f6db40dac853feeca79826be6f">&#9670;&#160;</a></span>getValue() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, std::size_t U&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool getValue </td>
+          <td>(</td>
+          <td class="paramtype">const picojson::object &amp;</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::array&lt; T, U &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>vector</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>構成ファイルの JSON オブジェクトから数値の配列を取得する</p>
+<dl class="tparams"><dt>テンプレート引数</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>構成ファイルから取得する配列の要素の数値のデータ型 </td></tr>
+    <tr><td class="paramname">U</td><td>構成ファイルから取得する配列の要素の数値の数 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">object</td><td>構成ファイルの JSON オブジェクト </td></tr>
+    <tr><td class="paramname">key</td><td>取得する JSON オブジェクトのキー </td></tr>
+    <tr><td class="paramname">vector</td><td>取得した数値の配列を格納する変数 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="parseconfig_8h_source.html">parseconfig.h</a> の <a class="el" href="parseconfig_8h_source.html#l00048">48</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ad7387beefe783ec9f01caa7ee49e60db" name="ad7387beefe783ec9f01caa7ee49e60db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7387beefe783ec9f01caa7ee49e60db">&#9670;&#160;</a></span>getValue() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool getValue </td>
+          <td>(</td>
+          <td class="paramtype">const picojson::object &amp;</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T &amp;</td>          <td class="paramname"><span class="paramname"><em>scalar</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>構成ファイルの JSON オブジェクトから数値を取得する</p>
+<dl class="tparams"><dt>テンプレート引数</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>構成ファイルから取得する数値のデータ型 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">object</td><td>構成ファイルの JSON オブジェクト </td></tr>
+    <tr><td class="paramname">key</td><td>取得する JSON オブジェクトのキー </td></tr>
+    <tr><td class="paramname">scalar</td><td>取得した JSON オブジェクトの数値を格納する変数 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="parseconfig_8h_source.html">parseconfig.h</a> の <a class="el" href="parseconfig_8h_source.html#l00023">23</a> 行目に定義があります。</p>
+<div class="dynheader">
+被呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="parseconfig_8h_ad7387beefe783ec9f01caa7ee49e60db_icgraph.png" border="0" usemap="#aparseconfig_8h_ad7387beefe783ec9f01caa7ee49e60db_icgraph" loading="lazy" alt=""/></div>
+<map name="aparseconfig_8h_ad7387beefe783ec9f01caa7ee49e60db_icgraph" id="aparseconfig_8h_ad7387beefe783ec9f01caa7ee49e60db_icgraph">
+<area shape="rect" title=" " alt="" coords="189,31,260,57"/>
+<area shape="rect" href="structIntrinsics.html#a38a459859c8332372673b11dd1ae08f4" title=" " alt="" coords="5,5,141,32"/>
+<area shape="poly" title=" " alt="" coords="171,36,141,33,141,27,176,35"/>
+<area shape="rect" href="classConfig.html#a75eae5cf03e3105be3f3503b5014b814" title=" " alt="" coords="27,56,119,83"/>
+<area shape="poly" title=" " alt="" coords="171,53,120,64,119,59,176,52"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a47ae8a74b49d33f074ebfa150204ec95" name="a47ae8a74b49d33f074ebfa150204ec95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47ae8a74b49d33f074ebfa150204ec95">&#9670;&#160;</a></span>setString() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::size_t U&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void setString </td>
+          <td>(</td>
+          <td class="paramtype">picojson::object &amp;</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::array&lt; std::string, U &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>strings</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>構成ファイルの JSON オブジェクトに文字列の配列を設定する</p>
+<dl class="tparams"><dt>テンプレート引数</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">U</td><td>構成ファイルに設定する配列の要素の文字列の数 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">object</td><td>構成ファイルの JSON オブジェクト </td></tr>
+    <tr><td class="paramname">key</td><td>設定する JSON オブジェクトのキー </td></tr>
+    <tr><td class="paramname">strings</td><td>設定する文字列の配列 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="parseconfig_8h_source.html">parseconfig.h</a> の <a class="el" href="parseconfig_8h_source.html#l00225">225</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a6d1cf7a5f56fa09883319b5afb48502f" name="a6d1cf7a5f56fa09883319b5afb48502f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d1cf7a5f56fa09883319b5afb48502f">&#9670;&#160;</a></span>setString() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void setString </td>
+          <td>(</td>
+          <td class="paramtype">picojson::object &amp;</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>string</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>構成ファイルの JSON オブジェクトに文字列を設定する</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">object</td><td>構成ファイルの JSON オブジェクト </td></tr>
+    <tr><td class="paramname">key</td><td>設定する JSON オブジェクトのキー </td></tr>
+    <tr><td class="paramname">string</td><td>設定する文字列 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="parseconfig_8h_source.html">parseconfig.h</a> の <a class="el" href="parseconfig_8h_source.html#l00210">210</a> 行目に定義があります。</p>
+<div class="dynheader">
+被呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="parseconfig_8h_a6d1cf7a5f56fa09883319b5afb48502f_icgraph.png" border="0" usemap="#aparseconfig_8h_a6d1cf7a5f56fa09883319b5afb48502f_icgraph" loading="lazy" alt=""/></div>
+<map name="aparseconfig_8h_a6d1cf7a5f56fa09883319b5afb48502f_icgraph" id="aparseconfig_8h_a6d1cf7a5f56fa09883319b5afb48502f_icgraph">
+<area shape="rect" title=" " alt="" coords="227,31,300,57"/>
+<area shape="rect" href="classConfig.html#a4410a2eb30485f0308aff79e36cc0a1d" title=" " alt="" coords="44,5,140,32"/>
+<area shape="poly" title=" " alt="" coords="209,37,140,28,140,23,214,36"/>
+<area shape="rect" href="classPreference.html#af2209e2f96a2755fe2a9994543b54621" title=" " alt="" coords="5,56,179,83"/>
+<area shape="poly" title=" " alt="" coords="209,52,179,59,179,54,214,51"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a4cad273831a9de460651017a9bfe6500" name="a4cad273831a9de460651017a9bfe6500"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cad273831a9de460651017a9bfe6500">&#9670;&#160;</a></span>setString() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void setString </td>
+          <td>(</td>
+          <td class="paramtype">picojson::object &amp;</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>strings</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>構成ファイルの JSON オブジェクトに文字列のベクトルを設定する</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">object</td><td>構成ファイルの JSON オブジェクト </td></tr>
+    <tr><td class="paramname">key</td><td>設定する JSON オブジェクトのキー </td></tr>
+    <tr><td class="paramname">strings</td><td>設定する文字列の配列 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="parseconfig_8h_source.html">parseconfig.h</a> の <a class="el" href="parseconfig_8h_source.html#l00250">250</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a88f3cec9a5d43c9a4292b9768daf67f7" name="a88f3cec9a5d43c9a4292b9768daf67f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88f3cec9a5d43c9a4292b9768daf67f7">&#9670;&#160;</a></span>setValue() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, std::size_t U&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void setValue </td>
+          <td>(</td>
+          <td class="paramtype">picojson::object &amp;</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::array&lt; T, U &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>vector</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>構成ファイルの JSON オブジェクトに数値の配列を設定する</p>
+<dl class="tparams"><dt>テンプレート引数</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>構成ファイルに設定する配列の要素の数値のデータ型 </td></tr>
+    <tr><td class="paramname">U</td><td>構成ファイルに設定する配列の要素の数値の数 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">object</td><td>構成ファイルの JSON オブジェクト </td></tr>
+    <tr><td class="paramname">key</td><td>設定する JSON オブジェクトのキー </td></tr>
+    <tr><td class="paramname">vector</td><td>設定する数値の配列 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="parseconfig_8h_source.html">parseconfig.h</a> の <a class="el" href="parseconfig_8h_source.html#l00185">185</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ab6753f500daf700e3db65f17b841ce2d" name="ab6753f500daf700e3db65f17b841ce2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6753f500daf700e3db65f17b841ce2d">&#9670;&#160;</a></span>setValue() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void setValue </td>
+          <td>(</td>
+          <td class="paramtype">picojson::object &amp;</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>scalar</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>構成ファイルの JSON オブジェクトに数値を設定する</p>
+<dl class="tparams"><dt>テンプレート引数</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>構成ファイルに設定する数値のデータ型 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">object</td><td>構成ファイルの JSON オブジェクト </td></tr>
+    <tr><td class="paramname">key</td><td>設定する JSON オブジェクトのキー </td></tr>
+    <tr><td class="paramname">scalar</td><td>設定する数値 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="parseconfig_8h_source.html">parseconfig.h</a> の <a class="el" href="parseconfig_8h_source.html#l00169">169</a> 行目に定義があります。</p>
+<div class="dynheader">
+被呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="parseconfig_8h_ab6753f500daf700e3db65f17b841ce2d_icgraph.png" border="0" usemap="#aparseconfig_8h_ab6753f500daf700e3db65f17b841ce2d_icgraph" loading="lazy" alt=""/></div>
+<map name="aparseconfig_8h_ab6753f500daf700e3db65f17b841ce2d_icgraph" id="aparseconfig_8h_ab6753f500daf700e3db65f17b841ce2d_icgraph">
+<area shape="rect" title=" " alt="" coords="227,31,298,57"/>
+<area shape="rect" href="classConfig.html#a4410a2eb30485f0308aff79e36cc0a1d" title=" " alt="" coords="44,5,140,32"/>
+<area shape="poly" title=" " alt="" coords="209,37,140,28,140,23,214,36"/>
+<area shape="rect" href="classPreference.html#af2209e2f96a2755fe2a9994543b54621" title=" " alt="" coords="5,56,179,83"/>
+<area shape="poly" title=" " alt="" coords="209,52,180,59,179,54,214,51"/>
+</map>
+</div>
+
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="parseconfig_8h.html">parseconfig.h</a></li>
+    <li class="footer">構築: <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.15.0 </li>
+  </ul>
+</div>
+</body>
+</html>
