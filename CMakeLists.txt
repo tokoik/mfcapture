@@ -205,6 +205,7 @@ set(HEADER_FILES_LIST
     CamImage.h
     Camera.h
     CamMf.h
+    CamAvf.h
     opencv_link.h
     Config.h
     Expand.h
@@ -424,6 +425,8 @@ elseif(APPLE)
     # macOS platform settings
     set(PLATFORM_SOURCES
         libs/ImGui/nfd_cocoa.m
+        CamAvf.mm
+        CamAvf.h
     )
     
     # Configure GLFW pre-compiled binary path for macOS
@@ -506,6 +509,8 @@ elseif(APPLE)
         "-framework Cocoa"
         "-framework IOKit"
         "-framework CoreVideo"
+        "-framework CoreMedia"
+        "-framework AVFoundation"
         "-framework OpenGL"
         "-framework AppKit"
         "-framework UniformTypeIdentifiers"

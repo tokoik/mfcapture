@@ -6,12 +6,13 @@
 
 画像処理プログラミングの勉強会等において、CPU（OpenCV）とGPU（OpenGL / GLSL）による画像処理モデルの違いや、`calib` で得られたカメラの内部パラメータ（カメラ行列および歪み係数）を用いたレンズ歪み補正の仕組みを比較学習するためのサンプルとして使用します。
 
-Windowsのカメラ入力には Microsoft Media Foundation（MSMF）を直接使用します。Raspberry Pi ではネイティブの `libcamera` バックエンド (`CamLibcam`) および OpenGL ES 3.1 をサポートします。macOSおよびLinux、ならびに動画・静止画像の入力にはOpenCVを使用し、描画とUIにはOpenGL / OpenGL ES、GLFW、Dear ImGuiを使用します。カメラ較正処理自体は行わず、`calib` が出力したJSON形式の較正パラメータを読み込んで補正に利用します。
+Windowsのカメラ入力には Microsoft Media Foundation（MSMF）を直接使用します。macOSのカメラ入力には AV Foundation ネイティブバックエンド (`CamAvf`) を使用し、カメラデバイス一覧や特性（解像度・フレームレート・コーデック）を直接取得して制御します。Raspberry Pi ではネイティブの `libcamera` バックエンド (`CamLibcam`) および OpenGL ES 3.1 をサポートします。Android では Camera2 NDK (`CamAndroid`) をサポートします。その他の動画・静止画像の入力にはOpenCVを使用し、描画とUIにはOpenGL / OpenGL ES、GLFW、Dear ImGuiを使用します。カメラ較正処理自体は行わず、`calib` が出力したJSON形式の較正パラメータを読み込んで補正に利用します。
 
 ## 主な機能
 
 - Webカメラ、動画ファイル、静止画像からの映像入力
 - Windows Media FoundationによるH.264/MJPGの直接取得、デコード、RGB変換 (`CamMf`)
+- macOS AV Foundation によるカメラデバイス一覧取得、特性選択、BGRA 変換 (`CamAvf`)
 - Raspberry Pi ネイティブの `libcamera` による高速フレーム取得と色変換 (`CamLibcam`)
 - 解像度、フレームレート、符号化方式の組み合わせ選択
 - 全フレーム処理とレイテンシ優先（低遅延）処理の切り替え
@@ -69,9 +70,11 @@ Windowsのカメラ入力には Microsoft Media Foundation（MSMF）を直接使
 - **`dynamic_cast` の排除**: 基底クラスに `isStillImage()`, `getFormatList()`, `selectFormat()` の仮想関数を導入し、上位層が特定派生クラスの型チェック（ダウンキャスト）を行わずにポリモーフィックに操作できるように疎結合化しました。
 
 - `CamMf`: Windows Media Foundation によるカメラ入力
+- `CamAvf`: macOS AV Foundation によるカメラ入力
+- `CamAndroid`: Android Camera2 NDK によるカメラ入力
+- `CamLibcam`: Raspberry Pi ネイティブの libcamera によるカメラ入力
 - `CamCv`: OpenCV によるカメラ、動画、ネットワーク入力
 - `CamImage`: 静止画像入力
-- `CamLibcam`: Raspberry Pi ネイティブの libcamera によるカメラ入力
 - `Capture`: 上記入力実装の所有、切り替え、開始・停止、フレーム取得の窓口
 
 ### `Config`、`Preference`、`Intrinsics`
@@ -104,11 +107,22 @@ Windowsのカメラ入力には Microsoft Media Foundation（MSMF）を直接使
 - 全フレーム処理時は、メインスレッドがフレームを取得するまで次のフレームで上書きしない。
 - COM オブジェクトおよび MFT バッファは、RAII パターン等を用いて早期 return 時にも解放漏れが発生しないよう安全に管理する。
 
+## macOSでの低遅延キャプチャ
+
+`CamAvf` は AV Foundation を用い、カメラ入力の制御とフレーム取得を行います。
+
+- `AVCaptureDeviceDiscoverySession` により、接続されたすべてのカメラデバイス（内蔵カメラ、USB Webカメラ、連係カメラ等）をシステムからネイティブに列挙します。
+- `AVCaptureDeviceFormat` から解像度、最大フレームレート、コーデック（4CC）を抽出し、`CaptureFormat` 構造体へ格納して UI で選択可能にします。
+- デバイス認識時やフォーマット列挙時にはセッション開始を行わず、キャプチャ開始時にのみフォーマット適用・セッション初期化を行う遅延初期化（Lazy Initialization）を行います。
+- `AVCaptureVideoDataOutput` の出力フォーマットに `kCVPixelFormatType_32BGRA` を指定し、ハードウェアまたは OS 内部で高速に BGRA 変換を行います。
+- `alwaysDiscardsLateVideoFrames` と連携し、レイテンシ優先時は遅延したフレームを破棄して常に最新フレームを取得します。
+- ストライド（行パディング）を考慮しながら単一画像バッファへ格納し、`lockFrame()` コールバックを通じて PBO または OpenCV へゼロコピーで安全にフレームを渡します。
+
 ## 基本操作
 
 1. 「ファイル」メニューから画像、動画、または較正ファイル (`calib` の出力 JSON) を開く。
 2. カメラを使用する場合は「入力」パネルでカメラ装置を選択する。
-3. Windows では解像度、フレームレート、符号化方式を選択する。
+3. Windows および macOS では解像度、フレームレート、符号化方式を選択する。
 4. 必要に応じて「レイテンシ優先」を有効にする。
 5. 「開始」を押してキャプチャを開始する。
 6. 「歪み補正」ラジオボタンで「なし」「OpenCV」「OpenGL」のいずれかを選択する。
@@ -134,6 +148,7 @@ Windowsのカメラ入力には Microsoft Media Foundation（MSMF）を直接使
 - C++17 (`/std:c++17`)
 - CMake 3.13 以降
 - Visual Studio 2022 以降（Windows、x64）
+- Clang / Xcode Command Line Tools（macOS、arm64 / x64）
 - OpenCV 4.13.0
 - GLFW 3.4
 - Dear ImGui 1.92.8
@@ -148,6 +163,24 @@ cmake --build build --config Release
 ```
 
 初回の CMake 構成時には、`CMakeLists.txt` が必要な依存ライブラリを `libs` 以下へ自動取得します。ビルド後は、シェーダー、構成ファイル、画像、フォント、OpenCV DLL が実行ファイルのディレクトリへコピーされます。
+
+### macOS でのビルド例
+
+Homebrew や Xcode Command Line Tools を用いてビルドします。
+
+```bash
+# 依存ライブラリのインストール（OpenCV, GLFW など）
+brew install opencv glfw
+
+# ビルド
+cmake -B build
+cmake --build build -j$(sysctl -n hw.ncpu)
+
+# 実行
+./build/mfcapture
+```
+
+ビルド完了後、POST_BUILD コマンドによりシェーダーおよび JSON 構成ファイル、画像アセットが `build/` ディレクトリへ自動コピーされます。また、`AVFoundation` および `CoreMedia` フレームワークが自動的にリンクされます。
 
 ### Raspberry Pi (Linux ARM) でのビルド例
 
@@ -197,7 +230,7 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 - 補正マップと Framebuffer Object は、入力サイズが変化した場合だけ再作成すること。
 - 較正ファイルの読み込みに失敗した場合、以前の値を部分的に更新しないこと。
 - 通常シェーダーと補正シェーダーは同じ投影設定から選択できること。
-- Windows 固有処理は `CamMf` と `Capture` に閉じ込め、`Menu` に Media Foundation 固有型を露出させないこと。
+- プラットフォーム固有処理は `CamMf`、`CamAvf`、`CamAndroid`、`CamLibcam`、`CamCv`、`Capture` に閉じ込め、`Menu` に固有型を露出させないこと。
 - `const_cast` や `friend` による不変条件迂回を排出し、`getSettings()` / `setSettings()` 等の公開 API で状態連携すること。
 - クラスメンバ変数の初期化はコンストラクタの初期化子リストではなくクラス定義（ヘッダ内）のデフォルトメンバ初期化構文（インクラス初期化）へ集約すること。
 - `calib` との共通処理で変数名・関数名は `mfcapture`、コメント・Doxygen 表現は `calib` に統一すること。

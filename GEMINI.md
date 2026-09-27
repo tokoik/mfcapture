@@ -14,9 +14,9 @@
 
 ## 2. 開発環境
 
-- 統合開発環境: Visual Studio 2022 以降（Windows）、VS Code / GCC（Linux）
+- 統合開発環境: Visual Studio 2022 以降（Windows）、VS Code / Clang（macOS）、VS Code / GCC（Linux）
 - 開発言語: C++17
-- ターゲット: 64 bit（x64 / aarch64）
+- ターゲット: 64 bit（x64 / arm64 / aarch64）
 - ビルドシステム: CMake 3.13 以降
 - C++ ソース（`.h`、`.cpp`）: UTF-8、BOM 付き
 - GLSL ソース（`.vert`、`.frag`、`.comp`）: UTF-8、BOM なし
@@ -30,6 +30,8 @@ out-of-source build を使用します。
 ## 3. 入力とキャプチャ
 
 - Windows のカメラ入力は Microsoft Media Foundation を使用します (`CamMf`)。
+- macOS のカメラ入力は AV Foundation ネイティブバックエンドを使用します (`CamAvf`)。
+- Android のカメラ入力は Camera2 NDK バックエンドを使用します (`CamAndroid`)。
 - Raspberry Pi のカメラ入力は libcamera ネイティブバックエンドを使用します (`CamLibcam`)。
 - その他のプラットフォームのカメラ入力と動画入力は OpenCV を使用します (`CamCv`)。
 - GStreamer パイプライン入力はサポート対象外とし、構成ファイルや UI に GStreamer 固有の設定を追加しません。
@@ -39,10 +41,11 @@ out-of-source build を使用します。
 - 従来の二重バッファ（`frame` と `image`）を廃止し、単一バッファ（`std::vector<std::uint8_t> image`）へ集約してメモリ使用量と不要な内部コピーを排除します。
 - 上位層へのフレーム転送はテンプレートメソッド `lockFrame(F&& func)` によるコールバック方式とし、非ブロッキング排他ロック（`try_to_lock`）成功時のみデータポインタを渡して直接 PBO 転送や `cv::Mat` へのコピーを行うゼロコピー設計とします。
 - 上位層での `dynamic_cast` による具象クラス依存を排除し、`isStillImage()`, `getFormatList()`, `selectFormat()` 等の基底クラス仮想関数を介して疎結合に連携します。
-- プラットフォーム固有処理は `CamMf`、`CamLibcam`、`CamCv`、`Capture` に閉じ込め、UI と
+- プラットフォーム固有処理は `CamMf`、`CamAvf`、`CamAndroid`、`CamLibcam`、`CamCv`、`Capture` に閉じ込め、UI と
   描画ループへプラットフォーム固有型を露出させません。
 - `CamMf` は MFT デコーダとカラーコンバータを使い、CPU メモリ上のフレームへ変換します。
-- フォーマット列挙時には重いデコーダ初期化を行わず、開始時に選択フォーマットを
+- `CamAvf` は AV Foundation を用い、`AVCaptureDeviceDiscoverySession` によるデバイス列挙、`AVCaptureDeviceFormat` による特性列挙、遅延初期化、`kCVPixelFormatType_32BGRA` によるゼロコピーフレーム取得を行います。
+- フォーマット列挙時には重いデコーダ初期化やセッション開始を行わず、開始時に選択フォーマットを
   適用する遅延初期化を維持します。
 - レイテンシ優先時は古いフレームを破棄し、全フレーム処理時は取得前のフレームを
   上書きしません。
@@ -171,3 +174,13 @@ out-of-source build を使用します。
 - **ビルドシステム**:
   - `android/` ディレクトリ配下に Gradle プロジェクトを構成し、トップレベルの `CMakeLists.txt` を外部ネイティブビルドとして直接参照します。
   - OpenCV Android SDK (`opencv-4.11.0-android-sdk.zip`) を自動取得・構成します。
+
+## 14. macOS (AV Foundation) 対応方針
+
+- **カメラ入力 (`CamAvf`)**:
+  - macOS のカメラ入力には AV Foundation を直接使用し、OpenCV (`CamCv`) から完全に独立させます。
+  - `AVCaptureDeviceDiscoverySession` により接続されたカメラデバイス一覧を取得し、`AVCaptureDeviceFormat` から解像度、フレームレート、コーデックを抽出して `CaptureFormat` に集約します。
+  - `AVCaptureVideoDataOutput` の `videoSettings` で `kCVPixelFormatType_32BGRA` を指定し、ハードウェアまたは OS 内部で BGRA に変換して CPU メモリ（`std::vector<std::uint8_t>`）へ直接出力します。
+  - `alwaysDiscardsLateVideoFrames` と連携し、`prioritizeLatency` に応じた低遅延フレーム破棄を制御します。
+  - カメラ認識時やフォーマットリスト取得時にはセッション開始等の重い処理を行わず、開始指示のタイミングで適用する遅延初期化（Lazy Initialization）を維持します。
+  - `CMakeLists.txt` において、macOS 環境 (`APPLE`) では `-framework AVFoundation` および `-framework CoreMedia` を自動的にリンクします。

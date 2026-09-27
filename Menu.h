@@ -31,7 +31,7 @@ class Menu
   /// 設定データのコピー
   Settings settings;
 
-#if !defined(_WIN32)
+#if !defined(_WIN32) && !defined(__ANDROID__) && !defined(__APPLE__)
   /// バックエンドのリスト
   static const std::map<cv::VideoCaptureAPIs, const char*> backendList;
 
@@ -99,7 +99,7 @@ class Menu
   /// 選択しているキャプチャデバイスの番号
   int deviceNumber{ 0 };
 
-#if defined(_WIN32) || defined(__ANDROID__)
+#if defined(_WIN32) || defined(__ANDROID__) || defined(__APPLE__)
   /// 選択しているビデオフォーマットの番号
   int formatNumber{ 0 };
 
