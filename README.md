@@ -203,21 +203,13 @@ libcamerify ./build/mfcapture
 
 ### Android スマートフォンでのビルド例
 
-Android Studio で `android` フォルダを開いてビルドするか、コマンドラインから Gradle Wrapper を用いてビルドします。
+Android Studio で `android` フォルダを開いてビルド・実行します。実機の事前設定、カメラ権限の手動許可、Logcat によるデバッグ手順などの詳細は [Android 実機テストガイド](docs/Android.md) を参照してください。
 
-**必要な環境**:
-- Android SDK (API 34, Android NDK 26.x 以降, CMake)
-- OpenJDK 17 または 21 (`JAVA_HOME`)
+コマンドラインから Gradle Wrapper を用いてビルドする場合:
 
-**コマンドラインビルド**:
 ```powershell
 cd android
 .\gradlew.bat assembleDebug
-```
-
-ビルド完了後、`android/app/build/outputs/apk/debug/app-debug.apk` が生成されます。
-ADB 経由で実機へインストールする場合:
-```powershell
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
@@ -241,14 +233,17 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 ### 開発・管理ドキュメント
 - [GEMINI.md](GEMINI.md): プロジェクト開発方針と環境定義
 - [REQUESTS.md](REQUESTS.md): 開発依頼および変更対応履歴
-
-### モジュール解説ドキュメント
-- [CamMf.md](CamMf.md): Windows Media Foundation ビデオキャプチャクラス `CamMf` の実装詳細および Win32 / MF API リファレンス
-- [CamMf.html](CamMf.html): `CamMf` の構造とデータパイプラインを解説した勉強会用スライド (HTML)
-- [CamLibcam.md](CamLibcam.md): Raspberry Pi ネイティブカメラキャプチャクラス `CamLibcam` の実装詳細および libcamera C++ API リファレンス
+### プラットフォーム・機能別ガイド (docs)
+- [docs/OpenXR.md](docs/OpenXR.md): OpenXR バックエンド実装マニュアル
+- [docs/Android.md](docs/Android.md): Android 実機テストとビルドガイド
+- [docs/CamMf.md](docs/CamMf.md): Windows Media Foundation ビデオキャプチャクラス `CamMf` 完全解説
+- [docs/CamAvf.md](docs/CamAvf.md): macOS AV Foundation ビデオキャプチャクラス `CamAvf` 完全解説
+- [docs/CamAndroid.md](docs/CamAndroid.md): Android Camera2 NDK ビデオキャプチャクラス `CamAndroid` 完全解説
+- [docs/CamLibcam.md](docs/CamLibcam.md): Raspberry Pi ネイティブカメラキャプチャクラス `CamLibcam` 完全解説
 
 ### 勉強会プレゼンテーション・ハンドブック
 - [presentation.md](presentation.md): カメラキャリブレーション & レンズ歪み補正プレゼンテーション概要
 - [presentation.html](presentation.html): カメラキャリブレーション & レンズ歪み補正勉強会用スライド (HTML)
 - [workshop_handbook.md](workshop_handbook.md): 勉強会ハンズオン用ハンドブック
 - [workshop_handbook.html](workshop_handbook.html): 勉強会ハンズオン用ハンドブック (HTML)
+- [CamMf.html](CamMf.html): `CamMf` の構造とデータパイプラインを解説した勉強会用スライド (HTML)
