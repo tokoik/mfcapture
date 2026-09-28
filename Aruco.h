@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 ///
 /// ArUco Marker 認識クラスの定義

@@ -69,47 +69,49 @@ var NAVTREE =
         [ "OpenCV 方式 (CPU 補正)", "md_README.html#autotoc_md49", null ],
         [ "OpenGL 方式 (GPU 補正)", "md_README.html#autotoc_md50", null ]
       ] ],
-      [ "主要クラスと責務", "md_README.html#autotoc_md51", [
-        [ "<span class=\"tt\">Camera</span> と入力実装", "md_README.html#autotoc_md52", null ],
-        [ "<span class=\"tt\">Config</span>、<span class=\"tt\">Preference</span>、<span class=\"tt\">Intrinsics</span>", "md_README.html#autotoc_md53", null ],
-        [ "<span class=\"tt\">Undistortion</span>", "md_README.html#autotoc_md54", null ],
-        [ "<span class=\"tt\">Menu</span>", "md_README.html#autotoc_md55", null ]
+      [ "ArUco Marker の検出", "md_README.html#autotoc_md51", null ],
+      [ "主要クラスと責務", "md_README.html#autotoc_md52", [
+        [ "<span class=\"tt\">Camera</span> と入力実装", "md_README.html#autotoc_md53", null ],
+        [ "<span class=\"tt\">Config</span>、<span class=\"tt\">Preference</span>、<span class=\"tt\">Intrinsics</span>", "md_README.html#autotoc_md54", null ],
+        [ "<span class=\"tt\">Undistortion</span>", "md_README.html#autotoc_md55", null ],
+        [ "<span class=\"tt\">Aruco</span>", "md_README.html#autotoc_md56", null ],
+        [ "<span class=\"tt\">Menu</span>", "md_README.html#autotoc_md57", null ]
       ] ],
-      [ "Windowsでの低遅延キャプチャ", "md_README.html#autotoc_md56", null ],
-      [ "macOSでの低遅延キャプチャ", "md_README.html#autotoc_md57", null ],
-      [ "基本操作", "md_README.html#autotoc_md58", null ],
-      [ "構成ファイル", "md_README.html#autotoc_md59", null ],
-      [ "開発環境とビルド", "md_README.html#autotoc_md60", [
-        [ "macOS でのビルド例", "md_README.html#autotoc_md61", null ],
-        [ "Raspberry Pi (Linux ARM) でのビルド例", "md_README.html#autotoc_md62", null ],
-        [ "Android スマートフォンでのビルド例", "md_README.html#autotoc_md63", null ]
+      [ "低遅延キャプチャ", "md_README.html#autotoc_md58", null ],
+      [ "基本操作", "md_README.html#autotoc_md59", null ],
+      [ "構成ファイル", "md_README.html#autotoc_md60", null ],
+      [ "開発環境とビルド", "md_README.html#autotoc_md61", [
+        [ "Windows", "md_README.html#autotoc_md62", null ],
+        [ "macOS", "md_README.html#autotoc_md63", null ],
+        [ "Raspberry Pi (Linux ARM)", "md_README.html#autotoc_md64", null ],
+        [ "Android", "md_README.html#autotoc_md65", null ]
       ] ],
-      [ "開発時の確認事項", "md_README.html#autotoc_md64", null ],
-      [ "ドキュメント・関連資料", "md_README.html#autotoc_md65", [
-        [ "開発・管理ドキュメント", "md_README.html#autotoc_md66", null ],
-        [ "プラットフォーム・機能別ガイド (docs)", "md_README.html#autotoc_md67", null ],
-        [ "勉強会プレゼンテーション・ハンドブック", "md_README.html#autotoc_md68", null ]
+      [ "開発時の確認事項", "md_README.html#autotoc_md66", null ],
+      [ "ドキュメント・関連資料", "md_README.html#autotoc_md67", [
+        [ "開発・管理ドキュメント", "md_README.html#autotoc_md68", null ],
+        [ "プラットフォーム・機能別ガイド", "md_README.html#autotoc_md69", null ],
+        [ "勉強会プレゼンテーション・ハンドブック", "md_README.html#autotoc_md70", null ]
       ] ]
     ] ],
     [ "実践カメラキャリブレーション &amp; レンズ歪み補正 講義・実習ハンドブック", "md_workshop__handbook.html", [
-      [ "第1章 開発環境とプロジェクト規約", "md_workshop__handbook.html#autotoc_md71", [
-        [ "1.1 開発環境要件", "md_workshop__handbook.html#autotoc_md72", null ],
-        [ "1.2 ソースコード文字コード規約", "md_workshop__handbook.html#autotoc_md73", null ]
+      [ "第1章 開発環境とプロジェクト規約", "md_workshop__handbook.html#autotoc_md73", [
+        [ "1.1 開発環境要件", "md_workshop__handbook.html#autotoc_md74", null ],
+        [ "1.2 ソースコード文字コード規約", "md_workshop__handbook.html#autotoc_md75", null ]
       ] ],
-      [ "第2章 カメラモデリングとレンズ歪みの数理", "md_workshop__handbook.html#autotoc_md75", [
-        [ "2.1 ピンホールカメラモデル・内部パラメータ・外部パラメータ", "md_workshop__handbook.html#autotoc_md76", [
-          [ "1. カメラ内部行列 (Camera Matrix $K$)", "md_workshop__handbook.html#autotoc_md77", null ],
-          [ "2. カメラ外部行列 (Extrinsic Parameters $[R | t]$)", "md_workshop__handbook.html#autotoc_md78", null ]
+      [ "第2章 カメラモデリングとレンズ歪みの数理", "md_workshop__handbook.html#autotoc_md77", [
+        [ "2.1 ピンホールカメラモデル・内部パラメータ・外部パラメータ", "md_workshop__handbook.html#autotoc_md78", [
+          [ "1. カメラ内部行列 (Camera Matrix $K$)", "md_workshop__handbook.html#autotoc_md79", null ],
+          [ "2. カメラ外部行列 (Extrinsic Parameters $[R | t]$)", "md_workshop__handbook.html#autotoc_md80", null ]
         ] ]
       ] ],
-      [ "第3章 ChArUco Board によるキャリブレーション原理", "md_workshop__handbook.html#autotoc_md80", [
-        [ "3.1 ChArUco Board とは (OpenCV チュートリアル準拠)", "md_workshop__handbook.html#autotoc_md81", null ],
-        [ "3.4 C++ 実装手順1：辞書、ボード、検出器を作る", "md_workshop__handbook.html#autotoc_md83", null ],
-        [ "3.7 C++ 実装手順4：標本データを抽出・保存する", "md_workshop__handbook.html#autotoc_md85", null ],
-        [ "3.8 C++ 実装手順5：内部パラメータを推定する (<span class=\"tt\">calibrateCamera</span>)", "md_workshop__handbook.html#autotoc_md87", null ]
+      [ "第3章 ChArUco Board によるキャリブレーション原理", "md_workshop__handbook.html#autotoc_md82", [
+        [ "3.1 ChArUco Board とは (OpenCV チュートリアル準拠)", "md_workshop__handbook.html#autotoc_md83", null ],
+        [ "3.4 C++ 実装手順1：辞書、ボード、検出器を作る", "md_workshop__handbook.html#autotoc_md85", null ],
+        [ "3.7 C++ 実装手順4：標本データを抽出・保存する", "md_workshop__handbook.html#autotoc_md87", null ],
+        [ "3.8 C++ 実装手順5：内部パラメータを推定する (<span class=\"tt\">calibrateCamera</span>)", "md_workshop__handbook.html#autotoc_md89", null ]
       ] ],
-      [ "第4章 プログラム設計とアーキテクチャ", "md_workshop__handbook.html#autotoc_md89", [
-        [ "4.1 C++ クラス設計と安全なカプセル化", "md_workshop__handbook.html#autotoc_md90", null ]
+      [ "第4章 プログラム設計とアーキテクチャ", "md_workshop__handbook.html#autotoc_md91", [
+        [ "4.1 C++ クラス設計と安全なカプセル化", "md_workshop__handbook.html#autotoc_md92", null ]
       ] ]
     ] ],
     [ "名前空間", "namespaces.html", [
@@ -153,7 +155,7 @@ var NAVTREEINDEX =
 "classgg_1_1GgPoints.html#aa9170eea649cf940adc6698d98964bd4",
 "classgg_1_1GgShader.html#afb49a96fa6fa7b981013ee783511b292",
 "classgg_1_1GgTrackball.html#af0ff2b315542776b0b465f5e166c4c8a",
-"md_presentation.html#autotoc_md2"
+"md_presentation.html#autotoc_md18"
 ];
 
 var SYNCONMSG = 'クリックで同期表示が無効になります';

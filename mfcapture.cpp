@@ -27,9 +27,6 @@
 // 標準ライブラリ
 #include <chrono>
 #include <iostream>
-#if defined(__ANDROID__)
-#include <android/log.h>
-#endif
 
 // 構成ファイル名
 #define CONFIG_FILE PROJECT_NAME "_config.json"
@@ -60,45 +57,12 @@ int GgApp::main(int argc, const char* const* argv)
   // メニューを作る
   Menu menu{ config, capture, undistortion, aruco };
 
-#if defined(__ANDROID__)
-  // Android では起動時に背面カメラを優先して自動的にキャプチャを開始する
-  bool cameraStarted{ false };
-  const auto& deviceList{ config.getDeviceList() };
-  int backCameraIndex{ -1 };
-
-  for (int i = 0; i < static_cast<int>(deviceList.size()); ++i)
-  {
-    if (deviceList[i].find("Back") != std::string::npos || deviceList[i].find("back") != std::string::npos)
-    {
-      backCameraIndex = i;
-      break;
-    }
-  }
-
-  if (backCameraIndex < 0 && !deviceList.empty())
-  {
-    backCameraIndex = 0;
-  }
-
-  if (backCameraIndex >= 0)
-  {
-    menu.setDeviceNumber(backCameraIndex);
-    cameraStarted = menu.startCapture();
-  }
-
-  // カメラが起動できなかった場合は初期画像を開く
-  if (!cameraStarted)
-  {
-    if (!capture.openImage(config.getInitialImage())) throw std::runtime_error("Cannot open initial image.");
-    menu.initializeInputIntrinsics(capture.getSize());
-  }
-#else
   // キャプチャデバイスで初期画像を開く
+  // (Android 版はこのファイルを使わず、NativeBridge.cpp が起動処理を行う)
   if (!capture.openImage(config.getInitialImage())) throw std::runtime_error("Cannot open initial image.");
 
   // 実解像度と焦点距離から初期画角を設定する
   menu.initializeInputIntrinsics(capture.getSize());
-#endif
 
   // キャプチャしたフレームを保持するテクスチャ
   Texture frame;
@@ -124,12 +88,7 @@ int GgApp::main(int argc, const char* const* argv)
     const auto renderElapsed{ std::chrono::duration<double>(currentFrameTime - lastRenderFpsReport).count() };
     if (renderElapsed >= 2.0)
     {
-      const double rFps{ renderFrameCount / renderElapsed };
-#if defined(__ANDROID__)
-      __android_log_print(ANDROID_LOG_INFO, "mfcapture", "mfcapture: Render FPS = %.1f", rFps);
-#else
-      std::cout << "mfcapture: Render FPS = " << rFps << std::endl;
-#endif
+      std::cout << "mfcapture: Render FPS = " << renderFrameCount / renderElapsed << std::endl;
       renderFrameCount = 0;
       lastRenderFpsReport = currentFrameTime;
     }
@@ -242,8 +201,7 @@ int GgApp::main(int argc, const char* const* argv)
     // 表示するウィンドウのビューポートを再設定する
     window.setMenubarHeight(menu.getMenubarHeight());
 
-    // フレームバッファオブジェクトの内容を表示する
-    //framebuffer.show(window.getWidth(), window.getHeight());
+    // シェーダーでBGRAをRGBAへ変換し、縦横比を維持して実Framebuffer領域へ中央表示する
     framebuffer.draw(window.getFboWidth(), window.getFboHeight());
 
     // カラーバッファを入れ替えてイベントを取り出す
