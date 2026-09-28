@@ -5,8 +5,11 @@ import android.view.Surface
 
 object NativeBridge {
     init {
-        System.loadLibrary("opencv_world")
-        System.loadLibrary("mfcapture")
+        try {
+            System.loadLibrary("mfcapture")
+        } catch (e: UnsatisfiedLinkError) {
+            e.printStackTrace()
+        }
     }
 
     external fun nativeInit(assetManager: AssetManager, internalPath: String)
