@@ -746,11 +746,12 @@ void Menu::drawInputPanel()
   if (showInputPanel)
   {
     // ウィンドウの位置とサイズ
-    ImGui::SetNextWindowPos(ImVec2(2.0f, 2.0f + menubarHeight), ImGuiCond_Once);
+    const float uiScale{ ImGui::GetIO().FontGlobalScale };
+    ImGui::SetNextWindowPos(ImVec2(2.0f * uiScale, 2.0f * uiScale + menubarHeight), ImGuiCond_Once);
 #if defined(_WIN32)
-    ImGui::SetNextWindowSize(ImVec2(262, 576), ImGuiCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(262.0f * uiScale, 576.0f * uiScale), ImGuiCond_Once);
 #else
-    ImGui::SetNextWindowSize(ImVec2(262, 606), ImGuiCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(262.0f * uiScale, 606.0f * uiScale), ImGuiCond_Once);
 #endif
     ImGui::Begin(u8"入力", &showInputPanel);
 
@@ -1175,8 +1176,17 @@ void Menu::drawArucoPanel()
   if (showArucoPanel)
   {
     // ウィンドウの位置と初期サイズを設定する
-    ImGui::SetNextWindowPos(ImVec2(270.0f, 2.0f + menubarHeight), ImGuiCond_Once);
-    ImGui::SetNextWindowSize(ImVec2(222, 133), ImGuiCond_Once);
+    const float uiScale{ ImGui::GetIO().FontGlobalScale };
+    const float panelW{ 222.0f * uiScale };
+    float posX{ 270.0f * uiScale };
+    float posY{ 2.0f * uiScale + menubarHeight };
+    if (posX + panelW > ImGui::GetIO().DisplaySize.x && ImGui::GetIO().DisplaySize.x > 0.0f)
+    {
+      posX = 20.0f * uiScale;
+      posY += 30.0f * uiScale;
+    }
+    ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(panelW, 133.0f * uiScale), ImGuiCond_Once);
     ImGui::Begin(u8"ArUco", &showArucoPanel);
 
     // 認識に使用する ArUco Marker 辞書の選択コンボボックス
@@ -1223,8 +1233,9 @@ void Menu::drawErrorDialog()
   if (errorMessage)
   {
     // ウィンドウの位置・サイズとタイトル
-    ImGui::SetNextWindowPos(ImVec2(60, 60), ImGuiCond_Once);
-    ImGui::SetNextWindowSize(ImVec2(272, 92), ImGuiCond_Always);
+    const float uiScale{ ImGui::GetIO().FontGlobalScale };
+    ImGui::SetNextWindowPos(ImVec2(60.0f * uiScale, 60.0f * uiScale), ImGuiCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(272.0f * uiScale, 92.0f * uiScale), ImGuiCond_Always);
 
     // ウィンドウを表示するとき true
     bool status{ true };
