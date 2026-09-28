@@ -182,12 +182,7 @@ set(SOURCES
     libs/ImGui/backends/imgui_impl_opengl3_loader.h
 )
 
-if(ANDROID)
-    list(APPEND SOURCES
-        libs/ImGui/backends/imgui_impl_android.cpp
-        libs/ImGui/backends/imgui_impl_android.h
-    )
-else()
+if(NOT ANDROID)
     list(APPEND SOURCES
         libs/ImGui/backends/imgui_impl_glfw.cpp
         libs/ImGui/backends/imgui_impl_glfw.h
@@ -296,22 +291,26 @@ set_source_files_properties(
 
 # Platforms configuration
 if(ANDROID)
-    # Android platform settings
-    add_compile_definitions(
-        GL_GLES_PROTOTYPES=1
-        IMGUI_IMPL_OPENGL_ES3=1
-    )
-
-    set(PLATFORM_SOURCES
+    # Android platform settings (OpenGL 非依存, Native Window 直接描画)
+    set(ANDROID_SOURCES
         CamAndroid.cpp
         CamAndroid.h
         NativeBridge.cpp
         NativeBridge.h
-        ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c
-    )
-
-    include_directories(
-        ${ANDROID_NDK}/sources/android/native_app_glue
+        Aruco.cpp
+        Aruco.h
+        Capture.cpp
+        Capture.h
+        CamImage.h
+        Camera.h
+        Config.cpp
+        Config.h
+        Intrinsics.cpp
+        Intrinsics.h
+        Menu.cpp
+        Menu.h
+        Undistortion.cpp
+        Undistortion.h
     )
 
     # Setup OpenCV paths (Android)
@@ -321,14 +320,12 @@ if(ANDROID)
     find_package(OpenCV REQUIRED)
     include_directories(${OpenCV_INCLUDE_DIRS})
 
-    add_library(${PROJECT_NAME} SHARED ${SOURCES} ${PLATFORM_SOURCES})
+    add_library(${PROJECT_NAME} SHARED ${ANDROID_SOURCES})
 
     target_link_libraries(${PROJECT_NAME} PRIVATE
         ${OpenCV_LIBS}
         android
         log
-        EGL
-        GLESv3
         camera2ndk
         mediandk
     )

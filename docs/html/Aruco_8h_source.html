@@ -96,45 +96,44 @@ $(function(){initNavTree('Aruco_8h_source.html','',''); });
 <a href="Aruco_8h.html">[詳解]</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">// 補助プログラム</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="gg_8h.html">gg.h</a>&quot;</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">// OpenCV ArUco (OpenCV 4.7+)</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="opencv__link_8h.html">opencv_link.h</a>&quot;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;opencv2/objdetect.hpp&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">// 標準ライブラリ</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;map&gt;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span></div>
-<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classAruco.html">   26</a></span><span class="keyword">class </span><a class="code hl_function" href="classAruco.html#ab64e1629f894850bdffb42992be4b58b">Aruco</a></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>{</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>  cv::aruco::Dictionary dictionary;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>  cv::Ptr&lt;cv::aruco::ArucoDetector&gt; detector;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  std::vector&lt;std::vector&lt;cv::Point2f&gt;&gt; corners, rejected;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  std::vector&lt;int&gt; ids;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span></div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <span class="keyword">static</span> <span class="keyword">const</span> std::map&lt;const std::string, const cv::aruco::PredefinedDictionaryType&gt; <a class="code hl_variable" href="classAruco.html#a0c7d6e0263748d8e0e054f475d0e9a4c">dictionaryList</a>;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span></div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="keyword">explicit</span> <a class="code hl_function" href="classAruco.html#ab64e1629f894850bdffb42992be4b58b">Aruco</a>(<span class="keyword">const</span> std::string&amp; dictionaryName = <span class="stringliteral">&quot;DICT_4X4_50&quot;</span>);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span></div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classAruco.html#ad7d29efb1901089a388be58a7ced9b1c">   55</a></span>  <a class="code hl_function" href="classAruco.html#ad7d29efb1901089a388be58a7ced9b1c">Aruco</a>(<span class="keyword">const</span> <a class="code hl_function" href="classAruco.html#ab64e1629f894850bdffb42992be4b58b">Aruco</a>&amp; aruco) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span></div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classAruco.html#a8e3c8b7e8b9befdd60d5678955eb5be8">   60</a></span>  <span class="keyword">virtual</span> <a class="code hl_function" href="classAruco.html#a8e3c8b7e8b9befdd60d5678955eb5be8">~Aruco</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span></div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classAruco.html#a2d99f824902ee1c922c2ab23b5d1bdca">   67</a></span>  <a class="code hl_function" href="classAruco.html#ab64e1629f894850bdffb42992be4b58b">Aruco</a>&amp; <a class="code hl_function" href="classAruco.html#a2d99f824902ee1c922c2ab23b5d1bdca">operator=</a>(<span class="keyword">const</span> <a class="code hl_function" href="classAruco.html#ab64e1629f894850bdffb42992be4b58b">Aruco</a>&amp; aruco) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span></div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classAruco.html#a19bf68a6c1a426331530bef4a782f293">setDictionary</a>(<span class="keyword">const</span> std::string&amp; dictionaryName);</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span></div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classAruco.html#a6f4ae07160368f9f725177e0025c4464">detectMarkers</a>(cv::Mat&amp; image, <span class="keywordtype">float</span> markerLength,</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">const</span> cv::Mat&amp; cameraMatrix = {}, <span class="keyword">const</span> cv::Mat&amp; distCoeffs = {});</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>};</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">// OpenCV ArUco (OpenCV 4.7+)</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="opencv__link_8h.html">opencv_link.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;opencv2/objdetect.hpp&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment">// 標準ライブラリ</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span></div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classAruco.html">   25</a></span><span class="keyword">class </span><a class="code hl_function" href="classAruco.html#ab64e1629f894850bdffb42992be4b58b">Aruco</a></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>{</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>  cv::aruco::Dictionary dictionary;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>  cv::Ptr&lt;cv::aruco::ArucoDetector&gt; detector;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  std::vector&lt;std::vector&lt;cv::Point2f&gt;&gt; corners, rejected;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  std::vector&lt;int&gt; ids;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  <span class="keyword">static</span> <span class="keyword">const</span> std::map&lt;const std::string, const cv::aruco::PredefinedDictionaryType&gt; <a class="code hl_variable" href="classAruco.html#a0c7d6e0263748d8e0e054f475d0e9a4c">dictionaryList</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  <span class="keyword">explicit</span> <a class="code hl_function" href="classAruco.html#ab64e1629f894850bdffb42992be4b58b">Aruco</a>(<span class="keyword">const</span> std::string&amp; dictionaryName = <span class="stringliteral">&quot;DICT_4X4_50&quot;</span>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classAruco.html#ad7d29efb1901089a388be58a7ced9b1c">   54</a></span>  <a class="code hl_function" href="classAruco.html#ad7d29efb1901089a388be58a7ced9b1c">Aruco</a>(<span class="keyword">const</span> <a class="code hl_function" href="classAruco.html#ab64e1629f894850bdffb42992be4b58b">Aruco</a>&amp; aruco) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classAruco.html#a8e3c8b7e8b9befdd60d5678955eb5be8">   59</a></span>  <span class="keyword">virtual</span> <a class="code hl_function" href="classAruco.html#a8e3c8b7e8b9befdd60d5678955eb5be8">~Aruco</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classAruco.html#a2d99f824902ee1c922c2ab23b5d1bdca">   66</a></span>  <a class="code hl_function" href="classAruco.html#ab64e1629f894850bdffb42992be4b58b">Aruco</a>&amp; <a class="code hl_function" href="classAruco.html#a2d99f824902ee1c922c2ab23b5d1bdca">operator=</a>(<span class="keyword">const</span> <a class="code hl_function" href="classAruco.html#ab64e1629f894850bdffb42992be4b58b">Aruco</a>&amp; aruco) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classAruco.html#a19bf68a6c1a426331530bef4a782f293">setDictionary</a>(<span class="keyword">const</span> std::string&amp; dictionaryName);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classAruco.html#a6f4ae07160368f9f725177e0025c4464">detectMarkers</a>(cv::Mat&amp; image, <span class="keywordtype">float</span> markerLength,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">const</span> cv::Mat&amp; cameraMatrix = {}, <span class="keyword">const</span> cv::Mat&amp; distCoeffs = {});</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>};</div>
 </div>
 <div class="ttc" id="aclassAruco_html_a0c7d6e0263748d8e0e054f475d0e9a4c"><div class="ttname"><a href="classAruco.html#a0c7d6e0263748d8e0e054f475d0e9a4c">Aruco::dictionaryList</a></div><div class="ttdeci">static const std::map&lt; const std::string, const cv::aruco::PredefinedDictionaryType &gt; dictionaryList</div><div class="ttdoc">ArUco Marker 辞書のリスト</div><div class="ttdef"><b>Definition</b> <a href="#l00109">Aruco.h:110</a></div></div>
 <div class="ttc" id="aclassAruco_html_a19bf68a6c1a426331530bef4a782f293"><div class="ttname"><a href="classAruco.html#a19bf68a6c1a426331530bef4a782f293">Aruco::setDictionary</a></div><div class="ttdeci">void setDictionary(const std::string &amp;dictionaryName)</div><div class="ttdef"><b>Definition</b> <a href="Aruco_8cpp_source.html#l00026">Aruco.cpp:26</a></div></div>
@@ -143,7 +142,6 @@ $(function(){initNavTree('Aruco_8h_source.html','',''); });
 <div class="ttc" id="aclassAruco_html_a8e3c8b7e8b9befdd60d5678955eb5be8"><div class="ttname"><a href="classAruco.html#a8e3c8b7e8b9befdd60d5678955eb5be8">Aruco::~Aruco</a></div><div class="ttdeci">virtual ~Aruco()=default</div></div>
 <div class="ttc" id="aclassAruco_html_ab64e1629f894850bdffb42992be4b58b"><div class="ttname"><a href="classAruco.html#ab64e1629f894850bdffb42992be4b58b">Aruco::Aruco</a></div><div class="ttdeci">Aruco(const std::string &amp;dictionaryName=&quot;DICT_4X4_50&quot;)</div><div class="ttdef"><b>Definition</b> <a href="Aruco_8cpp_source.html#l00017">Aruco.cpp:17</a></div></div>
 <div class="ttc" id="aclassAruco_html_ad7d29efb1901089a388be58a7ced9b1c"><div class="ttname"><a href="classAruco.html#ad7d29efb1901089a388be58a7ced9b1c">Aruco::Aruco</a></div><div class="ttdeci">Aruco(const Aruco &amp;aruco)=delete</div></div>
-<div class="ttc" id="agg_8h_html"><div class="ttname"><a href="gg_8h.html">gg.h</a></div></div>
 <div class="ttc" id="aopencv__link_8h_html"><div class="ttname"><a href="opencv__link_8h.html">opencv_link.h</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

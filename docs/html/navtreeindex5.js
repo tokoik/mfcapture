@@ -1,5 +1,11 @@
 var NAVTREEINDEX5 =
 {
+"classgg_1_1GgTrackball.html#af0ff2b315542776b0b465f5e166c4c8a":[5,0,0,3,16],
+"classgg_1_1GgTriangles.html":[4,0,0,13],
+"classgg_1_1GgTriangles.html":[5,0,0,13],
+"classgg_1_1GgTriangles.html#a175a09c25313d9ae85bc4badf91fbfd6":[4,0,0,13,5],
+"classgg_1_1GgTriangles.html#a175a09c25313d9ae85bc4badf91fbfd6":[5,0,0,13,5],
+"classgg_1_1GgTriangles.html#a2cfa85c9ee633974e69df68d9ec588f1":[4,0,0,13,6],
 "classgg_1_1GgTriangles.html#a2cfa85c9ee633974e69df68d9ec588f1":[5,0,0,13,6],
 "classgg_1_1GgTriangles.html#a43ae036c4906d95a450cda3724cb6062":[4,0,0,13,2],
 "classgg_1_1GgTriangles.html#a43ae036c4906d95a450cda3724cb6062":[5,0,0,13,2],
@@ -243,11 +249,5 @@ var NAVTREEINDEX5 =
 "md_presentation.html#autotoc_md17":[1,5],
 "md_presentation.html#autotoc_md18":[1,5,0],
 "md_presentation.html#autotoc_md19":[1,5,1],
-"md_presentation.html#autotoc_md2":[1,0],
-"md_presentation.html#autotoc_md21":[1,6],
-"md_presentation.html#autotoc_md22":[1,6,0],
-"md_presentation.html#autotoc_md23":[1,6,1],
-"md_presentation.html#autotoc_md25":[1,7],
-"md_presentation.html#autotoc_md26":[1,7,0],
-"md_presentation.html#autotoc_md28":[1,8]
+"md_presentation.html#autotoc_md2":[1,0]
 };

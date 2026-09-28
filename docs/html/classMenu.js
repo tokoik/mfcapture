@@ -8,6 +8,8 @@ var classMenu =
     [ "getMarkerLength", "classMenu.html#a22fccb819445ce795682b226a637f24c", null ],
     [ "getMenubarHeight", "classMenu.html#a033f612f12cbe21ee3cd749bf2a411a6", null ],
     [ "getPose", "classMenu.html#ae80a2d02e3d21a30cc59b5b50208848f", null ],
+    [ "getSettings", "classMenu.html#a2b8b7eccbe05c2ba0873b474617fefdf", null ],
+    [ "getSettings", "classMenu.html#afe1ed650c6b2d0d9764782c8d4fe929e", null ],
     [ "getUndistortionMode", "classMenu.html#a1bd433ba6365bdd8dc5290a845cd194d", null ],
     [ "initializeInputIntrinsics", "classMenu.html#a6763d1f2af5a47c38ae5337a7637ad7e", null ],
     [ "operator bool", "classMenu.html#abf2c8b96dab080745e7601184fd77388", null ],

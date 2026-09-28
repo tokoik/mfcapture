@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 ///
 /// ArUco Marker 認識クラスの定義
@@ -8,8 +8,7 @@
 /// @date March 6, 2024
 ///
 
-// 補助プログラム
-#include "gg.h"
+
 
 // OpenCV ArUco (OpenCV 4.7+)
 #include "opencv_link.h"

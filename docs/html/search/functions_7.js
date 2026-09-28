@@ -60,7 +60,7 @@ var searchData=
   ['getrotationmatrix_57',['getRotationMatrix',['../classGgApp_1_1Window.html#ae072fc515e5a2fc54b8a11a552fc10b0',1,'GgApp::Window']]],
   ['getscale_58',['getScale',['../classgg_1_1GgTrackball.html#a660339a8239bc5bbdc8677c409ae7da7',1,'gg::GgTrackball::getScale() const'],['../classgg_1_1GgTrackball.html#a5238d255732688fb52f590da8801c17b',1,'gg::GgTrackball::getScale(int direction) const'],['../classgg_1_1GgTrackball.html#aaf190b7c0fedbc0fae01856ec3eb1e27',1,'gg::GgTrackball::getScale(GLfloat *factor) const']]],
   ['getscrollmatrix_59',['getScrollMatrix',['../classGgApp_1_1Window.html#a5a882289de8c5dabb26c1370d036607a',1,'GgApp::Window']]],
-  ['getsettings_60',['getSettings',['../classConfig.html#a345504abd37d5988ee94575372a53aa4',1,'Config']]],
+  ['getsettings_60',['getSettings',['../classConfig.html#a345504abd37d5988ee94575372a53aa4',1,'Config::getSettings()'],['../classMenu.html#afe1ed650c6b2d0d9764782c8d4fe929e',1,'Menu::getSettings() const'],['../classMenu.html#a2b8b7eccbe05c2ba0873b474617fefdf',1,'Menu::getSettings()']]],
   ['getshader_61',['getShader',['../classPreference.html#afeba7eb0b94aa7a265158e3fdbab4ad4',1,'Preference']]],
   ['getshiftarrow_62',['getShiftArrow',['../classGgApp_1_1Window.html#a2201654415ccd466ce8c2e25de831e7f',1,'GgApp::Window']]],
   ['getshiftarrowx_63',['getShiftArrowX',['../classGgApp_1_1Window.html#a0c2238b6a1ad09eaeaf9f268b79bf00d',1,'GgApp::Window']]],

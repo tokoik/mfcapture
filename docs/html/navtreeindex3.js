@@ -1,5 +1,11 @@
 var NAVTREEINDEX3 =
 {
+"classgg_1_1GgPoints.html#aa9170eea649cf940adc6698d98964bd4":[5,0,0,11,1],
+"classgg_1_1GgPoints.html#aca74376961ea4f170e83a8afc3fe4565":[4,0,0,11,0],
+"classgg_1_1GgPoints.html#aca74376961ea4f170e83a8afc3fe4565":[5,0,0,11,0],
+"classgg_1_1GgPoints.html#afb04d3d08ecd9fdefb1500e9db902a64":[4,0,0,11,2],
+"classgg_1_1GgPoints.html#afb04d3d08ecd9fdefb1500e9db902a64":[5,0,0,11,2],
+"classgg_1_1GgQuaternion.html":[4,0,0,2],
 "classgg_1_1GgQuaternion.html":[5,0,0,2],
 "classgg_1_1GgQuaternion.html#a010873f8c906d3c878529d7fccc5e654":[4,0,0,2,68],
 "classgg_1_1GgQuaternion.html#a010873f8c906d3c878529d7fccc5e654":[5,0,0,2,68],
@@ -243,11 +249,5 @@ var NAVTREEINDEX3 =
 "classgg_1_1GgShader.html#ac771bbf53f285cbaa8f2209fd8ea9850":[5,0,0,15,2],
 "classgg_1_1GgShader.html#af065218c76d31a9b8d90faf17c65aeb4":[4,0,0,15,4],
 "classgg_1_1GgShader.html#af065218c76d31a9b8d90faf17c65aeb4":[5,0,0,15,4],
-"classgg_1_1GgShader.html#afb49a96fa6fa7b981013ee783511b292":[4,0,0,15,5],
-"classgg_1_1GgShader.html#afb49a96fa6fa7b981013ee783511b292":[5,0,0,15,5],
-"classgg_1_1GgShape.html":[4,0,0,10],
-"classgg_1_1GgShape.html":[5,0,0,10],
-"classgg_1_1GgShape.html#a4aa6e7ea313bf3ef47b7a6e5b88ed13d":[4,0,0,10,7],
-"classgg_1_1GgShape.html#a4aa6e7ea313bf3ef47b7a6e5b88ed13d":[5,0,0,10,7],
-"classgg_1_1GgShape.html#a721bb786cc7ab8873aeffbb33216fe2b":[4,0,0,10,5]
+"classgg_1_1GgShader.html#afb49a96fa6fa7b981013ee783511b292":[4,0,0,15,5]
 };

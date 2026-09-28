@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 ///
 /// メニューの描画クラスの定義
@@ -139,20 +139,7 @@ class Menu
   cv::VideoCaptureAPIs backend{ cv::CAP_ANY };
 #endif
 
-#if defined(__ANDROID__)
-  /// ファイル選択モーダルの種類
-  enum class FileModalType { None, Image, Calibration };
-
-  /// ファイル選択モーダルの種類
-  FileModalType fileModalType{ FileModalType::None };
-
-  /// ファイル選択モーダルの表示フラグ
-  bool showFileModal{ false };
-
-  /// ファイル選択モーダルを描画する
-  void drawFileModal();
-#endif
-
+#if !defined(__ANDROID__)
   /// 使用中の構成の番号
   int preferenceNumber{ 0 };
 
@@ -161,6 +148,7 @@ class Menu
 
   /// メニューバーの高さ
   GLsizei menubarHeight{ 0 };
+#endif
 
   /// 入力パネルの表示
   bool showInputPanel{ true };
@@ -216,6 +204,7 @@ class Menu
   ///
   void selectPreference(int index);
 
+#if !defined(__ANDROID__)
   ///
   /// 指定した番号の構成を調べる
   ///
@@ -256,6 +245,7 @@ class Menu
   /// 保留中のエラーメッセージをダイアログとして描画する
   ///
   void drawErrorDialog();
+#endif
 
 public:
 
@@ -305,6 +295,7 @@ public:
     return !quit;
   }
 
+#if !defined(__ANDROID__)
   ///
   /// キャプチャデバイスの姿勢を得る
   ///
@@ -314,6 +305,7 @@ public:
   {
     return pose;
   }
+#endif
 
   ///
   /// 選択するキャプチャデバイスの番号を設定する
@@ -342,6 +334,7 @@ public:
   ///
   bool startCapture();
 
+#if !defined(__ANDROID__)
   ///
   /// メニューバーの高さを得る
   ///
@@ -351,6 +344,17 @@ public:
   {
     return menubarHeight;
   }
+#else
+  ///
+  /// メニューバーの高さを得る
+  ///
+  /// @return メニューバーの高さ (Android では 0)
+  ///
+  auto getMenubarHeight() const
+  {
+    return 0;
+  }
+#endif
 
   ///
   /// ArUco Marker の一辺の長さを得る
@@ -402,6 +406,7 @@ public:
     return undistortionMode;
   }
 
+#if !defined(__ANDROID__)
   ///
   /// 歪み補正シェーダを設定する
   ///
@@ -425,4 +430,5 @@ public:
   /// メニューを描画する
   ///
   void draw();
+#endif
 };

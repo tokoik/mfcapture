@@ -1,4 +1,4 @@
-﻿///
+///
 /// Android JNI ブリッジとレンダリングエンジンの実装
 ///
 /// @file
@@ -21,9 +21,6 @@
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
-
-// GgApp.h 内で参照されるグローバル AssetManager ポインタ
-extern void* ggAndroidAssetManager;
 
 namespace
 {
@@ -107,20 +104,12 @@ namespace mfcapture
     }
 
     if (!assetManager) return;
-    ggAndroidAssetManager = assetManager;
 
     // 必須アセットを展開
     static const char* const requiredAssets[]{
       "mfcapture_config.json",
       "castle.jpg",
-      "draw.frag",
-      "draw.vert",
-      "initial.jpg",
-      "Mplus1-Regular.ttf",
-      "normal.frag",
-      "orthographic.vert",
-      "undistortion.frag",
-      "undistortion.vert"
+      "initial.jpg"
     };
 
     const std::string pathStr{ internalPath };
@@ -146,89 +135,7 @@ namespace mfcapture
     }
   }
 
-  bool NativeEngine::initEgl(ANativeWindow* window)
-  {
-    display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-    if (display == EGL_NO_DISPLAY)
-    {
-      LOGE("eglGetDisplay failed");
-      return false;
-    }
 
-    if (!eglInitialize(display, nullptr, nullptr))
-    {
-      LOGE("eglInitialize failed");
-      return false;
-    }
-
-    const EGLint attribs[]{
-      EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
-      EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-      EGL_BLUE_SIZE, 8,
-      EGL_GREEN_SIZE, 8,
-      EGL_RED_SIZE, 8,
-      EGL_DEPTH_SIZE, 24,
-      EGL_NONE
-    };
-
-    EGLConfig eglConfig;
-    EGLint numConfigs{ 0 };
-    if (!eglChooseConfig(display, attribs, &eglConfig, 1, &numConfigs) || numConfigs <= 0)
-    {
-      LOGE("eglChooseConfig failed");
-      return false;
-    }
-
-    const EGLint contextAttribs[]{
-      EGL_CONTEXT_CLIENT_VERSION, 3,
-      EGL_NONE
-    };
-
-    context = eglCreateContext(display, eglConfig, EGL_NO_CONTEXT, contextAttribs);
-    if (context == EGL_NO_CONTEXT)
-    {
-      LOGE("eglCreateContext failed");
-      return false;
-    }
-
-    surface = eglCreateWindowSurface(display, eglConfig, window, nullptr);
-    if (surface == EGL_NO_SURFACE)
-    {
-      LOGE("eglCreateWindowSurface failed");
-      return false;
-    }
-
-    if (!eglMakeCurrent(display, surface, surface, context))
-    {
-      LOGE("eglMakeCurrent failed");
-      return false;
-    }
-
-    return true;
-  }
-
-  void NativeEngine::destroyEgl()
-  {
-    Texture::resetMesh();
-    Preference::clearShaders();
-
-    if (display != EGL_NO_DISPLAY)
-    {
-      eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-      if (surface != EGL_NO_SURFACE)
-      {
-        eglDestroySurface(display, surface);
-        surface = EGL_NO_SURFACE;
-      }
-      if (context != EGL_NO_CONTEXT)
-      {
-        eglDestroyContext(display, context);
-        context = EGL_NO_CONTEXT;
-      }
-      eglTerminate(display);
-      display = EGL_NO_DISPLAY;
-    }
-  }
 
   void NativeEngine::onSurfaceCreated(ANativeWindow* window)
   {
@@ -398,24 +305,16 @@ namespace mfcapture
   void NativeEngine::renderLoop()
   {
     LOGI("renderLoop started");
-    ANativeWindow* win{ nativeWindow.load() };
-    if (!win || !initEgl(win))
-    {
-      LOGE("Failed to initialize EGL in renderLoop");
-      return;
-    }
 
-    Texture::resetMesh();
-    Preference::clearShaders();
-
-    gg::ggInit();
+    ANativeWindow* currentWin{ nullptr };
+    int lastW{ 0 };
+    int lastH{ 0 };
 
     {
       std::lock_guard<std::mutex> lock(engineMutex);
       if (!config || !capture || !undistortion || !aruco || !menu)
       {
         LOGE("Engine components are not initialized");
-        destroyEgl();
         return;
       }
 
@@ -456,26 +355,27 @@ namespace mfcapture
       }
     }
 
-    Texture frame;
     cv::Mat cpuFrame;
     cv::Mat correctedFrame;
+    cv::Mat displayFrame;
 
     auto lastFpsTime{ std::chrono::steady_clock::now() };
     int frameCount{ 0 };
 
     while (isRunning)
     {
-      int curW = windowWidth.load();
-      int curH = windowHeight.load();
-      if (curW <= 0 || curH <= 0)
+      ANativeWindow* win{ nativeWindow.load() };
+      if (win != currentWin)
+      {
+        currentWin = win;
+        lastW = 0;
+        lastH = 0;
+      }
+
+      if (!currentWin)
       {
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
         continue;
-      }
-
-      if (sizeChanged.exchange(false))
-      {
-        glViewport(0, 0, curW, curH);
       }
 
       // FPS 計測 (1秒ごと)
@@ -488,8 +388,6 @@ namespace mfcapture
         frameCount = 0;
         lastFpsTime = now;
       }
-
-      glViewport(0, 0, curW, curH);
 
       // フレーム取得と画像処理 (ゼロストール)
       {
@@ -533,39 +431,59 @@ namespace mfcapture
               }
             }
 
-            // 3. 処理済みフレームをテクスチャへ直接転送
-            frame.drawPixels(targetFrame.cols, targetFrame.rows, targetFrame.channels(), targetFrame.data);
-          }
+            // 3. ウィンドウバッファサイズ設定（解像度変更時）
+            if (lastW != targetFrame.cols || lastH != targetFrame.rows)
+            {
+              ANativeWindow_setBuffersGeometry(currentWin, targetFrame.cols, targetFrame.rows, WINDOW_FORMAT_RGBA_8888);
+              lastW = targetFrame.cols;
+              lastH = targetFrame.rows;
+              LOGI("ANativeWindow buffers geometry set to: %d x %d", lastW, lastH);
+            }
 
-          // 4. ダイレクト contain 描画 (背景色なし)
-          if (frame.getWidth() > 0 && frame.getHeight() > 0)
-          {
-            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-            frame.draw(curW, curH);
-          }
-          else
-          {
-            glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
+            // 4. ANativeWindow へ直接描画 (BGRA -> RGBA)
+            ANativeWindow_Buffer winBuf;
+            if (ANativeWindow_lock(currentWin, &winBuf, nullptr) == 0)
+            {
+              if (targetFrame.channels() == 4)
+              {
+                cv::cvtColor(targetFrame, displayFrame, cv::COLOR_BGRA2RGBA);
+              }
+              else if (targetFrame.channels() == 3)
+              {
+                cv::cvtColor(targetFrame, displayFrame, cv::COLOR_BGR2RGBA);
+              }
+              else
+              {
+                displayFrame = targetFrame;
+              }
+
+              const int copyRows{ std::min(winBuf.height, displayFrame.rows) };
+              const int srcRowBytes{ displayFrame.cols * 4 };
+              const int dstStrideBytes{ winBuf.stride * 4 };
+              const uint8_t* srcBits{ displayFrame.data };
+              uint8_t* dstBits{ static_cast<uint8_t*>(winBuf.bits) };
+
+              if (winBuf.stride == displayFrame.cols)
+              {
+                std::memcpy(dstBits, srcBits, srcRowBytes * copyRows);
+              }
+              else
+              {
+                for (int y = 0; y < copyRows; ++y)
+                {
+                  std::memcpy(dstBits + y * dstStrideBytes, srcBits + y * srcRowBytes, srcRowBytes);
+                }
+              }
+
+              ANativeWindow_unlockAndPost(currentWin);
+            }
           }
         }
-        else
-        {
-          glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-          glClear(GL_COLOR_BUFFER_BIT);
-        }
-      }
-
-      if (display != EGL_NO_DISPLAY && surface != EGL_NO_SURFACE)
-      {
-        eglSwapBuffers(display, surface);
       }
 
       std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
-    destroyEgl();
     LOGI("renderLoop finished");
   }
 }

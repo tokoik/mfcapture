@@ -1,4 +1,4 @@
-﻿///
+///
 /// 歪補正処理クラスの実装
 ///
 /// @file
@@ -6,7 +6,14 @@
 /// @date July 27, 2027
 ///
 #include "Undistortion.h"
+#if !defined(__ANDROID__)
 #include "gg.h"
+#else
+namespace
+{
+  inline const std::string& Utf8ToTChar(const std::string& string) { return string; }
+}
+#endif
 
 // JSON
 #include "picojson.h"

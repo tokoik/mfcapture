@@ -1,7 +1,7 @@
-﻿#pragma once
+#pragma once
 
 ///
-/// Android JNI ブリッジとレンダリングエンジンの定義
+/// Android JNI ブリッジとレンダリングエンジンの定義 (OpenGL 非依存)
 ///
 /// @file
 /// @author Kohe Tokoi
@@ -16,9 +16,6 @@
 #include <android/asset_manager_jni.h>
 #include <android/log.h>
 
-#include <EGL/egl.h>
-#include <GLES3/gl31.h>
-
 #include <thread>
 #include <atomic>
 #include <mutex>
@@ -31,12 +28,11 @@
 #include "Undistortion.h"
 #include "Aruco.h"
 #include "Menu.h"
-#include "Texture.h"
 
 namespace mfcapture
 {
   ///
-  /// Android レンダリングと画像処理を管理するエンジンクラス
+  /// Android レンダリングと画像処理を管理するエンジンクラス (Direct ANativeWindow CPU Blit)
   ///
   class NativeEngine
   {
@@ -82,32 +78,10 @@ namespace mfcapture
     /// ウィンドウサイズ更新フラグ
     std::atomic<bool> sizeChanged{ false };
 
-    /// EGL ディスプレイ
-    EGLDisplay display{ EGL_NO_DISPLAY };
-
-    /// EGL サーフェス
-    EGLSurface surface{ EGL_NO_SURFACE };
-
-    /// EGL コンテキスト
-    EGLContext context{ EGL_NO_CONTEXT };
-
     ///
-    /// レンダリングループ本体
+    /// レンダリングループ本体 (ANativeWindow 直接描画)
     ///
     void renderLoop();
-
-    ///
-    /// EGL の初期化
-    ///
-    /// @param window 初期化対象の ANativeWindow
-    /// @return 初期化に成功したら true
-    ///
-    bool initEgl(ANativeWindow* window);
-
-    ///
-    /// EGL の破棄
-    ///
-    void destroyEgl();
 
   public:
 
