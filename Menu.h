@@ -11,6 +11,9 @@
 // 構成データ
 #include "Config.h"
 
+// 内部パラメータ
+#include "Intrinsics.h"
+
 // キャプチャデバイス
 #include "Capture.h"
 

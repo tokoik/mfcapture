@@ -359,33 +359,35 @@ $(function(){initNavTree('Config_8cpp_source.html','',''); });
 <div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>  <span class="comment">// 初期表示画像</span></div>
 <div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>  <a class="code hl_function" href="parseconfig_8h.html#a6d1cf7a5f56fa09883319b5afb48502f">setString</a>(<span class="keywordtype">object</span>, <span class="stringliteral">&quot;initial&quot;</span>, initialImage);</div>
 <div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>  <span class="comment">// 配列</span></div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>  picojson::array array;</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span> </div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>  <span class="comment">// 構成リストのすべて構成について</span></div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; preference : preferenceList)</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>  {</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    <span class="comment">// 構成の要素</span></div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    picojson::object camera;</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span> </div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <span class="comment">// 構成を JSON オブジェクトに格納する</span></div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    preference.setPreference(camera);</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <span class="comment">// 要素を picojson::array に追加する</span></div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    array.emplace_back(picojson::value(camera));</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>  }</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span> </div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>  <span class="comment">// オブジェクトに追加する</span></div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>  <span class="keywordtype">object</span>.emplace(<span class="stringliteral">&quot;camera&quot;</span>, array);</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span> </div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>  <span class="comment">// 構成をシリアライズして保存</span></div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>  picojson::value v{ <span class="keywordtype">object</span> };</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>  config &lt;&lt; v.serialize(<span class="keyword">true</span>);</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>  config.close();</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span> </div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>  <span class="comment">// 構成データの書き込み成功</span></div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>}</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span><span class="preprocessor">#if !defined(__ANDROID__)</span></div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>  <span class="comment">// 配列</span></div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>  picojson::array array;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span> </div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>  <span class="comment">// 構成リストのすべて構成について</span></div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; preference : preferenceList)</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>  {</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    <span class="comment">// 構成の要素</span></div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    picojson::object camera;</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span> </div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    <span class="comment">// 構成を JSON オブジェクトに格納する</span></div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    preference.setPreference(camera);</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span> </div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    <span class="comment">// 要素を picojson::array に追加する</span></div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    array.emplace_back(picojson::value(camera));</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>  }</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span> </div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>  <span class="comment">// オブジェクトに追加する</span></div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>  <span class="keywordtype">object</span>.emplace(<span class="stringliteral">&quot;camera&quot;</span>, array);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span> </div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>  <span class="comment">// 構成をシリアライズして保存</span></div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>  picojson::value v{ <span class="keywordtype">object</span> };</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>  config &lt;&lt; v.serialize(<span class="keyword">true</span>);</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>  config.close();</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span> </div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>  <span class="comment">// 構成データの書き込み成功</span></div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>}</div>
 </div>
 <div class="ttc" id="aCamAndroid_8h_html"><div class="ttname"><a href="CamAndroid_8h.html">CamAndroid.h</a></div></div>
 <div class="ttc" id="aCamAvf_8h_html"><div class="ttname"><a href="CamAvf_8h.html">CamAvf.h</a></div></div>

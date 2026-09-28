@@ -261,6 +261,7 @@ bool Config::save(const pathString& filename) const
   // 初期表示画像
   setString(object, "initial", initialImage);
 
+#if !defined(__ANDROID__)
   // 配列
   picojson::array array;
 
@@ -279,6 +280,7 @@ bool Config::save(const pathString& filename) const
 
   // オブジェクトに追加する
   object.emplace("camera", array);
+#endif
 
   // 構成をシリアライズして保存
   picojson::value v{ object };
