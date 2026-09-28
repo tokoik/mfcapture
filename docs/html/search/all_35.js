@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ネイティブカメラキャプチャ対応とインタフェース統一_0',['20. macOS における AV Foundation (&lt;span class=&quot;tt&quot;&gt;CamAvf&lt;/span&gt;) ネイティブカメラキャプチャ対応とインタフェース統一',['../md_REQUESTS.html#autotoc_md106',1,'']]]
+  ['処理概略と_20corners_20size_204_20の理由_0',['処理概略と &lt;span class=&quot;tt&quot;&gt;corners.size() &amp;gt;= 4&lt;/span&gt; の理由',['../md_presentation.html#autotoc_md22',1,'']]]
 ];

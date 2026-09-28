@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['リソース管理と安全性_0',['8. リソース管理と安全性',['../md_GEMINI.html#autotoc_md8',1,'']]]
+  ['後半_3a_20実装とハンズオン_0',['後半: 実装とハンズオン',['../md_presentation.html#autotoc_md4',1,'']]]
 ];

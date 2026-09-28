@@ -93,13 +93,13 @@ $(function(){initNavTree('md_workshop__handbook.html','',''); });
   <div class="headertitle"><div class="title">実践カメラキャリブレーション &amp; レンズ歪み補正 講義・実習ハンドブック </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md109"></a></p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md69"></a></p>
 <p>本ドキュメントは、ChArUco Board を用いたカメラキャリブレーションプログラム <span class="tt">calib</span> および、キャリブレーション結果を用いてリアルタイムにレンズ歪み補正を行って表示するプログラム <span class="tt">mfcapture</span> を用いた技術勉強会の受講者用詳細資料です。</p>
 <p>対象読者は、C++ や Swift 等で OpenCV を用いた画像処理アプリの開発経験があるエンジニアです。</p>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md111"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md71"></a>
 第1章 開発環境とプロジェクト規約</h1>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md112"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md72"></a>
 1.1 開発環境要件</h2>
 <p>本勉強会で使用する開発環境およびツール群は以下の通りです。</p>
 <ul>
@@ -109,7 +109,7 @@ $(function(){initNavTree('md_workshop__handbook.html','',''); });
 <li><b>シェル環境</b>: PowerShell</li>
 <li><b>事前インストールツール</b>: <span class="tt">git</span>, <span class="tt">cmake</span> (3.13以降), <span class="tt">python</span> (PATHが通っていること)</li>
 </ul>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md113"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md73"></a>
 1.2 ソースコード文字コード規約</h2>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -120,35 +120,35 @@ $(function(){initNavTree('md_workshop__handbook.html','',''); });
 <td class="markdownTableBodyLeft"><b>GLSL シェーダー</b>  </td><td class="markdownTableBodyLeft"><span class="tt">.vert</span>, <span class="tt">.frag</span>, <span class="tt">.comp</span>  </td><td class="markdownTableBodyLeft"><span class="tt">UTF-8</span>  </td><td class="markdownTableBodyLeft"><b>BOM なし</b>  </td><td class="markdownTableBodyLeft">OpenGL の GLSL コンパイラ (<span class="tt">glCompileShader</span>) が BOM プレフィックスを構文エラーとみなすため  </td></tr>
 </table>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md115"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md75"></a>
 第2章 カメラモデリングとレンズ歪みの数理</h1>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md116"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md76"></a>
 2.1 ピンホールカメラモデル・内部パラメータ・外部パラメータ</h2>
 <p>ピンホールカメラモデルでは、3次元空間の点 $P_w = (X_w, Y_w, Z_w)^T$ がカメラの光学中心を通り、画像平面上の点 $p = (u, v)^T$ に投影されます。</p>
 <p><b>透視投影 (Perspective Projection)</b> 方程式は斉次座標系を用いて以下のように記述されます。</p>
 <p>$$ s \begin{bmatrix} u \ v \ 1 \end{bmatrix} = K \begin{bmatrix} R &amp; t \end{bmatrix} \begin{bmatrix} X_w \ Y_w \ Z_w \ 1 \end{bmatrix} $$</p>
-<h3 class="doxsection"><a class="anchor" id="autotoc_md117"></a>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md77"></a>
 1. カメラ内部行列 (Camera Matrix $K$)</h3>
 <p>$$ K = \begin{bmatrix} f_x &amp; 0 &amp; c_x \ 0 &amp; f_y &amp; c_y \ 0 &amp; 0 &amp; 1 \end{bmatrix} $$</p><ul>
 <li>$f_x, f_y$: 画素単位で表した焦点距離 (Focal Length)。</li>
 <li>$c_x, c_y$: 光軸と画像平面の交点である主点 (Principal Point) の画素座標。</li>
 </ul>
-<h3 class="doxsection"><a class="anchor" id="autotoc_md118"></a>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md78"></a>
 2. カメラ外部行列 (Extrinsic Parameters $[R | t]$)</h3>
 <p>世界座標系からカメラ座標系への剛体変換 $P_c = R P_w + t$ を表します。</p><ul>
 <li>**回転行列 $R$ ($3 \times 3$):** 世界座標系に対するカメラの向き（回転）を表す直交行列。</li>
 <li>**並進ベクトル $t$ ($3 \times 1$):** 世界座標系原点に対するカメラの位置オフセット。</li>
 </ul>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md120"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md80"></a>
 第3章 ChArUco Board によるキャリブレーション原理</h1>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md121"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md81"></a>
 3.1 ChArUco Board とは (OpenCV チュートリアル準拠)</h2>
 <p>ChArUco Board はチェスボードと ArUco マーカーを融合させたハイブリッドパターンです。</p>
 <p><img src="images/charuco_board.png" alt="ChArUco Board" class="inline"/></p>
 <p>チェスボードのサブピクセル交点検出精度と、ArUco マーカーによる個別交点識別能力を両立。黒マス内に固有 ID の ArUco マーカーが交互配置されており、マーカーの ID 識別によって「各交点がボード上のどの位置か」が一意特定できるため、**ボードの一部が画面外や物体の陰に隠れていても高精度に較正が可能**です。</p>
 <hr  />
-<h2 class="doxsection"><a class="anchor" id="autotoc_md123"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md83"></a>
 3.4 C++ 実装手順1：辞書、ボード、検出器を作る</h2>
 <div class="fragment"><div class="line">cv::aruco::Dictionary dictionary =</div>
 <div class="line">  cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);</div>
@@ -165,7 +165,7 @@ $(function(){initNavTree('md_workshop__handbook.html','',''); });
 <div class="line"> </div>
 <div class="line">cv::aruco::CharucoDetector boardDetector{board};</div>
 </div><!-- fragment --><hr  />
-<h2 class="doxsection"><a class="anchor" id="autotoc_md125"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md85"></a>
 3.7 C++ 実装手順4：標本データを抽出・保存する</h2>
 <div class="fragment"><div class="line">std::vector&lt;cv::Point3f&gt; objectPoints;</div>
 <div class="line">std::vector&lt;cv::Point2f&gt; imagePoints;</div>
@@ -176,7 +176,7 @@ $(function(){initNavTree('md_workshop__handbook.html','',''); });
 <div class="line">board.matchImagePoints(charucoCorners, charucoIds, objectPoints, imagePoints);</div>
 </div><!-- fragment --><p><b><span class="tt">charucoCorners.size() &gt;= 4</span> を判定している理由:</b> 平面 3D オブジェクトと 2D 画像間の姿勢変換（透視投影・PnP 問題 / ホモグラフィ）を決定するには**最低 4 点の対応点が必要**であるためです。4点未満では自由度が不足するため処理を中断・スキップします。</p>
 <hr  />
-<h2 class="doxsection"><a class="anchor" id="autotoc_md127"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md87"></a>
 3.8 C++ 実装手順5：内部パラメータを推定する (<span class="tt">calibrateCamera</span>)</h2>
 <div class="fragment"><div class="line">cv::Mat cameraMatrix, distCoeffs;</div>
 <div class="line">std::vector&lt;cv::Mat&gt; rvecs, tvecs;</div>
@@ -188,10 +188,10 @@ $(function(){initNavTree('md_workshop__handbook.html','',''); });
 <div class="line">);</div>
 </div><!-- fragment --><p><b>最適化計算の意味:</b> 実測された 2D 画素座標 $p_{ij}$ と、推定パラメータ $(K, d, R_i, t_i)$ で 3D ボード点を画像上へ再投影した計算座標 $\hat{p}_{ij}$ との差（**再投影誤差 Reprojection Error**）の自乗和を最小化する非線形最小二乗問題です。**Levenberg-Marquardt (LM) 法**による反復計算によって、全標本のデータから内部行列 $K$、歪み係数 $d$、各標本のカメラ姿勢 $[R_i | t_i]$ を一括して同時に最適推定します。</p>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md129"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md89"></a>
 第4章 プログラム設計とアーキテクチャ</h1>
 <p><img src="images/system_architecture.jpg" alt="全体システムアーキテクチャ" class="inline"/></p>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md130"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md90"></a>
 4.1 C++ クラス設計と安全なカプセル化</h2>
 <ul>
 <li><b>インクラスメンバ初期化 (Default Member Initializers)</b>: 全クラスのメンバ変数初期化をヘッダ（クラス定義内）に集約 (<span class="tt">int var{ 0 };</span>, <span class="tt"><a class="el" href="classFramebuffer.html">Framebuffer()</a> = default;</span>) し、コンストラクタにおける初期化漏れを防止。</li>

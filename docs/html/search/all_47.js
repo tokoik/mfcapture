@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['対応方針_0',['14. macOS (AV Foundation) 対応方針',['../md_GEMINI.html#autotoc_md14',1,'']]]
+  ['較正ファイルの読み込み_0',['較正ファイルの読み込み',['../md_README.html#autotoc_md48',1,'']]]
 ];

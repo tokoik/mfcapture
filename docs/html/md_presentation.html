@@ -93,12 +93,12 @@ $(function(){initNavTree('md_presentation.html','',''); });
   <div class="headertitle"><div class="title">実践カメラキャリブレーション &amp; レンズ歪み補正 スライド構成 </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md15"></a></p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md0"></a></p>
 <p>ChArUco Board と OpenGL/GLSL によるリアルタイム高精度画像補正技術</p>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md17"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md2"></a>
 1. アジェンダ</h1>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md18"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
 前半: 理論と基礎</h2>
 <ul>
 <li>カメラモデリングの基礎（ピンホールモデル・透視投影・内部/外部パラメータ）</li>
@@ -107,7 +107,7 @@ $(function(){initNavTree('md_presentation.html','',''); });
 <li>C++ OpenCV 実装の詳細関数と引数構造 (<span class="tt">CharucoBoard</span>, <span class="tt">detectBoard</span>, <span class="tt">matchImagePoints</span>, <span class="tt">calibrateCamera</span>)</li>
 <li>全体システム構成 (<span class="tt">calib</span> &amp; <span class="tt">mfcapture</span>)</li>
 </ul>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md19"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md4"></a>
 後半: 実装とハンズオン</h2>
 <ul>
 <li>CPU (OpenCV <span class="tt">remap</span>) vs GPU (GLSL) 補正パイプライン</li>
@@ -118,9 +118,9 @@ $(function(){initNavTree('md_presentation.html','',''); });
 <li>Windows / VS2022 実習ハンズオン A / B</li>
 </ul>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md21"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md6"></a>
 2. カメラモデリングの基礎原理</h1>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md22"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md7"></a>
 ピンホールモデルと透視投影 (Perspective Projection)</h2>
 <p>3次元世界座標系 $(X_w, Y_w, Z_w)$ から2次元画像平面 $(u, v)$ への透視投影方程式：</p>
 <p>$$s \begin{bmatrix} u \ v \ 1 \end{bmatrix} = K \begin{bmatrix} R &amp; t \end{bmatrix} \begin{bmatrix} X_w \ Y_w \ Z_w \ 1 \end{bmatrix}$$</p>
@@ -134,17 +134,17 @@ $(function(){initNavTree('md_presentation.html','',''); });
 </li>
 </ul>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md24"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md9"></a>
 3. レンズ歪みの数理モデル</h1>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md25"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md10"></a>
 1. 放射歪み (Radial Distortion)</h2>
 <p>$$x_{\text{distorted}} = x(1 + k_1 r^2 + k_2 r^4 + k_3 r^6)$$ $$y_{\text{distorted}} = y(1 + k_1 r^2 + k_2 r^4 + k_3 r^6)$$</p>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md26"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md11"></a>
 2. 接線歪み (Tangential Distortion)</h2>
 <p>$$\delta x = 2 p_1 x y + p_2(r^2 + 2x^2)$$ $$\delta y = p_1(r^2 + 2y^2) + 2 p_2 x y$$</p>
 <p>本システムでは $[k_1, k_2, p_1, p_2, k_3]$ の 5 係数モデルを使用。</p>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md28"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md13"></a>
 4. ChArUco Board によるキャリブレーション</h1>
 <ul>
 <li><b>チェスボード</b>: サブピクセル精度の交点検出。ただしパターン一部遮蔽で検出不能。</li>
@@ -152,7 +152,7 @@ $(function(){initNavTree('md_presentation.html','',''); });
 <li><b>ChArUco Board</b>: ArUco で交点 ID を特定し、チェスボード交点で超高精度検出。</li>
 </ul>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md30"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md15"></a>
 4.1 キャリブレーションで推定するもの</h1>
 <div class="fragment"><div class="line">flowchart TD</div>
 <div class="line">    A[&quot;既知の3D点 (X,Y,0)&quot;] --&gt; C[&quot;投影モデル K, d, R, t&quot;]</div>
@@ -166,7 +166,7 @@ $(function(){initNavTree('md_presentation.html','',''); });
 <li><b>既知量</b>: 設計 3D ボード座標 $(X, Y, 0)$</li>
 </ul>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md32"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md17"></a>
 4.2 C++ 実装：ChArUco Board の定義と構成</h1>
 <div class="fragment"><div class="line">cv::aruco::Dictionary dictionary =</div>
 <div class="line">  cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);</div>
@@ -181,10 +181,10 @@ $(function(){initNavTree('md_presentation.html','',''); });
 <div class="line"> </div>
 <div class="line">cv::aruco::CharucoDetector detector{board};</div>
 </div><!-- fragment --><p><img src="images/charuco_board.png" alt="ChArUco Board" class="inline"/></p>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md33"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md18"></a>
 ChArUco Board とは (OpenCV チュートリアル準拠)</h2>
 <p>チェスボードの「高精度交点検出」と ArUco の「個体識別・遮蔽耐性」を組み合わせたハイブリッドパターン。黒マス内に固有 ID マーカーが交互配置され、**ボードの一部が画面外や物体の陰に隠れていても交点座標と位置関係を正確に決定可能**。</p>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md34"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md19"></a>
 <span class="tt">cv::aruco::CharucoBoard</span> 引数解説</h2>
 <ul>
 <li><span class="tt">size</span> (<span class="tt">cv::Size</span>): チェスボードのマス数 (横, 縦)</li>
@@ -193,7 +193,7 @@ ChArUco Board とは (OpenCV チュートリアル準拠)</h2>
 <li><span class="tt">dictionary</span>: マーカー識別用辞書パターン</li>
 </ul>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md36"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md21"></a>
 4.3 C++ 実装：検出と標本座標マッチング</h1>
 <div class="fragment"><div class="line">std::vector&lt;cv::Point2f&gt; charucoCorners;</div>
 <div class="line">std::vector&lt;int&gt; charucoIds;</div>
@@ -213,10 +213,10 @@ ChArUco Board とは (OpenCV チュートリアル準拠)</h2>
 <div class="line">  allObjectPoints.push_back(std::move(objectPoints));</div>
 <div class="line">  allImagePoints.push_back(std::move(imagePoints));</div>
 <div class="line">}</div>
-</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md37"></a>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md22"></a>
 処理概略と <span class="tt">corners.size() &gt;= 4</span> の理由</h2>
 <p>平面オブジェクトと 2D 画像との間の姿勢変換 (PnP / ホモグラフィ) を幾何学的に決定するには**最低 4 点の対応点が必要**となるためです。4点未満では自由度が不足するため処理をスキップします。</p>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md38"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md23"></a>
 関数の引数解説</h2>
 <ul>
 <li><span class="tt">detector.detectBoard(image, corners, ids)</span>:<ul>
@@ -233,7 +233,7 @@ ChArUco Board とは (OpenCV チュートリアル準拠)</h2>
 </li>
 </ul>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md40"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md25"></a>
 4.4 C++ 実装：最適化計算 (<span class="tt">calibrateCamera</span>)</h1>
 <div class="fragment"><div class="line">cv::Mat K, distortion;</div>
 <div class="line">std::vector&lt;cv::Mat&gt; rvecs, tvecs;</div>
@@ -248,15 +248,15 @@ ChArUco Board とは (OpenCV チュートリアル準拠)</h2>
 <div class="line">  cv::noArray(), cv::noArray(), cv::noArray(),</div>
 <div class="line">  0                 <span class="comment">// 較正オプションフラグ</span></div>
 <div class="line">);</div>
-</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md41"></a>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md26"></a>
 「最適化計算」の意味</h2>
 <p>実測された 2D 画素座標 $p$ と、推定パラメータ $(K, d, R_i, t_i)$ で 3D 点を画像上に再投影した座標 $\hat{p}$ との差（**再投影誤差 Reprojection Error**）の自乗和を最小化する非線形最小二乗問題です。**Levenberg-Marquardt (LM) 法**による反復計算により内部行列 $K$、歪み係数 $d$、各標本姿勢 $[R_i | t_i]$ を同時一括推定します。</p>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md43"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md28"></a>
 5. 全体システムアーキテクチャ</h1>
 <p><img src="images/system_architecture.jpg" alt="全体システムアーキテクチャ" class="inline"/></p>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md45"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md30"></a>
 6. 歪み補正パイプラインの比較 (CPU vs GPU)</h1>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -271,7 +271,7 @@ ChArUco Board とは (OpenCV チュートリアル準拠)</h2>
 <td class="markdownTableBodyLeft"><b>事前準備</b>  </td><td class="markdownTableBodyLeft"><span class="tt">cv::initUndistortRectifyMap</span> でマップ構築  </td><td class="markdownTableBodyLeft">Uniform へ焦点距離・主点・係数を転送  </td></tr>
 </table>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md47"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md32"></a>
 7. OpenCV (CPU) による C++ 歪み補正処理</h1>
 <div class="fragment"><div class="line"><span class="comment">// 1. 初期化・マップ作成（解像度変更時のみ1回実行）</span></div>
 <div class="line">cv::Mat map1, map2;</div>
@@ -292,7 +292,7 @@ ChArUco Board とは (OpenCV チュートリアル準拠)</h2>
 <div class="line">    cv::INTER_LINEAR  <span class="comment">// 双線形補間</span></div>
 <div class="line">);</div>
 </div><!-- fragment --><hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md49"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md34"></a>
 8. GLSL 歪み補正シェーダー (<span class="tt">undistortion.frag</span>)</h1>
 <div class="fragment"><div class="line">// 理想的な正規化座標 p = (x, y) の算出</div>
 <div class="line">vec2 p = (v_texcoord * size - center) / focal;</div>
@@ -310,7 +310,7 @@ ChArUco Board とは (OpenCV チュートリアル準拠)</h2>
 <div class="line">vec2 uv = (pd * focal + center) / size;</div>
 <div class="line">fragment = texture(image, uv);</div>
 </div><!-- fragment --><hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md51"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md36"></a>
 9. なぜ「逆向き」に座標を求めるのか (逆写像)</h1>
 <div class="fragment"><div class="line">flowchart TD</div>
 <div class="line">    O[&quot;補正後出力画素 (u, v)&quot;] --&gt; N[&quot;K⁻¹ 正規化座標 (x, y)&quot;]</div>
@@ -319,7 +319,7 @@ ChArUco Board とは (OpenCV チュートリアル準拠)</h2>
 <div class="line">    P --&gt; S[&quot;入力画像をサンプル&quot;]</div>
 <div class="line">    S --&gt; O2[&quot;出力色&quot;]</div>
 </div><!-- fragment --><hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md53"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md38"></a>
 10. C++ クラス設計と安全なカプセル化</h1>
 <ul>
 <li><b>インクラスメンバ初期化 (Default Member Initializers)</b>: メンバ変数の初期値をヘッダ（クラス定義内）に集約し、初期化漏れを防止</li>
@@ -327,7 +327,7 @@ ChArUco Board とは (OpenCV チュートリアル準拠)</h2>
 <li><b>構造統一</b>: 共通処理の変数名・関数名は <span class="tt">mfcapture</span>、Doxygen/実装コメントスタイルは <span class="tt">calib</span> に統一</li>
 </ul>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md55"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md40"></a>
 11. Windows Media Foundation (MSMF) による低遅延キャプチャ</h1>
 <ul>
 <li><span class="tt"><a class="el" href="classCamMf.html">CamMf</a></span> クラスによる MSMF 直接操作</li>
@@ -335,7 +335,7 @@ ChArUco Board とは (OpenCV チュートリアル準拠)</h2>
 <li>レイテンシ優先モード (<span class="tt">prioritizeLatency == true</span>)</li>
 </ul>
 <hr  />
-<h1 class="doxsection"><a class="anchor" id="autotoc_md57"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md42"></a>
 12. まとめ</h1>
 <ul>
 <li>ChArUco Board による高精度な交点認識</li>

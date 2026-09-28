@@ -44,7 +44,12 @@ static void glfwErrorCallback(int error, const char* description)
 }
 
 #if defined(__ANDROID__)
+#include <android/log.h>
 struct android_app* GgApp::androidApp{ nullptr };
+#define GG_LOG_TAG "GgApp"
+#define GG_LOGI(...) __android_log_print(ANDROID_LOG_INFO, GG_LOG_TAG, __VA_ARGS__)
+#define GG_LOGW(...) __android_log_print(ANDROID_LOG_WARN, GG_LOG_TAG, __VA_ARGS__)
+#define GG_LOGE(...) __android_log_print(ANDROID_LOG_ERROR, GG_LOG_TAG, __VA_ARGS__)
 #endif
 
 //

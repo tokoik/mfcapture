@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['主な機能_0',['主な機能',['../md_README.html#autotoc_md60',1,'']]],
-  ['主要クラスと責務_1',['主要クラスと責務',['../md_README.html#autotoc_md66',1,'']]]
+  ['方式_20cpu_20補正_0',['OpenCV 方式 (CPU 補正)',['../md_README.html#autotoc_md49',1,'']]],
+  ['方式_20gpu_20補正_1',['OpenGL 方式 (GPU 補正)',['../md_README.html#autotoc_md50',1,'']]]
 ];

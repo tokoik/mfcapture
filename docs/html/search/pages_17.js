@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['size_204_20の理由_0',['処理概略と &lt;span class=&quot;tt&quot;&gt;corners.size() &amp;gt;= 4&lt;/span&gt; の理由',['../md_presentation.html#autotoc_md37',1,'']]]
+  ['t_20_24_0',['2. カメラ外部行列 (Extrinsic Parameters $[R | t]$)',['../md_workshop__handbook.html#autotoc_md78',1,'']]],
+  ['tangential_20distortion_1',['2. 接線歪み (Tangential Distortion)',['../md_presentation.html#autotoc_md11',1,'']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['対応方針_0',['14. macOS (AV Foundation) 対応方針',['../md_GEMINI.html#autotoc_md14',1,'']]]
+  ['逆写像_0',['9. なぜ「逆向き」に座標を求めるのか (逆写像)',['../md_presentation.html#autotoc_md36',1,'']]]
 ];

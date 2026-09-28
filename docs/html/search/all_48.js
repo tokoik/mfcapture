@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['引数解説_0',['&lt;span class=&quot;tt&quot;&gt;cv::aruco::CharucoBoard&lt;/span&gt; 引数解説',['../md_presentation.html#autotoc_md34',1,'']]]
+  ['逆写像_0',['9. なぜ「逆向き」に座標を求めるのか (逆写像)',['../md_presentation.html#autotoc_md36',1,'']]]
 ];

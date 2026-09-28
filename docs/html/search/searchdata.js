@@ -1,6 +1,6 @@
 var indexSectionsWithContent =
 {
-  0: "$123456789_abcdefghilmnoprstuvw~「おでとなにのへまアカキクゲコサシスソチドネパビピプマリレ主作入全共処前勉基実対引後接描放教方検概構歪版特理画第組結補講較逆開関非",
+  0: "$123456789_abcdefghilmnoprstuvw~「でとなにのまアカキクゲスソチドピプレ主全処前勉基実引後接放方概構歪版理第補講較逆開関",
   1: "abcefgilmpstuw",
   2: "g",
   3: "abcefgimoprtuw",
@@ -9,8 +9,8 @@ var indexSectionsWithContent =
   6: "p",
   7: "bu",
   8: "lmno",
-  9: "cghu",
-  10: "$123456789abcdefghlmoprstuvw「おでとなにのへまアカキクゲコサシスソチドネパビピプマリレ主作入全共処前勉基実対引後接描放教方検概構歪版特理画第組結補講較逆開関非"
+  9: "cghsu",
+  10: "$123456789abcdefglmoprstuvw「でとなにのまアカキクゲスソチドピプレ主全処前勉基実引後接放方概構歪版理第補講較逆開関"
 };
 
 var indexSectionNames =

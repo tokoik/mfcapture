@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['でのビルド例_0',['でのビルド例',['../md_README.html#autotoc_md76',1,'macOS でのビルド例'],['../md_README.html#autotoc_md77',1,'Raspberry Pi (Linux ARM) でのビルド例']]]
+  ['なぜ「逆向き」に座標を求めるのか_20逆写像_0',['9. なぜ「逆向き」に座標を求めるのか (逆写像)',['../md_presentation.html#autotoc_md36',1,'']]]
 ];

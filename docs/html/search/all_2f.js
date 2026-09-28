@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['サポート方針_0',['12. OpenXR サポート方針',['../md_GEMINI.html#autotoc_md12',1,'']]]
+  ['ドキュメント・関連資料_0',['ドキュメント・関連資料',['../md_README.html#autotoc_md65',1,'']]]
 ];
