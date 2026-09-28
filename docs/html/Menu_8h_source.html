@@ -155,7 +155,7 @@ $(function(){initNavTree('Menu_8h_source.html','',''); });
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>  <span class="keywordtype">int</span> deviceNumber{ 0 };</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="preprocessor">#if defined(_WIN32) || defined(__ANDROID__) || defined(__APPLE__)</span></div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  <span class="keywordtype">int</span> formatNumber{ 0 };</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  <span class="keywordtype">int</span> formatNumber{ -1 };</div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span></div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>  std::vector&lt;CaptureFormat&gt; availableFormats;</div>
 <div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span></div>
@@ -205,96 +205,111 @@ $(function(){initNavTree('Menu_8h_source.html','',''); });
 <div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>  <span class="keyword">mutable</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* errorMessage{ <span class="keyword">nullptr</span> };</div>
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span></div>
 <div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>  <span class="keywordtype">bool</span> openDevice();</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span></div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>  <span class="keywordtype">bool</span> startCapture();</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span></div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>  <span class="keywordtype">void</span> openImage();</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span></div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>  <span class="keywordtype">void</span> openMovie();</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span></div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>  <span class="keywordtype">void</span> loadConfig();</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span></div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>  <span class="keywordtype">void</span> saveConfig() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span></div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>  <span class="keywordtype">void</span> loadCalibration();</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span></div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>  <span class="keywordtype">void</span> selectPreference(<span class="keywordtype">int</span> index);</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span></div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>  <span class="keyword">const</span> <span class="keyword">auto</span>&amp; getPreference(<span class="keywordtype">int</span> i)<span class="keyword"> const</span></div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span><span class="keyword">  </span>{</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <span class="keywordflow">return</span> config.getPreferences()[i];</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>  }</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span></div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>  <span class="keyword">const</span> <span class="keyword">auto</span>&amp; getPreference()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span><span class="keyword">  </span>{</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    <span class="keywordflow">return</span> getPreference(preferenceNumber);</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>  }</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span></div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>  <span class="keywordtype">void</span> drawMainMenuBar();</div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span></div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>  <span class="keywordtype">void</span> drawInputPanel();</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span></div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>  <span class="keywordtype">void</span> drawArucoPanel();</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span></div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>  <span class="keywordtype">void</span> drawErrorDialog();</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span></div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>  <span class="keywordtype">void</span> openImage();</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span></div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>  <span class="keywordtype">void</span> openMovie();</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>  <span class="keywordtype">void</span> loadConfig();</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span></div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>  <span class="keywordtype">void</span> saveConfig() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span></div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>  <span class="keywordtype">void</span> loadCalibration();</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span></div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>  <span class="keywordtype">void</span> selectPreference(<span class="keywordtype">int</span> index);</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span></div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>  <span class="keyword">const</span> <span class="keyword">auto</span>&amp; getPreference(<span class="keywordtype">int</span> i)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="keywordflow">return</span> config.getPreferences()[i];</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>  }</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span></div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>  <span class="keyword">const</span> <span class="keyword">auto</span>&amp; getPreference()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <span class="keywordflow">return</span> getPreference(preferenceNumber);</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>  }</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span></div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>  <span class="keywordtype">void</span> drawMainMenuBar();</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span></div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>  <span class="keywordtype">void</span> drawInputPanel();</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span></div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>  <span class="keywordtype">void</span> drawArucoPanel();</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span></div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>  <span class="keywordtype">void</span> drawErrorDialog();</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span> </div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span></div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno"><a class="line" href="classMenu.html#a1e5ffef596e3987246aac6c410e4fab9">  263</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classMenu.html#a1e5ffef596e3987246aac6c410e4fab9">prioritizeLatency</a>{ <span class="keyword">true</span> };</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span></div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno"><a class="line" href="classMenu.html#a160e3cf22b6e1f966c84e195f20542e5">  266</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classMenu.html#a160e3cf22b6e1f966c84e195f20542e5">detectMarker</a>{ <span class="keyword">false</span> };</div>
 <div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span></div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno"><a class="line" href="classMenu.html#a1e5ffef596e3987246aac6c410e4fab9">  269</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classMenu.html#a1e5ffef596e3987246aac6c410e4fab9">prioritizeLatency</a>{ <span class="keyword">true</span> };</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span></div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno"><a class="line" href="classMenu.html#a160e3cf22b6e1f966c84e195f20542e5">  272</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classMenu.html#a160e3cf22b6e1f966c84e195f20542e5">detectMarker</a>{ <span class="keyword">false</span> };</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span></div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>  <a class="code hl_function" href="classMenu.html#a6093082b3cbecf85532aa6b66549d009">Menu</a>(<a class="code hl_class" href="classConfig.html">Config</a>&amp; config, <a class="code hl_class" href="classCapture.html">Capture</a>&amp; capture, <a class="code hl_class" href="classUndistortion.html">Undistortion</a>&amp; undistortion, <a class="code hl_class" href="classAruco.html">Aruco</a>&amp; aruco);</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span></div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno"><a class="line" href="classMenu.html#a1fb469a852bcd1eea11afa514aa3fed8">  289</a></span>  <a class="code hl_function" href="classMenu.html#a1fb469a852bcd1eea11afa514aa3fed8">Menu</a>(<span class="keyword">const</span> <a class="code hl_function" href="classMenu.html#a6093082b3cbecf85532aa6b66549d009">Menu</a>&amp; menu) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span></div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>  <span class="keyword">virtual</span> <a class="code hl_function" href="classMenu.html#a831387f51358cfb88cd018e1777bc980">~Menu</a>();</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span></div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno"><a class="line" href="classMenu.html#a4959822a63a56fc22f664598ff81313a">  302</a></span>  <a class="code hl_function" href="classMenu.html#a6093082b3cbecf85532aa6b66549d009">Menu</a>&amp; <a class="code hl_function" href="classMenu.html#a4959822a63a56fc22f664598ff81313a">operator=</a>(<span class="keyword">const</span> <a class="code hl_function" href="classMenu.html#a6093082b3cbecf85532aa6b66549d009">Menu</a>&amp; menu) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span></div>
-<div class="foldopen" id="foldopen00309" data-start="{" data-end="}">
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno"><a class="line" href="classMenu.html#abf2c8b96dab080745e7601184fd77388">  309</a></span>  <span class="keyword">explicit</span> <span class="keyword">operator</span> bool()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span><span class="keyword">  </span>{</div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    <span class="keywordflow">return</span> !quit;</div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>  }</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>  <a class="code hl_function" href="classMenu.html#a6093082b3cbecf85532aa6b66549d009">Menu</a>(<a class="code hl_class" href="classConfig.html">Config</a>&amp; config, <a class="code hl_class" href="classCapture.html">Capture</a>&amp; capture, <a class="code hl_class" href="classUndistortion.html">Undistortion</a>&amp; undistortion, <a class="code hl_class" href="classAruco.html">Aruco</a>&amp; aruco);</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span></div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno"><a class="line" href="classMenu.html#a1fb469a852bcd1eea11afa514aa3fed8">  283</a></span>  <a class="code hl_function" href="classMenu.html#a1fb469a852bcd1eea11afa514aa3fed8">Menu</a>(<span class="keyword">const</span> <a class="code hl_function" href="classMenu.html#a6093082b3cbecf85532aa6b66549d009">Menu</a>&amp; menu) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span></div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>  <span class="keyword">virtual</span> <a class="code hl_function" href="classMenu.html#a831387f51358cfb88cd018e1777bc980">~Menu</a>();</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span></div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno"><a class="line" href="classMenu.html#a4959822a63a56fc22f664598ff81313a">  296</a></span>  <a class="code hl_function" href="classMenu.html#a6093082b3cbecf85532aa6b66549d009">Menu</a>&amp; <a class="code hl_function" href="classMenu.html#a4959822a63a56fc22f664598ff81313a">operator=</a>(<span class="keyword">const</span> <a class="code hl_function" href="classMenu.html#a6093082b3cbecf85532aa6b66549d009">Menu</a>&amp; menu) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span></div>
+<div class="foldopen" id="foldopen00303" data-start="{" data-end="}">
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno"><a class="line" href="classMenu.html#abf2c8b96dab080745e7601184fd77388">  303</a></span>  <span class="keyword">explicit</span> <span class="keyword">operator</span> bool()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    <span class="keywordflow">return</span> !quit;</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>  }</div>
 </div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span></div>
-<div class="foldopen" id="foldopen00319" data-start="{" data-end="}">
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno"><a class="line" href="classMenu.html#ae80a2d02e3d21a30cc59b5b50208848f">  319</a></span>  <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_function" href="classMenu.html#ae80a2d02e3d21a30cc59b5b50208848f">getPose</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span><span class="keyword">  </span>{</div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    <span class="keywordflow">return</span> pose;</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>  }</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span></div>
+<div class="foldopen" id="foldopen00313" data-start="{" data-end="}">
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno"><a class="line" href="classMenu.html#ae80a2d02e3d21a30cc59b5b50208848f">  313</a></span>  <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_function" href="classMenu.html#ae80a2d02e3d21a30cc59b5b50208848f">getPose</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    <span class="keywordflow">return</span> pose;</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>  }</div>
 </div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span></div>
-<div class="foldopen" id="foldopen00329" data-start="{" data-end="}">
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno"><a class="line" href="classMenu.html#a033f612f12cbe21ee3cd749bf2a411a6">  329</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="classMenu.html#a033f612f12cbe21ee3cd749bf2a411a6">getMenubarHeight</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span><span class="keyword">  </span>{</div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>    <span class="keywordflow">return</span> menubarHeight;</div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>  }</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span></div>
+<div class="foldopen" id="foldopen00323" data-start="{" data-end="}">
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno"><a class="line" href="classMenu.html#acb2d6c926d790c1603744179d4d4ed54">  323</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classMenu.html#acb2d6c926d790c1603744179d4d4ed54">setDeviceNumber</a>(<span class="keywordtype">int</span> number)</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>  {</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    deviceNumber = number;</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>  }</div>
 </div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span></div>
-<div class="foldopen" id="foldopen00339" data-start="{" data-end="}">
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno"><a class="line" href="classMenu.html#a22fccb819445ce795682b226a637f24c">  339</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="classMenu.html#a22fccb819445ce795682b226a637f24c">getMarkerLength</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span><span class="keyword">  </span>{</div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>    <span class="keywordflow">return</span> settings.markerLength;</div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>  }</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span></div>
+<div class="foldopen" id="foldopen00333" data-start="{" data-end="}">
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno"><a class="line" href="classMenu.html#a01b6fdfd566bdcdcf42d57b6001d5f7a">  333</a></span>  <span class="keywordtype">int</span> <a class="code hl_function" href="classMenu.html#a01b6fdfd566bdcdcf42d57b6001d5f7a">getDeviceNumber</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    <span class="keywordflow">return</span> deviceNumber;</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>  }</div>
 </div>
-<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span></div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classMenu.html#a6763d1f2af5a47c38ae5337a7637ad7e">initializeInputIntrinsics</a>(<span class="keyword">const</span> std::array&lt;int, 2&gt;&amp; size);</div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span></div>
-<div class="foldopen" id="foldopen00359" data-start="{" data-end="}">
-<div class="line"><a id="l00359" name="l00359"></a><span class="lineno"><a class="line" href="classMenu.html#a1bd433ba6365bdd8dc5290a845cd194d">  359</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="classMenu.html#a1bd433ba6365bdd8dc5290a845cd194d">getUndistortionMode</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span><span class="keyword">  </span>{</div>
-<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>    <span class="keywordflow">return</span> undistortionMode;</div>
-<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>  }</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span></div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classMenu.html#a0d4fe5cb8194f53e9ac108dc6a2faac0">startCapture</a>();</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span></div>
+<div class="foldopen" id="foldopen00350" data-start="{" data-end="}">
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno"><a class="line" href="classMenu.html#a033f612f12cbe21ee3cd749bf2a411a6">  350</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="classMenu.html#a033f612f12cbe21ee3cd749bf2a411a6">getMenubarHeight</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>    <span class="keywordflow">return</span> menubarHeight;</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>  }</div>
 </div>
-<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span></div>
-<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>  std::array&lt;GLsizei, 2&gt; <a class="code hl_function" href="classMenu.html#a4f36a627c2bbe5c84d9722779dab5ed9">setupUndistortion</a>(GLfloat aspect) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span></div>
-<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>  std::array&lt;GLsizei, 2&gt; <a class="code hl_function" href="classMenu.html#a144b100568382513c749f88bd7b92495">setup</a>(GLfloat aspect) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span></div>
-<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classMenu.html#a2cd7ab9901a8f42a3ae977d0774398a6">draw</a>();</div>
-<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>};</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span></div>
+<div class="foldopen" id="foldopen00360" data-start="{" data-end="}">
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno"><a class="line" href="classMenu.html#a22fccb819445ce795682b226a637f24c">  360</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="classMenu.html#a22fccb819445ce795682b226a637f24c">getMarkerLength</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>    <span class="keywordflow">return</span> settings.markerLength;</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>  }</div>
+</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span></div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classMenu.html#a6763d1f2af5a47c38ae5337a7637ad7e">initializeInputIntrinsics</a>(<span class="keyword">const</span> std::array&lt;int, 2&gt;&amp; size);</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span></div>
+<div class="foldopen" id="foldopen00380" data-start="{" data-end="}">
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno"><a class="line" href="classMenu.html#a1bd433ba6365bdd8dc5290a845cd194d">  380</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="classMenu.html#a1bd433ba6365bdd8dc5290a845cd194d">getUndistortionMode</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>    <span class="keywordflow">return</span> undistortionMode;</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>  }</div>
+</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span></div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>  std::array&lt;GLsizei, 2&gt; <a class="code hl_function" href="classMenu.html#a4f36a627c2bbe5c84d9722779dab5ed9">setupUndistortion</a>(GLfloat aspect) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span></div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>  std::array&lt;GLsizei, 2&gt; <a class="code hl_function" href="classMenu.html#a144b100568382513c749f88bd7b92495">setup</a>(GLfloat aspect) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span></div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classMenu.html#a2cd7ab9901a8f42a3ae977d0774398a6">draw</a>();</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>};</div>
 </div>
 <div class="ttc" id="aAruco_8h_html"><div class="ttname"><a href="Aruco_8h.html">Aruco.h</a></div></div>
 <div class="ttc" id="aCapture_8h_html"><div class="ttname"><a href="Capture_8h.html">Capture.h</a></div></div>
@@ -305,20 +320,23 @@ $(function(){initNavTree('Menu_8h_source.html','',''); });
 <div class="ttc" id="aclassAruco_html"><div class="ttname"><a href="classAruco.html">Aruco</a></div><div class="ttdef"><b>Definition</b> <a href="Aruco_8h_source.html#l00026">Aruco.h:27</a></div></div>
 <div class="ttc" id="aclassCapture_html"><div class="ttname"><a href="classCapture.html">Capture</a></div><div class="ttdef"><b>Definition</b> <a href="Capture_8h_source.html#l00044">Capture.h:45</a></div></div>
 <div class="ttc" id="aclassConfig_html"><div class="ttname"><a href="classConfig.html">Config</a></div><div class="ttdef"><b>Definition</b> <a href="Config_8h_source.html#l00065">Config.h:66</a></div></div>
-<div class="ttc" id="aclassMenu_html_a033f612f12cbe21ee3cd749bf2a411a6"><div class="ttname"><a href="classMenu.html#a033f612f12cbe21ee3cd749bf2a411a6">Menu::getMenubarHeight</a></div><div class="ttdeci">auto getMenubarHeight() const</div><div class="ttdef"><b>Definition</b> <a href="#l00329">Menu.h:329</a></div></div>
-<div class="ttc" id="aclassMenu_html_a144b100568382513c749f88bd7b92495"><div class="ttname"><a href="classMenu.html#a144b100568382513c749f88bd7b92495">Menu::setup</a></div><div class="ttdeci">std::array&lt; GLsizei, 2 &gt; setup(GLfloat aspect) const</div><div class="ttdef"><b>Definition</b> <a href="Menu_8cpp_source.html#l00675">Menu.cpp:675</a></div></div>
-<div class="ttc" id="aclassMenu_html_a160e3cf22b6e1f966c84e195f20542e5"><div class="ttname"><a href="classMenu.html#a160e3cf22b6e1f966c84e195f20542e5">Menu::detectMarker</a></div><div class="ttdeci">bool detectMarker</div><div class="ttdoc">ArUco Marker を検出するなら true</div><div class="ttdef"><b>Definition</b> <a href="#l00272">Menu.h:272</a></div></div>
-<div class="ttc" id="aclassMenu_html_a1bd433ba6365bdd8dc5290a845cd194d"><div class="ttname"><a href="classMenu.html#a1bd433ba6365bdd8dc5290a845cd194d">Menu::getUndistortionMode</a></div><div class="ttdeci">auto getUndistortionMode() const</div><div class="ttdef"><b>Definition</b> <a href="#l00359">Menu.h:359</a></div></div>
-<div class="ttc" id="aclassMenu_html_a1e5ffef596e3987246aac6c410e4fab9"><div class="ttname"><a href="classMenu.html#a1e5ffef596e3987246aac6c410e4fab9">Menu::prioritizeLatency</a></div><div class="ttdeci">bool prioritizeLatency</div><div class="ttdoc">レイテンシを優先するなら true</div><div class="ttdef"><b>Definition</b> <a href="#l00269">Menu.h:269</a></div></div>
+<div class="ttc" id="aclassMenu_html_a01b6fdfd566bdcdcf42d57b6001d5f7a"><div class="ttname"><a href="classMenu.html#a01b6fdfd566bdcdcf42d57b6001d5f7a">Menu::getDeviceNumber</a></div><div class="ttdeci">int getDeviceNumber() const</div><div class="ttdef"><b>Definition</b> <a href="#l00333">Menu.h:333</a></div></div>
+<div class="ttc" id="aclassMenu_html_a033f612f12cbe21ee3cd749bf2a411a6"><div class="ttname"><a href="classMenu.html#a033f612f12cbe21ee3cd749bf2a411a6">Menu::getMenubarHeight</a></div><div class="ttdeci">auto getMenubarHeight() const</div><div class="ttdef"><b>Definition</b> <a href="#l00350">Menu.h:350</a></div></div>
+<div class="ttc" id="aclassMenu_html_a0d4fe5cb8194f53e9ac108dc6a2faac0"><div class="ttname"><a href="classMenu.html#a0d4fe5cb8194f53e9ac108dc6a2faac0">Menu::startCapture</a></div><div class="ttdeci">bool startCapture()</div><div class="ttdef"><b>Definition</b> <a href="Menu_8cpp_source.html#l00613">Menu.cpp:613</a></div></div>
+<div class="ttc" id="aclassMenu_html_a144b100568382513c749f88bd7b92495"><div class="ttname"><a href="classMenu.html#a144b100568382513c749f88bd7b92495">Menu::setup</a></div><div class="ttdeci">std::array&lt; GLsizei, 2 &gt; setup(GLfloat aspect) const</div><div class="ttdef"><b>Definition</b> <a href="Menu_8cpp_source.html#l00703">Menu.cpp:703</a></div></div>
+<div class="ttc" id="aclassMenu_html_a160e3cf22b6e1f966c84e195f20542e5"><div class="ttname"><a href="classMenu.html#a160e3cf22b6e1f966c84e195f20542e5">Menu::detectMarker</a></div><div class="ttdeci">bool detectMarker</div><div class="ttdoc">ArUco Marker を検出するなら true</div><div class="ttdef"><b>Definition</b> <a href="#l00266">Menu.h:266</a></div></div>
+<div class="ttc" id="aclassMenu_html_a1bd433ba6365bdd8dc5290a845cd194d"><div class="ttname"><a href="classMenu.html#a1bd433ba6365bdd8dc5290a845cd194d">Menu::getUndistortionMode</a></div><div class="ttdeci">auto getUndistortionMode() const</div><div class="ttdef"><b>Definition</b> <a href="#l00380">Menu.h:380</a></div></div>
+<div class="ttc" id="aclassMenu_html_a1e5ffef596e3987246aac6c410e4fab9"><div class="ttname"><a href="classMenu.html#a1e5ffef596e3987246aac6c410e4fab9">Menu::prioritizeLatency</a></div><div class="ttdeci">bool prioritizeLatency</div><div class="ttdoc">レイテンシを優先するなら true</div><div class="ttdef"><b>Definition</b> <a href="#l00263">Menu.h:263</a></div></div>
 <div class="ttc" id="aclassMenu_html_a1fb469a852bcd1eea11afa514aa3fed8"><div class="ttname"><a href="classMenu.html#a1fb469a852bcd1eea11afa514aa3fed8">Menu::Menu</a></div><div class="ttdeci">Menu(const Menu &amp;menu)=delete</div></div>
-<div class="ttc" id="aclassMenu_html_a22fccb819445ce795682b226a637f24c"><div class="ttname"><a href="classMenu.html#a22fccb819445ce795682b226a637f24c">Menu::getMarkerLength</a></div><div class="ttdeci">auto getMarkerLength() const</div><div class="ttdef"><b>Definition</b> <a href="#l00339">Menu.h:339</a></div></div>
-<div class="ttc" id="aclassMenu_html_a2cd7ab9901a8f42a3ae977d0774398a6"><div class="ttname"><a href="classMenu.html#a2cd7ab9901a8f42a3ae977d0774398a6">Menu::draw</a></div><div class="ttdeci">void draw()</div><div class="ttdef"><b>Definition</b> <a href="Menu_8cpp_source.html#l01251">Menu.cpp:1251</a></div></div>
+<div class="ttc" id="aclassMenu_html_a22fccb819445ce795682b226a637f24c"><div class="ttname"><a href="classMenu.html#a22fccb819445ce795682b226a637f24c">Menu::getMarkerLength</a></div><div class="ttdeci">auto getMarkerLength() const</div><div class="ttdef"><b>Definition</b> <a href="#l00360">Menu.h:360</a></div></div>
+<div class="ttc" id="aclassMenu_html_a2cd7ab9901a8f42a3ae977d0774398a6"><div class="ttname"><a href="classMenu.html#a2cd7ab9901a8f42a3ae977d0774398a6">Menu::draw</a></div><div class="ttdeci">void draw()</div><div class="ttdef"><b>Definition</b> <a href="Menu_8cpp_source.html#l01309">Menu.cpp:1309</a></div></div>
 <div class="ttc" id="aclassMenu_html_a4959822a63a56fc22f664598ff81313a"><div class="ttname"><a href="classMenu.html#a4959822a63a56fc22f664598ff81313a">Menu::operator=</a></div><div class="ttdeci">Menu &amp; operator=(const Menu &amp;menu)=delete</div></div>
-<div class="ttc" id="aclassMenu_html_a4f36a627c2bbe5c84d9722779dab5ed9"><div class="ttname"><a href="classMenu.html#a4f36a627c2bbe5c84d9722779dab5ed9">Menu::setupUndistortion</a></div><div class="ttdeci">std::array&lt; GLsizei, 2 &gt; setupUndistortion(GLfloat aspect) const</div><div class="ttdef"><b>Definition</b> <a href="Menu_8cpp_source.html#l00660">Menu.cpp:660</a></div></div>
-<div class="ttc" id="aclassMenu_html_a6093082b3cbecf85532aa6b66549d009"><div class="ttname"><a href="classMenu.html#a6093082b3cbecf85532aa6b66549d009">Menu::Menu</a></div><div class="ttdeci">Menu(Config &amp;config, Capture &amp;capture, Undistortion &amp;undistortion, Aruco &amp;aruco)</div><div class="ttdef"><b>Definition</b> <a href="Menu_8cpp_source.html#l00469">Menu.cpp:469</a></div></div>
-<div class="ttc" id="aclassMenu_html_a6763d1f2af5a47c38ae5337a7637ad7e"><div class="ttname"><a href="classMenu.html#a6763d1f2af5a47c38ae5337a7637ad7e">Menu::initializeInputIntrinsics</a></div><div class="ttdeci">void initializeInputIntrinsics(const std::array&lt; int, 2 &gt; &amp;size)</div><div class="ttdef"><b>Definition</b> <a href="Menu_8cpp_source.html#l00570">Menu.cpp:570</a></div></div>
-<div class="ttc" id="aclassMenu_html_a831387f51358cfb88cd018e1777bc980"><div class="ttname"><a href="classMenu.html#a831387f51358cfb88cd018e1777bc980">Menu::~Menu</a></div><div class="ttdeci">virtual ~Menu()</div><div class="ttdef"><b>Definition</b> <a href="Menu_8cpp_source.html#l00553">Menu.cpp:553</a></div></div>
-<div class="ttc" id="aclassMenu_html_ae80a2d02e3d21a30cc59b5b50208848f"><div class="ttname"><a href="classMenu.html#ae80a2d02e3d21a30cc59b5b50208848f">Menu::getPose</a></div><div class="ttdeci">const auto &amp; getPose() const</div><div class="ttdef"><b>Definition</b> <a href="#l00319">Menu.h:319</a></div></div>
+<div class="ttc" id="aclassMenu_html_a4f36a627c2bbe5c84d9722779dab5ed9"><div class="ttname"><a href="classMenu.html#a4f36a627c2bbe5c84d9722779dab5ed9">Menu::setupUndistortion</a></div><div class="ttdeci">std::array&lt; GLsizei, 2 &gt; setupUndistortion(GLfloat aspect) const</div><div class="ttdef"><b>Definition</b> <a href="Menu_8cpp_source.html#l00688">Menu.cpp:688</a></div></div>
+<div class="ttc" id="aclassMenu_html_a6093082b3cbecf85532aa6b66549d009"><div class="ttname"><a href="classMenu.html#a6093082b3cbecf85532aa6b66549d009">Menu::Menu</a></div><div class="ttdeci">Menu(Config &amp;config, Capture &amp;capture, Undistortion &amp;undistortion, Aruco &amp;aruco)</div><div class="ttdef"><b>Definition</b> <a href="Menu_8cpp_source.html#l00497">Menu.cpp:497</a></div></div>
+<div class="ttc" id="aclassMenu_html_a6763d1f2af5a47c38ae5337a7637ad7e"><div class="ttname"><a href="classMenu.html#a6763d1f2af5a47c38ae5337a7637ad7e">Menu::initializeInputIntrinsics</a></div><div class="ttdeci">void initializeInputIntrinsics(const std::array&lt; int, 2 &gt; &amp;size)</div><div class="ttdef"><b>Definition</b> <a href="Menu_8cpp_source.html#l00598">Menu.cpp:598</a></div></div>
+<div class="ttc" id="aclassMenu_html_a831387f51358cfb88cd018e1777bc980"><div class="ttname"><a href="classMenu.html#a831387f51358cfb88cd018e1777bc980">Menu::~Menu</a></div><div class="ttdeci">virtual ~Menu()</div><div class="ttdef"><b>Definition</b> <a href="Menu_8cpp_source.html#l00581">Menu.cpp:581</a></div></div>
+<div class="ttc" id="aclassMenu_html_acb2d6c926d790c1603744179d4d4ed54"><div class="ttname"><a href="classMenu.html#acb2d6c926d790c1603744179d4d4ed54">Menu::setDeviceNumber</a></div><div class="ttdeci">void setDeviceNumber(int number)</div><div class="ttdef"><b>Definition</b> <a href="#l00323">Menu.h:323</a></div></div>
+<div class="ttc" id="aclassMenu_html_ae80a2d02e3d21a30cc59b5b50208848f"><div class="ttname"><a href="classMenu.html#ae80a2d02e3d21a30cc59b5b50208848f">Menu::getPose</a></div><div class="ttdeci">const auto &amp; getPose() const</div><div class="ttdef"><b>Definition</b> <a href="#l00313">Menu.h:313</a></div></div>
 <div class="ttc" id="aclassUndistortion_html"><div class="ttname"><a href="classUndistortion.html">Undistortion</a></div><div class="ttdef"><b>Definition</b> <a href="Undistortion_8h_source.html#l00036">Undistortion.h:37</a></div></div>
 <div class="ttc" id="aclassgg_1_1GgMatrix_html"><div class="ttname"><a href="classgg_1_1GgMatrix.html">gg::GgMatrix</a></div><div class="ttdef"><b>Definition</b> <a href="gg_8h_source.html#l02169">gg.h:2170</a></div></div>
 <div class="ttc" id="anamespacegg_html_afca3af3d6f73db24e8309a0f83592356"><div class="ttname"><a href="namespacegg.html#afca3af3d6f73db24e8309a0f83592356">gg::ggIdentity</a></div><div class="ttdeci">GgMatrix ggIdentity()</div><div class="ttdef"><b>Definition</b> <a href="gg_8h_source.html#l03156">gg.h:3156</a></div></div>

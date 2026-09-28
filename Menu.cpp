@@ -36,6 +36,8 @@ std::string Config::initialImage{ "initial.jpg" };
 
 // 標準ライブラリ
 #include <sstream>
+#include <limits>
+#include <algorithm>
 
 #if !defined(_WIN32) && !defined(__ANDROID__) && !defined(__APPLE__)
 // バックエンドのリスト
@@ -209,9 +211,35 @@ bool Menu::openDevice()
   // 選択したキャプチャデバイスを開く
   if (capture.openDevice(deviceNumber))
   {
-    if (formatNumber < 0) formatNumber = 0;
-
     updateFormatDropdowns();
+
+    // フォーマット未指定時は 1280x720 を優先して自動選択
+    if (formatNumber < 0 || formatNumber >= static_cast<int>(availableFormats.size()))
+    {
+      int defaultIndex{ 0 };
+      int bestScore{ std::numeric_limits<int>::max() };
+      for (const auto& item : availableFormats)
+      {
+        int fw{ 0 }, fh{ 0 };
+        if (sscanf(item.resolution.c_str(), "%d x %d", &fw, &fh) == 2)
+        {
+          if (fw == 1280 && fh == 720)
+          {
+            defaultIndex = item.index;
+            break;
+          }
+          int score{ std::abs(fw * fh - 1280 * 720) };
+          if (fw * fh > 1920 * 1080) score += 10000000;
+          if (score < bestScore)
+          {
+            bestScore = score;
+            defaultIndex = item.index;
+          }
+        }
+      }
+      formatNumber = defaultIndex;
+      updateFormatDropdowns();
+    }
 
     // フォーマットを指定して開始できるように準備する
     if (capture.select(formatNumber))
@@ -747,12 +775,22 @@ void Menu::drawInputPanel()
   {
     // ウィンドウの位置とサイズ
     const float uiScale{ ImGui::GetIO().FontGlobalScale };
-    ImGui::SetNextWindowPos(ImVec2(2.0f * uiScale, 2.0f * uiScale + menubarHeight), ImGuiCond_Once);
+    const float displayW{ ImGui::GetIO().DisplaySize.x };
+    const float displayH{ ImGui::GetIO().DisplaySize.y };
+
+    const float posY{ 2.0f + menubarHeight };
 #if defined(_WIN32)
-    ImGui::SetNextWindowSize(ImVec2(262.0f * uiScale, 576.0f * uiScale), ImGuiCond_Once);
+    const float targetH{ 576.0f * uiScale };
 #else
-    ImGui::SetNextWindowSize(ImVec2(262.0f * uiScale, 606.0f * uiScale), ImGuiCond_Once);
+    const float targetH{ 606.0f * uiScale };
 #endif
+    const float maxH{ (displayH > posY + 10.0f) ? (displayH - posY - 4.0f) : targetH };
+    const float winW{ (displayW > 10.0f) ? std::min(262.0f * uiScale, displayW - 4.0f) : 262.0f * uiScale };
+    const float winH{ std::min(targetH, maxH) };
+
+    ImGui::SetNextWindowPos(ImVec2(2.0f, posY), ImGuiCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(winW, winH), ImGuiCond_Once);
+    ImGui::SetNextWindowSizeConstraints(ImVec2(100.0f * uiScale, 100.0f * uiScale), ImVec2(displayW, maxH));
     ImGui::Begin(u8"入力", &showInputPanel);
 
     // 3種類の処理経路をラジオボタンで排他的に選択する。
@@ -1177,16 +1215,25 @@ void Menu::drawArucoPanel()
   {
     // ウィンドウの位置と初期サイズを設定する
     const float uiScale{ ImGui::GetIO().FontGlobalScale };
+    const float displayW{ ImGui::GetIO().DisplaySize.x };
+    const float displayH{ ImGui::GetIO().DisplaySize.y };
+
     const float panelW{ 222.0f * uiScale };
     float posX{ 270.0f * uiScale };
-    float posY{ 2.0f * uiScale + menubarHeight };
-    if (posX + panelW > ImGui::GetIO().DisplaySize.x && ImGui::GetIO().DisplaySize.x > 0.0f)
+    float posY{ 2.0f + menubarHeight };
+    if (posX + panelW > displayW && displayW > 0.0f)
     {
       posX = 20.0f * uiScale;
       posY += 30.0f * uiScale;
     }
+    const float targetH{ 133.0f * uiScale };
+    const float maxH{ (displayH > posY + 10.0f) ? (displayH - posY - 4.0f) : targetH };
+    const float winW{ (displayW > 10.0f) ? std::min(panelW, displayW - 4.0f) : panelW };
+    const float winH{ std::min(targetH, maxH) };
+
     ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_Once);
-    ImGui::SetNextWindowSize(ImVec2(panelW, 133.0f * uiScale), ImGuiCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(winW, winH), ImGuiCond_Once);
+    ImGui::SetNextWindowSizeConstraints(ImVec2(100.0f * uiScale, 100.0f * uiScale), ImVec2(displayW, maxH));
     ImGui::Begin(u8"ArUco", &showArucoPanel);
 
     // 認識に使用する ArUco Marker 辞書の選択コンボボックス

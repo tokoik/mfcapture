@@ -1,5 +1,8 @@
 var NAVTREEINDEX4 =
 {
+"classgg_1_1GgShape.html#a721bb786cc7ab8873aeffbb33216fe2b":[5,0,0,10,5],
+"classgg_1_1GgShape.html#a7e018d9755385e742455d011f2d9a685":[4,0,0,10,0],
+"classgg_1_1GgShape.html#a7e018d9755385e742455d011f2d9a685":[5,0,0,10,0],
 "classgg_1_1GgShape.html#a860e6671d9d80295599ed2cf9f2449bc":[4,0,0,10,4],
 "classgg_1_1GgShape.html#a860e6671d9d80295599ed2cf9f2449bc":[5,0,0,10,4],
 "classgg_1_1GgShape.html#a9728d042512e5f21d585614dce7db872":[4,0,0,10,6],
@@ -246,8 +249,5 @@ var NAVTREEINDEX4 =
 "classgg_1_1GgTriangles.html":[5,0,0,13],
 "classgg_1_1GgTriangles.html#a175a09c25313d9ae85bc4badf91fbfd6":[4,0,0,13,5],
 "classgg_1_1GgTriangles.html#a175a09c25313d9ae85bc4badf91fbfd6":[5,0,0,13,5],
-"classgg_1_1GgTriangles.html#a2cfa85c9ee633974e69df68d9ec588f1":[4,0,0,13,6],
-"classgg_1_1GgTriangles.html#a2cfa85c9ee633974e69df68d9ec588f1":[5,0,0,13,6],
-"classgg_1_1GgTriangles.html#a43ae036c4906d95a450cda3724cb6062":[4,0,0,13,2],
-"classgg_1_1GgTriangles.html#a43ae036c4906d95a450cda3724cb6062":[5,0,0,13,2]
+"classgg_1_1GgTriangles.html#a2cfa85c9ee633974e69df68d9ec588f1":[4,0,0,13,6]
 };
