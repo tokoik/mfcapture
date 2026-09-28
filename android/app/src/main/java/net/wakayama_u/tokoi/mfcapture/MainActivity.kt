@@ -130,8 +130,12 @@ fun MainScreen() {
         }
     }
 
+    // キャプチャフレーム解像度 (アスペクト比計算用)
+    var frameWidth by remember { mutableStateOf(1280) }
+    var frameHeight by remember { mutableStateOf(720) }
+
     // 一括ポーリングによる UI 状態の同期 (Mutex 競合を解消)
-    val statusArray = remember { FloatArray(6) }
+    val statusArray = remember { FloatArray(8) }
     LaunchedEffect(Unit) {
         while (true) {
             NativeBridge.nativeGetStatus(statusArray)
@@ -141,13 +145,38 @@ fun MainScreen() {
             undistortionMode = statusArray[3].toInt()
             markerLength = statusArray[4]
             fps = statusArray[5]
+            if (statusArray.size >= 8 && statusArray[6] > 0f && statusArray[7] > 0f) {
+                frameWidth = statusArray[6].toInt()
+                frameHeight = statusArray[7].toInt()
+            }
             delay(100)
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black),
+        contentAlignment = Alignment.Center
+    ) {
         if (hasCameraPermission) {
-            // 最背面: C++ / ANativeWindow 直接描画を行う SurfaceView
+            // アスペクト比を維持した SurfaceView のレイアウトサイズを計算 (Contain 方式)
+            val videoAspect = if (frameWidth > 0 && frameHeight > 0) {
+                frameWidth.toFloat() / frameHeight.toFloat()
+            } else {
+                16f / 9f
+            }
+
+            val screenAspect = maxWidth / maxHeight
+            val (surfaceWidth, surfaceHeight) = if (screenAspect > videoAspect) {
+                // 画面の方が横長 -> 画面の高さに合わせる（左右に黒帯）
+                Pair(maxHeight * videoAspect, maxHeight)
+            } else {
+                // 画面の方が縦長 -> 画面の幅に合わせる（上下に黒帯）
+                Pair(maxWidth, maxWidth / videoAspect)
+            }
+
+            // 最背面: C++ / ANativeWindow 直接描画を行う SurfaceView (アスペクト比維持)
             AndroidView(
                 factory = { ctx ->
                     SurfaceView(ctx).apply {
@@ -173,7 +202,7 @@ fun MainScreen() {
                         })
                     }
                 },
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.size(surfaceWidth, surfaceHeight)
             )
 
             // 画面タップ検知用の透明レイヤー（SurfaceView の前面、UI コントロールの背面）

@@ -300,6 +300,11 @@ namespace mfcapture
     outStatus[3] = (undistortionMode == UndistortionMode::OpenCV) ? 1.0f : 0.0f;
     outStatus[4] = menu ? menu->getMarkerLength() : 0.0f;
     outStatus[5] = currentFps;
+    if (count >= 8)
+    {
+      outStatus[6] = static_cast<float>(frameWidth.load());
+      outStatus[7] = static_cast<float>(frameHeight.load());
+    }
   }
 
   void NativeEngine::renderLoop()
@@ -398,6 +403,8 @@ namespace mfcapture
           const bool hasNewFrame{ capture->retrieve(cpuFrame) };
           if (hasNewFrame && !cpuFrame.empty())
           {
+            frameWidth = cpuFrame.cols;
+            frameHeight = cpuFrame.rows;
             cv::Mat targetFrame;
 
             // 1. OpenCV 歪み補正 (較正データがロードされている場合)
@@ -623,9 +630,22 @@ extern "C"
     if (!outStatus) return;
     jsize len = env->GetArrayLength(outStatus);
     if (len < 6) return;
-    jfloat buf[6]{};
-    mfcapture::NativeEngine::getInstance().getStatus(buf, 6);
-    env->SetFloatArrayRegion(outStatus, 0, 6, buf);
+    const int count{ std::min(static_cast<int>(len), 8) };
+    jfloat buf[8]{};
+    mfcapture::NativeEngine::getInstance().getStatus(buf, count);
+    env->SetFloatArrayRegion(outStatus, 0, count, buf);
+  }
+
+  JNIEXPORT jint JNICALL Java_net_wakayama_1u_tokoi_mfcapture_NativeBridge_nativeGetFrameWidth(
+    JNIEnv*, jclass)
+  {
+    return mfcapture::NativeEngine::getInstance().getFrameWidth();
+  }
+
+  JNIEXPORT jint JNICALL Java_net_wakayama_1u_tokoi_mfcapture_NativeBridge_nativeGetFrameHeight(
+    JNIEnv*, jclass)
+  {
+    return mfcapture::NativeEngine::getInstance().getFrameHeight();
   }
 }
 

@@ -39,4 +39,8 @@ object NativeBridge {
     external fun nativeSetUndistortionMode(mode: Int)
 
     external fun nativeGetStatus(outStatus: FloatArray)
+
+    // フレーム解像度
+    external fun nativeGetFrameWidth(): Int
+    external fun nativeGetFrameHeight(): Int
 }

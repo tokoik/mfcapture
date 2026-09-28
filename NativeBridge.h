@@ -78,6 +78,12 @@ namespace mfcapture
     /// ウィンドウサイズ更新フラグ
     std::atomic<bool> sizeChanged{ false };
 
+    /// キャプチャフレームの幅
+    std::atomic<int> frameWidth{ 1280 };
+
+    /// キャプチャフレームの高さ
+    std::atomic<int> frameHeight{ 720 };
+
     ///
     /// レンダリングループ本体 (ANativeWindow 直接描画)
     ///
@@ -141,6 +147,20 @@ namespace mfcapture
     /// @return キャプチャ中なら true
     ///
     bool isCapturing() const;
+
+    ///
+    /// キャプチャフレームの幅を取得する
+    ///
+    /// @return キャプチャフレームの幅 (px)
+    ///
+    int getFrameWidth() const { return frameWidth.load(); }
+
+    ///
+    /// キャプチャフレームの高さを取得する
+    ///
+    /// @return キャプチャフレームの高さ (px)
+    ///
+    int getFrameHeight() const { return frameHeight.load(); }
 
     // --- ArUco Marker 認識 ---
     bool isDetectMarker() const;
