@@ -43,4 +43,10 @@ object NativeBridge {
     // フレーム解像度
     external fun nativeGetFrameWidth(): Int
     external fun nativeGetFrameHeight(): Int
+
+    // カメラ解像度選択
+    external fun nativeGetResolutionCount(): Int
+    external fun nativeGetResolutionByIndex(index: Int): String
+    external fun nativeGetCurrentResolution(): String
+    external fun nativeSelectResolution(resolution: String): Boolean
 }

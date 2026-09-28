@@ -316,22 +316,41 @@ $(function(){initNavTree('Menu_8h_source.html','',''); });
 </div>
 <div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span></div>
 <div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classMenu.html#a6763d1f2af5a47c38ae5337a7637ad7e">initializeInputIntrinsics</a>(<span class="keyword">const</span> std::array&lt;int, 2&gt;&amp; size);</div>
-<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span></div>
-<div class="foldopen" id="foldopen00407" data-start="{" data-end="}">
-<div class="line"><a id="l00407" name="l00407"></a><span class="lineno"><a class="line" href="classMenu.html#a1bd433ba6365bdd8dc5290a845cd194d">  407</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="classMenu.html#a1bd433ba6365bdd8dc5290a845cd194d">getUndistortionMode</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span><span class="keyword">  </span>{</div>
-<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>    <span class="keywordflow">return</span> undistortionMode;</div>
-<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>  }</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span> </div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span><span class="preprocessor">#if defined(_WIN32) || defined(__ANDROID__) || defined(__APPLE__)</span></div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>  <span class="keywordtype">int</span> getResolutionCount()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(uniqueResolutions.size());</div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>  }</div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span></div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>  std::string getResolutionByIndex(<span class="keywordtype">int</span> index)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>    <span class="keywordflow">return</span> (index &gt;= 0 &amp;&amp; index &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(uniqueResolutions.size())) ? uniqueResolutions[index] : std::string{};</div>
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>  }</div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span></div>
+<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span>  <span class="keyword">const</span> std::string&amp; getCurrentResolution()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span>    <span class="keywordflow">return</span> currentRes;</div>
+<div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span>  }</div>
+<div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span></div>
+<div class="line"><a id="l00440" name="l00440"></a><span class="lineno">  440</span>  <span class="keywordtype">bool</span> selectResolution(<span class="keyword">const</span> std::string&amp; resolution);</div>
+<div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00442" name="l00442"></a><span class="lineno">  442</span></div>
+<div class="foldopen" id="foldopen00448" data-start="{" data-end="}">
+<div class="line"><a id="l00448" name="l00448"></a><span class="lineno"><a class="line" href="classMenu.html#a1bd433ba6365bdd8dc5290a845cd194d">  448</a></span>  <span class="keyword">auto</span> <a class="code hl_function" href="classMenu.html#a1bd433ba6365bdd8dc5290a845cd194d">getUndistortionMode</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00449" name="l00449"></a><span class="lineno">  449</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00450" name="l00450"></a><span class="lineno">  450</span>    <span class="keywordflow">return</span> undistortionMode;</div>
+<div class="line"><a id="l00451" name="l00451"></a><span class="lineno">  451</span>  }</div>
 </div>
-<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span> </div>
-<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span><span class="preprocessor">#if !defined(__ANDROID__)</span></div>
-<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>  std::array&lt;GLsizei, 2&gt; <a class="code hl_function" href="classMenu.html#a4f36a627c2bbe5c84d9722779dab5ed9">setupUndistortion</a>(GLfloat aspect) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span></div>
-<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span>  std::array&lt;GLsizei, 2&gt; <a class="code hl_function" href="classMenu.html#a144b100568382513c749f88bd7b92495">setup</a>(GLfloat aspect) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span></div>
-<div class="line"><a id="l00435" name="l00435"></a><span class="lineno">  435</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classMenu.html#a2cd7ab9901a8f42a3ae977d0774398a6">draw</a>();</div>
-<div class="line"><a id="l00436" name="l00436"></a><span class="lineno">  436</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00437" name="l00437"></a><span class="lineno">  437</span>};</div>
+<div class="line"><a id="l00452" name="l00452"></a><span class="lineno">  452</span> </div>
+<div class="line"><a id="l00453" name="l00453"></a><span class="lineno">  453</span><span class="preprocessor">#if !defined(__ANDROID__)</span></div>
+<div class="line"><a id="l00460" name="l00460"></a><span class="lineno">  460</span>  std::array&lt;GLsizei, 2&gt; <a class="code hl_function" href="classMenu.html#a4f36a627c2bbe5c84d9722779dab5ed9">setupUndistortion</a>(GLfloat aspect) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00461" name="l00461"></a><span class="lineno">  461</span></div>
+<div class="line"><a id="l00471" name="l00471"></a><span class="lineno">  471</span>  std::array&lt;GLsizei, 2&gt; <a class="code hl_function" href="classMenu.html#a144b100568382513c749f88bd7b92495">setup</a>(GLfloat aspect) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00472" name="l00472"></a><span class="lineno">  472</span></div>
+<div class="line"><a id="l00476" name="l00476"></a><span class="lineno">  476</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classMenu.html#a2cd7ab9901a8f42a3ae977d0774398a6">draw</a>();</div>
+<div class="line"><a id="l00477" name="l00477"></a><span class="lineno">  477</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00478" name="l00478"></a><span class="lineno">  478</span>};</div>
 </div>
 <div class="ttc" id="aAruco_8h_html"><div class="ttname"><a href="Aruco_8h.html">Aruco.h</a></div></div>
 <div class="ttc" id="aCapture_8h_html"><div class="ttname"><a href="Capture_8h.html">Capture.h</a></div></div>
@@ -348,7 +367,7 @@ $(function(){initNavTree('Menu_8h_source.html','',''); });
 <div class="ttc" id="aclassMenu_html_a0d4fe5cb8194f53e9ac108dc6a2faac0"><div class="ttname"><a href="classMenu.html#a0d4fe5cb8194f53e9ac108dc6a2faac0">Menu::startCapture</a></div><div class="ttdeci">bool startCapture()</div><div class="ttdef"><b>Definition</b> <a href="Menu_8cpp_source.html#l00582">Menu.cpp:582</a></div></div>
 <div class="ttc" id="aclassMenu_html_a144b100568382513c749f88bd7b92495"><div class="ttname"><a href="classMenu.html#a144b100568382513c749f88bd7b92495">Menu::setup</a></div><div class="ttdeci">std::array&lt; GLsizei, 2 &gt; setup(GLfloat aspect) const</div><div class="ttdef"><b>Definition</b> <a href="Menu_8cpp_source.html#l00675">Menu.cpp:675</a></div></div>
 <div class="ttc" id="aclassMenu_html_a160e3cf22b6e1f966c84e195f20542e5"><div class="ttname"><a href="classMenu.html#a160e3cf22b6e1f966c84e195f20542e5">Menu::detectMarker</a></div><div class="ttdeci">bool detectMarker</div><div class="ttdoc">ArUco Marker を検出するなら true</div><div class="ttdef"><b>Definition</b> <a href="#l00259">Menu.h:259</a></div></div>
-<div class="ttc" id="aclassMenu_html_a1bd433ba6365bdd8dc5290a845cd194d"><div class="ttname"><a href="classMenu.html#a1bd433ba6365bdd8dc5290a845cd194d">Menu::getUndistortionMode</a></div><div class="ttdeci">auto getUndistortionMode() const</div><div class="ttdef"><b>Definition</b> <a href="#l00407">Menu.h:407</a></div></div>
+<div class="ttc" id="aclassMenu_html_a1bd433ba6365bdd8dc5290a845cd194d"><div class="ttname"><a href="classMenu.html#a1bd433ba6365bdd8dc5290a845cd194d">Menu::getUndistortionMode</a></div><div class="ttdeci">auto getUndistortionMode() const</div><div class="ttdef"><b>Definition</b> <a href="#l00448">Menu.h:448</a></div></div>
 <div class="ttc" id="aclassMenu_html_a1e5ffef596e3987246aac6c410e4fab9"><div class="ttname"><a href="classMenu.html#a1e5ffef596e3987246aac6c410e4fab9">Menu::prioritizeLatency</a></div><div class="ttdeci">bool prioritizeLatency</div><div class="ttdoc">レイテンシを優先するなら true</div><div class="ttdef"><b>Definition</b> <a href="#l00256">Menu.h:256</a></div></div>
 <div class="ttc" id="aclassMenu_html_a1fb469a852bcd1eea11afa514aa3fed8"><div class="ttname"><a href="classMenu.html#a1fb469a852bcd1eea11afa514aa3fed8">Menu::Menu</a></div><div class="ttdeci">Menu(const Menu &amp;menu)=delete</div></div>
 <div class="ttc" id="aclassMenu_html_a22fccb819445ce795682b226a637f24c"><div class="ttname"><a href="classMenu.html#a22fccb819445ce795682b226a637f24c">Menu::getMarkerLength</a></div><div class="ttdeci">auto getMarkerLength() const</div><div class="ttdef"><b>Definition</b> <a href="#l00367">Menu.h:367</a></div></div>

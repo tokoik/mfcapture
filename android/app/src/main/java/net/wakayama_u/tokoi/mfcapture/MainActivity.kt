@@ -405,6 +405,16 @@ fun SettingsContent(
     }
     var dictExpanded by remember { mutableStateOf(false) }
 
+    val resCount = remember { NativeBridge.nativeGetResolutionCount() }
+    val resList = remember {
+        (0 until resCount).map { NativeBridge.nativeGetResolutionByIndex(it) }
+    }
+    var currentRes by remember {
+        val cur = NativeBridge.nativeGetCurrentResolution()
+        mutableStateOf(if (cur.isNotEmpty()) cur else resList.firstOrNull() ?: "1280 x 720")
+    }
+    var resExpanded by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -417,6 +427,43 @@ fun SettingsContent(
             fontWeight = FontWeight.Bold,
             color = Color.White
         )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // --- カメラ解像度 ---
+        Text("カメラ解像度", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+        Spacer(modifier = Modifier.height(4.dp))
+        ExposedDropdownMenuBox(
+            expanded = resExpanded,
+            onExpandedChange = { resExpanded = !resExpanded }
+        ) {
+            OutlinedTextField(
+                value = currentRes,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = resExpanded) },
+                modifier = Modifier
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                    .fillMaxWidth()
+            )
+            ExposedDropdownMenu(
+                expanded = resExpanded,
+                onDismissRequest = { resExpanded = false }
+            ) {
+                resList.forEach { res ->
+                    DropdownMenuItem(
+                        text = { Text(res) },
+                        onClick = {
+                            currentRes = res
+                            NativeBridge.nativeSelectResolution(res)
+                            resExpanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        HorizontalDivider()
         Spacer(modifier = Modifier.height(16.dp))
 
         // --- レンズ歪み補正 ---

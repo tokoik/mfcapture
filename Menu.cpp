@@ -1,4 +1,4 @@
-///
+﻿///
 /// メニューの描画クラスの実装
 ///
 /// @file
@@ -1285,5 +1285,41 @@ void Menu::draw()
   drawInputPanel();
   drawArucoPanel();
   drawErrorDialog();
+}
+#endif
+
+#if defined(_WIN32) || defined(__ANDROID__) || defined(__APPLE__)
+//
+// カメラ解像度を選択する
+//
+bool Menu::selectResolution(const std::string& resolution)
+{
+  if (resolution == currentRes && bool(capture)) return true;
+
+  for (const auto& item : availableFormats)
+  {
+    if (item.resolution == resolution)
+    {
+      currentRes = resolution;
+      currentFps = item.fps;
+      currentCodec = item.codec;
+      formatNumber = item.index;
+
+      if (capture.isOpened())
+      {
+        const bool wasRunning{ bool(capture) };
+        if (wasRunning) capture.stop();
+        if (capture.select(formatNumber))
+        {
+          initializeInputIntrinsics(capture.getSize());
+          if (wasRunning) capture.start();
+          return true;
+        }
+      }
+      break;
+    }
+  }
+
+  return false;
 }
 #endif
