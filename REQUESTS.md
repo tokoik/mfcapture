@@ -135,4 +135,5 @@
   - `Config::initialImage` の定義を `Menu.cpp` から `Config.cpp` へ移した。
   - BOM が欠けていた C++ ソース（`Aruco.h`, `CamImage.h`, `Capture.h`, `Capture.cpp`, `Config.h`, `Config.cpp`）に BOM を付与した。
   - `GEMINI.md`、`REQUESTS.md`、`README.md` から古い記述や重複を整理した。
+  - Doxygen の HTML と `docs/pdf/refman.pdf`（916 ページ）を更新した。
 - **検証**: Windows の Debug / Release、Android の Debug APK のビルドが成功し、`git diff --check` とソースコードに関する Doxygen 警告がないことを確認した。
