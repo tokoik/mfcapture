@@ -363,6 +363,26 @@ public:
   }
 
   ///
+  /// 設定データを得る
+  ///
+  /// @return 設定データへの参照
+  ///
+  const auto& getSettings() const
+  {
+    return settings;
+  }
+
+  ///
+  /// 設定データを得る
+  ///
+  /// @return 設定データへの参照
+  ///
+  auto& getSettings()
+  {
+    return settings;
+  }
+
+  ///
   /// 入力画像に合わせて内部パラメータを初期化する
   ///
   /// @param size 開かれた入力フレームの解像度

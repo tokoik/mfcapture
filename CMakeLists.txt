@@ -217,6 +217,7 @@ set(HEADER_FILES_LIST
     Preference.h
     Texture.h
     Undistortion.h
+    NativeBridge.h
     gg.h
     parseconfig.h
 )
@@ -304,6 +305,8 @@ if(ANDROID)
     set(PLATFORM_SOURCES
         CamAndroid.cpp
         CamAndroid.h
+        NativeBridge.cpp
+        NativeBridge.h
         ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c
     )
 
