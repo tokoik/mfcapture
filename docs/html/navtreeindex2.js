@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"classgg_1_1GgMatrix.html#a0c9004fe440a597d57f52e1d1ac05c6a":[4,0,0,1,77],
 "classgg_1_1GgMatrix.html#a0c9004fe440a597d57f52e1d1ac05c6a":[5,0,0,1,77],
 "classgg_1_1GgMatrix.html#a0d6e22e769769b44d6942062db8b5b40":[4,0,0,1,50],
 "classgg_1_1GgMatrix.html#a0d6e22e769769b44d6942062db8b5b40":[5,0,0,1,50],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "classgg_1_1GgPoints.html#a7f3cad112cdcb664771259eebac5874c":[4,0,0,11,5],
 "classgg_1_1GgPoints.html#a7f3cad112cdcb664771259eebac5874c":[5,0,0,11,5],
 "classgg_1_1GgPoints.html#aa1e392b623c66b9d82aaa2f899b58cfa":[4,0,0,11,6],
-"classgg_1_1GgPoints.html#aa1e392b623c66b9d82aaa2f899b58cfa":[5,0,0,11,6],
-"classgg_1_1GgPoints.html#aa9170eea649cf940adc6698d98964bd4":[4,0,0,11,1]
+"classgg_1_1GgPoints.html#aa1e392b623c66b9d82aaa2f899b58cfa":[5,0,0,11,6]
 };

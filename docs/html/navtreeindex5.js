@@ -1,5 +1,6 @@
 var NAVTREEINDEX5 =
 {
+"classgg_1_1GgTrackball.html#af0ff2b315542776b0b465f5e166c4c8a":[4,0,0,3,16],
 "classgg_1_1GgTrackball.html#af0ff2b315542776b0b465f5e166c4c8a":[5,0,0,3,16],
 "classgg_1_1GgTriangles.html":[4,0,0,13],
 "classgg_1_1GgTriangles.html":[5,0,0,13],
@@ -248,6 +249,5 @@ var NAVTREEINDEX5 =
 "md_presentation.html#autotoc_md15":[1,4],
 "md_presentation.html#autotoc_md17":[1,5],
 "md_presentation.html#autotoc_md18":[1,5,0],
-"md_presentation.html#autotoc_md19":[1,5,1],
-"md_presentation.html#autotoc_md2":[1,0]
+"md_presentation.html#autotoc_md19":[1,5,1]
 };

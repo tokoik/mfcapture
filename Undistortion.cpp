@@ -1,4 +1,4 @@
-///
+﻿///
 /// 歪補正処理クラスの実装
 ///
 /// @file
@@ -91,6 +91,19 @@ bool Undistortion::load(const std::string& filename)
   // 両方の行列が正常な場合だけ、新しい較正値へまとめて置き換える。
   cameraMatrix = std::move(loadedCamera);
   distortion = std::move(loadedDistortion);
+
+  // 較正ファイルに画像サイズが記録されていれば読み込む。
+  imageSize = cv::Size{ 0, 0 };
+  auto sizeIt{ object.find("size") };
+  if (sizeIt == object.end()) sizeIt = object.find("image size");
+  if (sizeIt != object.end() && sizeIt->second.is<picojson::array>())
+  {
+    const auto& arr{ sizeIt->second.get<picojson::array>() };
+    if (arr.size() == 2 && arr[0].is<double>() && arr[1].is<double>())
+    {
+      imageSize = cv::Size{ static_cast<int>(arr[0].get<double>()), static_cast<int>(arr[1].get<double>()) };
+    }
+  }
 
   // 較正値が変わったため、古い値から作った OpenCV の補正マップを無効化する。
   mapX.release();

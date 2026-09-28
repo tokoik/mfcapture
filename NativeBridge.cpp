@@ -256,6 +256,11 @@ namespace mfcapture
     if (ok)
     {
       LOGI("Successfully loaded calibration: %s", filename.c_str());
+      const auto& calibSize{ undistortion->getImageSize() };
+      if (menu && calibSize.width > 0 && calibSize.height > 0)
+      {
+        menu->selectBestResolution(calibSize.width, calibSize.height);
+      }
     }
     else
     {

@@ -451,6 +451,17 @@ void Menu::loadCalibration()
       // だから画像を補正しない
       undistortionMode = UndistortionMode::None;
     }
+#if defined(_WIN32) || defined(__ANDROID__) || defined(__APPLE__)
+    else
+    {
+      // 較正ファイルに解像度が記録されていれば、最も近い解像度に自動で切り替える
+      const auto& calibSize{ undistortion.getImageSize() };
+      if (calibSize.width > 0 && calibSize.height > 0)
+      {
+        selectBestResolution(calibSize.width, calibSize.height);
+      }
+    }
+#endif
 
     // ファイルパスの取り出しに使ったメモリを開放する
     NFD_FreePath(filepath);
@@ -1318,6 +1329,56 @@ bool Menu::selectResolution(const std::string& resolution)
       }
       break;
     }
+  }
+
+  return false;
+}
+
+//
+// 指定された解像度に最も近いカメラ解像度を選択する
+//
+bool Menu::selectBestResolution(int targetWidth, int targetHeight)
+{
+  if (targetWidth <= 0 || targetHeight <= 0) return false;
+  if (availableFormats.empty()) return false;
+
+  int bestIndex{ -1 };
+  int bestScore{ std::numeric_limits<int>::max() };
+  std::string bestRes;
+
+  const int targetArea{ targetWidth * targetHeight };
+  const double targetAspect{ static_cast<double>(targetWidth) / targetHeight };
+
+  for (const auto& item : availableFormats)
+  {
+    int fw{ 0 }, fh{ 0 };
+    if (sscanf(item.resolution.c_str(), "%d x %d", &fw, &fh) == 2)
+    {
+      if (fw == targetWidth && fh == targetHeight)
+      {
+        bestIndex = item.index;
+        bestRes = item.resolution;
+        break;
+      }
+
+      // 画素数の差とアスペクト比の差からスコアを算出
+      const int areaDiff{ std::abs(fw * fh - targetArea) };
+      const double aspectDiff{ std::abs((static_cast<double>(fw) / fh) - targetAspect) };
+      // アスペクト比が大きく異なるものはペナルティを加算
+      const int score{ areaDiff + static_cast<int>(aspectDiff * 1000000.0) };
+
+      if (score < bestScore)
+      {
+        bestScore = score;
+        bestIndex = item.index;
+        bestRes = item.resolution;
+      }
+    }
+  }
+
+  if (bestIndex >= 0 && !bestRes.empty())
+  {
+    return selectResolution(bestRes);
   }
 
   return false;

@@ -438,6 +438,15 @@ public:
   /// @return 変更に成功したら true
   ///
   bool selectResolution(const std::string& resolution);
+
+  ///
+  /// 指定された解像度に最も近いカメラ解像度を選択する
+  ///
+  /// @param targetWidth 目標とする解像度の幅 (px)
+  /// @param targetHeight 目標とする解像度の高さ (px)
+  /// @return 変更に成功したら true
+  ///
+  bool selectBestResolution(int targetWidth, int targetHeight);
 #endif
 
   ///
