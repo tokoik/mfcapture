@@ -514,6 +514,7 @@ Menu::Menu(Config& config, Capture& capture, Undistortion& undistortion, Aruco& 
   //ImGui::StyleColorsDark();                                 // 暗めのスタイル
   //ImGui::StyleColorsClassic();                              // 以前のスタイル
 
+#if !defined(__ANDROID__)
   // 日本語を表示できるメニューフォントを読み込む
   // 基本の日本語グリフセット（常用・人名用漢字、ひらがな、カタカナ、英数字）に加え、
   // デバイス名等に含まれる一般句読点（引用符、ダッシュ等）や文字様記号（商標記号等）を追加する
@@ -542,6 +543,7 @@ Menu::Menu(Config& config, Capture& capture, Undistortion& undistortion, Aruco& 
     // メニューフォントが読み込めなかったらエラーにする
     throw std::runtime_error("Cannot find any menu fonts.");
   }
+#endif
 
 #if defined(_WIN32) || defined(__ANDROID__) || defined(__APPLE__)
   // 初期状態で最初のデバイスのフォーマットリストを取得しておく
@@ -1308,14 +1310,12 @@ void Menu::drawErrorDialog()
 //
 void Menu::draw()
 {
+#if !defined(__ANDROID__)
   // 各ウィンドウの描画責務を分離し、この関数では一フレーム分の呼び出し順だけを管理する
   drawMainMenuBar();
   drawInputPanel();
   drawArucoPanel();
   drawErrorDialog();
-
-#if defined(__ANDROID__)
-  drawFileModal();
 #endif
 }
 
