@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['共通処理における命名規約・コメントの統一とドキュメント同期_0',['12. 共通処理における命名規約・コメントの統一とドキュメント同期',['../md_REQUESTS.html#autotoc_md98',1,'']]]
+  ['処理概略と_20corners_20size_204_20の理由_0',['処理概略と &lt;span class=&quot;tt&quot;&gt;corners.size() &amp;gt;= 4&lt;/span&gt; の理由',['../md_presentation.html#autotoc_md37',1,'']]]
 ];

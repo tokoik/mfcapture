@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['理論と基礎_0',['前半: 理論と基礎',['../md_presentation.html#autotoc_md18',1,'']]]
+  ['画像処理パイプライン_0',['4. 画像処理パイプライン',['../md_GEMINI.html#autotoc_md4',1,'']]]
 ];

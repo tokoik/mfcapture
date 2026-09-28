@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['特殊文字エラー解消、および_20doxygen_20マニュアル_20html_20pdf_20作成_0',['22. ドキュメントの整理、LaTeX 特殊文字エラー解消、および Doxygen マニュアル (HTML/PDF) 作成',['../md_REQUESTS.html#autotoc_md108',1,'']]]
+  ['理論と基礎_0',['前半: 理論と基礎',['../md_presentation.html#autotoc_md18',1,'']]]
 ];

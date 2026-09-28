@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['接線歪み_20tangential_20distortion_0',['2. 接線歪み (Tangential Distortion)',['../md_presentation.html#autotoc_md26',1,'']]]
+  ['描画ループ内の_20framebuffer_3a_3aresize_20の確認_0',['5. 描画ループ内の &lt;span class=&quot;tt&quot;&gt;Framebuffer::resize()&lt;/span&gt; の確認',['../md_REQUESTS.html#autotoc_md91',1,'']]]
 ];

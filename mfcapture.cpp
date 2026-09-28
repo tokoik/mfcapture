@@ -24,6 +24,13 @@
 // ArUco Marker 認識
 #include "Aruco.h"
 
+// 標準ライブラリ
+#include <chrono>
+#include <iostream>
+#if defined(__ANDROID__)
+#include <android/log.h>
+#endif
+
 // 構成ファイル名
 #define CONFIG_FILE PROJECT_NAME "_config.json"
 
@@ -75,6 +82,24 @@ int GgApp::main(int argc, const char* const* argv)
   // ウィンドウが開いている間繰り返す
   while (window && menu)
   {
+    // 描画フレームレートの実測と診断出力 (2秒ごと)
+    static auto lastRenderFpsReport{ std::chrono::steady_clock::now() };
+    static int renderFrameCount{ 0 };
+    ++renderFrameCount;
+    const auto currentFrameTime{ std::chrono::steady_clock::now() };
+    const auto renderElapsed{ std::chrono::duration<double>(currentFrameTime - lastRenderFpsReport).count() };
+    if (renderElapsed >= 2.0)
+    {
+      const double rFps{ renderFrameCount / renderElapsed };
+#if defined(__ANDROID__)
+      __android_log_print(ANDROID_LOG_INFO, "mfcapture", "mfcapture: Render FPS = %.1f", rFps);
+#else
+      std::cout << "mfcapture: Render FPS = " << rFps << std::endl;
+#endif
+      renderFrameCount = 0;
+      lastRenderFpsReport = currentFrameTime;
+    }
+
     // メニューを表示して設定を更新する
     menu.draw();
 

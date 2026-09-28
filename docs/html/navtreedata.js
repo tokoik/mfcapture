@@ -103,7 +103,7 @@ var NAVTREE =
       [ "開発時の確認事項", "md_README.html#autotoc_md79", null ],
       [ "ドキュメント・関連資料", "md_README.html#autotoc_md80", [
         [ "開発・管理ドキュメント", "md_README.html#autotoc_md81", null ],
-        [ "モジュール解説ドキュメント", "md_README.html#autotoc_md82", null ],
+        [ "プラットフォーム・機能別ガイド (docs)", "md_README.html#autotoc_md82", null ],
         [ "勉強会プレゼンテーション・ハンドブック", "md_README.html#autotoc_md83", null ]
       ] ]
     ] ],

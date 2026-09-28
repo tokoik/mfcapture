@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['結果・アスペクト比の完全一致_0',['16. レンズ歪み補正の 2 パス描画パイプライン統合 (OpenCV / OpenGL 結果・アスペクト比の完全一致)',['../md_REQUESTS.html#autotoc_md102',1,'']]]
+  ['補正_0',['補正',['../md_README.html#autotoc_md64',1,'OpenCV 方式 (CPU 補正)'],['../md_README.html#autotoc_md65',1,'OpenGL 方式 (GPU 補正)']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['モジュール解説ドキュメント_0',['モジュール解説ドキュメント',['../md_README.html#autotoc_md82',1,'']]]
+  ['リソース管理と安全性_0',['8. リソース管理と安全性',['../md_GEMINI.html#autotoc_md8',1,'']]]
 ];

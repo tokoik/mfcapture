@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['入力とキャプチャ_0',['3. 入力とキャプチャ',['../md_GEMINI.html#autotoc_md3',1,'']]]
+  ['全体システムアーキテクチャ_0',['5. 全体システムアーキテクチャ',['../md_presentation.html#autotoc_md43',1,'']]]
 ];

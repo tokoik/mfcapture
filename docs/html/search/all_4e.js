@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['教材向けコメントと_20doxygen_20の整備_0',['8. 教材向けコメントと Doxygen の整備',['../md_REQUESTS.html#autotoc_md94',1,'']]]
+  ['方式_20cpu_20補正_0',['OpenCV 方式 (CPU 補正)',['../md_README.html#autotoc_md64',1,'']]],
+  ['方式_20gpu_20補正_1',['OpenGL 方式 (GPU 補正)',['../md_README.html#autotoc_md65',1,'']]]
 ];
