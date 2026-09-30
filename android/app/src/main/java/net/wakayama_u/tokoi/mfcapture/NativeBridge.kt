@@ -40,6 +40,9 @@ object NativeBridge {
 
     external fun nativeGetStatus(outStatus: FloatArray)
 
+    // 較正時の解像度に関する警告の文言 (警告が無ければ空文字列)
+    external fun nativeGetCalibrationWarning(): String
+
     // フレーム解像度
     external fun nativeGetFrameWidth(): Int
     external fun nativeGetFrameHeight(): Int

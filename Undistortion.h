@@ -26,12 +26,27 @@ enum class UndistortionMode
 };
 
 ///
+/// 較正時の画像サイズと入力画像のサイズの関係
+///
+enum class CalibrationSizeMatch
+{
+  Unknown,       ///< 較正ファイルに画像サイズが記録されていないので換算しない
+  Exact,         ///< 較正時と同じ解像度
+  Scaled,        ///< アスペクト比は同じで解像度が違うので、カメラ行列を換算して使う
+  AspectMismatch ///< アスペクト比が違うので、換算しても正しく補正できない
+};
+
+///
 /// calib が出力した内部パラメータを読み込み、レンズ歪みを補正するクラス
 ///
 /// @details
 /// 較正ファイルの "camera matrix" と "distortion" を保持する。
 /// OpenCV 方式では補正マップを作って cv::remap() に渡し、OpenGL 方式では
 /// 同じ値を GLSL の uniform へ渡せるよう float 配列へ変換する。
+///
+/// カメラ行列は較正時の画像の画素単位なので、較正時と解像度が違う入力には
+/// 解像度の比で換算して使う。歪み係数は正規化したカメラ座標で定義されているので、
+/// 解像度によらずそのまま使える。
 ///
 class Undistortion
 {
@@ -50,12 +65,30 @@ class Undistortion
   /// 現在の補正マップを作成した画像サイズ
   cv::Size mapSize{ 0, 0 };
 
+
+
   /// 較正ファイルに記録された画像サイズ
   cv::Size imageSize{ 0, 0 };
 
 public:
 
-///
+  ///
+  /// アスペクト比が同じとみなす相対誤差の上限
+  ///
+  /// @note 1280 x 720 と 854 x 480 のように、画素数の丸めで生じる差を許容する。
+  ///
+  static constexpr double aspectTolerance{ 0.01 };
+
+  ///
+  /// 二つの画像サイズのアスペクト比が同じか調べる
+  ///
+  /// @param a 一方の画像サイズ
+  /// @param b もう一方の画像サイズ
+  /// @return アスペクト比の相対誤差が aspectTolerance 以下なら true
+  ///
+  static bool isSameAspect(const cv::Size& a, const cv::Size& b);
+
+  ///
   /// calib が作成した較正ファイルを読み込む
   ///
   /// @param filename 読み込む JSON ファイルのパス
@@ -83,11 +116,33 @@ public:
   void apply(const cv::Mat& source, cv::Mat& destination);
 
   ///
+  /// 入力画像のサイズが較正時の画像サイズと合っているか調べる
+  ///
+  /// @param size 入力画像のサイズ
+  /// @return 較正時の画像サイズとの関係
+  ///
+  CalibrationSizeMatch matchSize(const cv::Size& size) const;
+
+  ///
+  /// 入力画像のサイズに換算したカメラ行列を得る
+  ///
+  /// @param size 入力画像のサイズ
+  /// @return 換算したカメラ行列 (較正時の画像サイズが不明なら較正値そのもの)
+  ///
+  /// @details
+  /// 焦点距離は幅と高さの比で拡大縮小し、主点は画素の中心を基準にして
+  /// cx' = (cx + 0.5) × s - 0.5 で換算する。
+  /// アスペクト比が違う場合も同じ式で換算するが、正しい補正にはならない。
+  ///
+  cv::Mat getCameraMatrix(const cv::Size& size) const;
+
+  ///
   /// GLSL に渡すカメラ行列の主要成分を得る
   ///
-  /// @return (fx, fy, cx, cy) の順に格納した配列
+  /// @param size 入力画像のサイズ
+  /// @return 入力画像のサイズに換算した (fx, fy, cx, cy) の順に格納した配列
   ///
-  std::array<float, 4> getCameraParameters() const;
+  std::array<float, 4> getCameraParameters(const cv::Size& size) const;
 
   ///
   /// GLSL に渡す歪み係数を得る
@@ -97,9 +152,11 @@ public:
   std::array<float, 5> getDistortionParameters() const;
 
   ///
-  /// カメラ行列を取り出す
+  /// 較正時の画像サイズのカメラ行列を取り出す
   ///
   /// @return カメラ行列への参照
+  ///
+  /// @note 入力画像に使うときは、入力画像のサイズに換算する getCameraMatrix(size) を使う。
   ///
   const cv::Mat& getCameraMatrix() const
   {

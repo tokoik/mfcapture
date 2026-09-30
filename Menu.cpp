@@ -474,6 +474,9 @@ void Menu::loadCalibration()
     }
 #endif
 
+    // 較正値が変わったので、入力の解像度と合っているか調べ直す
+    checkCalibrationSize();
+
     // ファイルパスの取り出しに使ったメモリを開放する
     NFD_FreePath(filepath);
   }
@@ -589,6 +592,43 @@ void Menu::initializeInputIntrinsics(const std::array<int, 2>& size)
   if (size[0] > 0 && size[1] > 0 && settings.focal > 0.0f)
   {
     intrinsics.setFov(settings.focal);
+  }
+
+  // 入力の解像度が変わったので、較正時の解像度と合っているか調べ直す
+  checkCalibrationSize();
+}
+
+//
+// 入力画像の解像度が較正時の解像度と合っているか調べて警告を設定する
+//
+void Menu::checkCalibrationSize()
+{
+  // 較正値を読み込んでいなければ警告しない
+  warningMessage = nullptr;
+  if (!undistortion.ready()) return;
+
+  // 入力の解像度と較正時の解像度の関係に応じた警告を設定する
+  warningMessage = getCalibrationWarningText(
+    undistortion.matchSize(cv::Size{ intrinsics.size[0], intrinsics.size[1] }));
+}
+
+//
+// 較正時の解像度との関係に応じた警告の文言を得る
+//
+const char* Menu::getCalibrationWarningText(CalibrationSizeMatch match)
+{
+  switch (match)
+  {
+  case CalibrationSizeMatch::Scaled:
+    return u8"入力の解像度が較正時と異なるので、較正値を換算して補正します。"
+      u8"解像度によって視野の切り出し方が変わるカメラでは、補正がずれます。";
+
+  case CalibrationSizeMatch::AspectMismatch:
+    return u8"入力のアスペクト比が較正時と異なるので、正しく補正できません。"
+      u8"較正時と同じアスペクト比の解像度を選んでください。";
+
+  default:
+    return nullptr;
   }
 }
 
@@ -721,7 +761,7 @@ std::array<GLsizei, 2> Menu::setupUndistortion(GLfloat aspect) const
 
   return shader.setup(settings.samples, aspect, pose, intrinsics.fov,
     intrinsics.center, settings.getFocal(), config.getBackground(),
-    undistortion.getCameraParameters(),
+    undistortion.getCameraParameters(cv::Size{ intrinsics.size[0], intrinsics.size[1] }),
     undistortion.getDistortionParameters(), intrinsics.size);
 }
 
@@ -736,7 +776,7 @@ std::array<GLsizei, 2> Menu::setup(GLfloat aspect) const
 
   return shader.setup(settings.samples, aspect, pose, intrinsics.fov,
     intrinsics.center, settings.getFocal(), config.getBackground(),
-    undistortion.getCameraParameters(),
+    undistortion.getCameraParameters(cv::Size{ intrinsics.size[0], intrinsics.size[1] }),
     undistortion.getDistortionParameters(), intrinsics.size);
 }
 
@@ -1259,6 +1299,34 @@ void Menu::drawErrorDialog()
     }
     ImGui::End();
   }
+
+  // 較正時の解像度に関する警告が設定されていたら
+  if (warningMessage)
+  {
+    // ウィンドウの位置・サイズとタイトル (エラーと重ならない位置に置く)
+    const float uiScale{ ImGui::GetIO().FontGlobalScale };
+    ImGui::SetNextWindowPos(ImVec2(60.0f * uiScale, 160.0f * uiScale), ImGuiCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(360.0f * uiScale, 0.0f), ImGuiCond_Always);
+
+    // ウィンドウを表示するとき true
+    bool status{ true };
+
+    // 警告ウィンドウを表示する
+    ImGui::Begin(u8"警告", &status);
+
+    // 警告の表示 (長い文はウィンドウの幅で折り返す)
+    ImGui::PushTextWrapPos(0.0f);
+    ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "%s", warningMessage);
+    ImGui::PopTextWrapPos();
+
+    // クローズボックスか「閉じる」ボタンをクリックしたら
+    if (!status || ImGui::Button(u8"閉じる"))
+    {
+      // 警告を消去する (補正は換算した較正値で続ける)
+      warningMessage = nullptr;
+    }
+    ImGui::End();
+  }
 }
 
 //
@@ -1316,10 +1384,17 @@ bool Menu::selectBestResolution(int targetWidth, int targetHeight)
 {
   if (targetWidth <= 0 || targetHeight <= 0) return false;
 
-  // 解像度ごとに一度だけ評価すれば十分なので、重複のない解像度のリストから選ぶ
-  const std::string* bestRes{ nullptr };
-  double bestScore{ std::numeric_limits<double>::max() };
+  // 解像度ごとに一度だけ評価すれば十分なので、重複のない解像度のリストから選ぶ。
+  // 優先順位は (1) 同じ解像度、(2) アスペクト比が同じで画素数が最も近い解像度、
+  // (3) アスペクト比が最も近く、その中で画素数が最も近い解像度とする。
+  // アスペクト比が違うモードは視野の切り出し方が違うので、(3) は補正が正しくならない。
+  const std::string* sameAspectRes{ nullptr };
+  double sameAspectAreaDiff{ std::numeric_limits<double>::max() };
+  const std::string* otherRes{ nullptr };
+  double otherAspectDiff{ std::numeric_limits<double>::max() };
+  double otherAreaDiff{ std::numeric_limits<double>::max() };
 
+  const cv::Size target{ targetWidth, targetHeight };
   const double targetArea{ static_cast<double>(targetWidth) * targetHeight };
   const double targetAspect{ static_cast<double>(targetWidth) / targetHeight };
 
@@ -1329,24 +1404,35 @@ bool Menu::selectBestResolution(int targetWidth, int targetHeight)
     if (!parseResolution(res, fw, fh) || fw <= 0 || fh <= 0) continue;
 
     // 完全に一致する解像度があればそれを使う
-    if (fw == targetWidth && fh == targetHeight)
-    {
-      bestRes = &res;
-      break;
-    }
+    if (fw == targetWidth && fh == targetHeight) return selectResolution(res);
 
-    // 画素数の差に、アスペクト比が大きく異なるもののペナルティを加えてスコアとする
+    // 画素数の差
     const double areaDiff{ std::abs(static_cast<double>(fw) * fh - targetArea) };
-    const double aspectDiff{ std::abs(static_cast<double>(fw) / fh - targetAspect) };
-    const double score{ areaDiff + aspectDiff * 1000000.0 };
 
-    if (score < bestScore)
+    if (Undistortion::isSameAspect(cv::Size{ fw, fh }, target))
     {
-      bestScore = score;
-      bestRes = &res;
+      // アスペクト比が同じものの中では画素数が最も近いものを選ぶ
+      if (areaDiff < sameAspectAreaDiff)
+      {
+        sameAspectAreaDiff = areaDiff;
+        sameAspectRes = &res;
+      }
+    }
+    else
+    {
+      // アスペクト比が違うものは、アスペクト比の差、画素数の差の順に比べる
+      const double aspectDiff{ std::abs(static_cast<double>(fw) / fh - targetAspect) };
+      if (aspectDiff < otherAspectDiff || (aspectDiff == otherAspectDiff && areaDiff < otherAreaDiff))
+      {
+        otherAspectDiff = aspectDiff;
+        otherAreaDiff = areaDiff;
+        otherRes = &res;
+      }
     }
   }
 
+  // 選んだ解像度に切り替える (警告は切り替え後の initializeInputIntrinsics() で設定される)
+  const std::string* const bestRes{ sameAspectRes ? sameAspectRes : otherRes };
   return bestRes && selectResolution(*bestRes);
 }
 #endif

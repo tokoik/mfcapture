@@ -174,6 +174,9 @@ class Menu
   /// エラーが無ければ nullptr
   mutable const char* errorMessage{ nullptr };
 
+  /// 警告が無ければ nullptr
+  const char* warningMessage{ nullptr };
+
   ///
   /// キャプチャデバイスを開く
   ///
@@ -407,6 +410,36 @@ public:
   /// 計算する。中心位置は投影方式の設定値を維持する。
   /// 
   void initializeInputIntrinsics(const std::array<int, 2>& size);
+
+  ///
+  /// 入力画像の解像度が較正時の解像度と合っているか調べて警告を設定する
+  ///
+  /// @details
+  /// 較正ファイルを読み込んだときと、入力画像の解像度が変わったときに呼ぶ。
+  /// 較正時とアスペクト比が同じで解像度が違えばカメラ行列を換算して補正することを、
+  /// アスペクト比が違えば正しく補正できないことを警告する。
+  ///
+  void checkCalibrationSize();
+
+  ///
+  /// 較正時の解像度との関係に応じた警告の文言を得る
+  ///
+  /// @param match 入力画像のサイズと較正時の画像サイズの関係
+  /// @return 警告の文字列 (UTF-8), 警告が無ければ nullptr
+  ///
+  /// @note デスクトップ版の警告ウィンドウと Android 版のダイアログで同じ文言を使う。
+  ///
+  static const char* getCalibrationWarningText(CalibrationSizeMatch match);
+
+  ///
+  /// 較正時の解像度に関する警告を得る
+  ///
+  /// @return 警告の文字列, 警告が無ければ nullptr
+  ///
+  const char* getWarningMessage() const
+  {
+    return warningMessage;
+  }
 
 #if defined(_WIN32) || defined(__ANDROID__) || defined(__APPLE__)
   ///

@@ -105,6 +105,11 @@ fun MainScreen() {
     var markerLength by remember { mutableStateOf(5.0f) }
     var fps by remember { mutableStateOf(0.0f) }
 
+    // 較正時の解像度に関する警告 (0: なし, 1: 換算して補正, 2: アスペクト比が異なる)
+    var calibrationWarningLevel by remember { mutableStateOf(0) }
+    var calibrationWarning by remember { mutableStateOf("") }
+    var showCalibrationWarning by remember { mutableStateOf(false) }
+
     // 較正ファイル選択ピッカー (Storage Access Framework)
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -135,7 +140,7 @@ fun MainScreen() {
     var frameHeight by remember { mutableStateOf(720) }
 
     // 一括ポーリングによる UI 状態の同期 (Mutex 競合を解消)
-    val statusArray = remember { FloatArray(8) }
+    val statusArray = remember { FloatArray(9) }
     LaunchedEffect(Unit) {
         while (true) {
             NativeBridge.nativeGetStatus(statusArray)
@@ -148,6 +153,15 @@ fun MainScreen() {
             if (statusArray.size >= 8 && statusArray[6] > 0f && statusArray[7] > 0f) {
                 frameWidth = statusArray[6].toInt()
                 frameHeight = statusArray[7].toInt()
+            }
+
+            // 較正時の解像度に関する警告が変わったら文言を取り直し、警告があればダイアログで知らせる
+            // (較正ファイルの読み込み、解像度の切り替え、起動時の自動読み込みのいずれでも表示される)
+            val level = statusArray[8].toInt()
+            if (level != calibrationWarningLevel) {
+                calibrationWarningLevel = level
+                calibrationWarning = if (level > 0) NativeBridge.nativeGetCalibrationWarning() else ""
+                showCalibrationWarning = calibrationWarning.isNotEmpty()
             }
             delay(100)
         }
@@ -265,13 +279,23 @@ fun MainScreen() {
                             )
                         }
 
-                        // 較正データ・姿勢推定バッジ
+                        // 較正データ・姿勢推定バッジ (較正時と解像度が違えば色と文言で知らせる)
                         Surface(
-                            color = if (isCalibrated) Color(0xFF2E7D32) else Color(0xFF424242),
+                            color = when {
+                                !isCalibrated -> Color(0xFF424242)
+                                calibrationWarningLevel == 1 -> Color(0xFFEF6C00)
+                                calibrationWarningLevel == 2 -> Color(0xFFC62828)
+                                else -> Color(0xFF2E7D32)
+                            },
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text(
-                                text = if (isCalibrated) "較正済 (姿勢推定ON)" else "未較正 (姿勢推定OFF)",
+                                text = when {
+                                    !isCalibrated -> "未較正 (姿勢推定OFF)"
+                                    calibrationWarningLevel == 1 -> "較正済 (解像度を換算)"
+                                    calibrationWarningLevel == 2 -> "較正済 (縦横比が不一致)"
+                                    else -> "較正済 (姿勢推定ON)"
+                                },
                                 color = Color.White,
                                 fontSize = 12.sp,
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
@@ -360,6 +384,21 @@ fun MainScreen() {
         }
     }
 
+    // --- 較正時の解像度に関する警告ダイアログ (閉じても補正は換算した較正値で続ける) ---
+    if (showCalibrationWarning) {
+        AlertDialog(
+            onDismissRequest = { showCalibrationWarning = false },
+            icon = { Icon(Icons.Default.Warning, contentDescription = null) },
+            title = { Text("較正値の警告") },
+            text = { Text(calibrationWarning) },
+            confirmButton = {
+                TextButton(onClick = { showCalibrationWarning = false }) {
+                    Text("閉じる")
+                }
+            }
+        )
+    }
+
     // --- 設定ボトムシート ---
     if (showSettingsSheet) {
         ModalBottomSheet(
@@ -368,6 +407,7 @@ fun MainScreen() {
         ) {
             SettingsContent(
                 isCalibrated = isCalibrated,
+                calibrationWarning = calibrationWarning,
                 onSelectCalibrationFile = {
                     showSettingsSheet = false
                     filePickerLauncher.launch("*/*")
@@ -384,6 +424,7 @@ fun MainScreen() {
 @Composable
 fun SettingsContent(
     isCalibrated: Boolean,
+    calibrationWarning: String,
     onSelectCalibrationFile: () -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -585,6 +626,17 @@ fun SettingsContent(
             fontSize = 12.sp,
             color = if (isCalibrated) Color(0xFF81C784) else Color(0xFFE57373)
         )
+
+        // 較正時と解像度が違えば、設定画面にも警告を表示し続ける
+        if (isCalibrated && calibrationWarning.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "⚠ $calibrationWarning",
+                fontSize = 12.sp,
+                color = Color(0xFFFFB74D)
+            )
+        }
+
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedButton(
             onClick = onSelectCalibrationFile,
