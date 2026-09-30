@@ -115,7 +115,7 @@ int GgApp::main(int argc, const char* const* argv)
           // 既に歪み補正済みのため、歪み係数はゼロ（空行列）としてカメラパラメータを渡し、
           // 姿勢推定を行って 3 次元の座標軸を描画する。
           aruco.detectMarkers(correctedFrame, menu.getMarkerLength(),
-            undistortion.ready() ? undistortion.getCameraMatrix() : cv::Mat{},
+            undistortion.ready() ? undistortion.getCameraMatrix(correctedFrame.size()) : cv::Mat{},
             cv::Mat{});
         }
 
@@ -150,7 +150,7 @@ int GgApp::main(int argc, const char* const* argv)
         // 既に歪み補正済みのため、歪み係数はゼロ（空行列）としてカメラパラメータを渡し、
         // 姿勢推定を行って 3 次元の座標軸を描画する。
         aruco.detectMarkers(image, menu.getMarkerLength(),
-          undistortion.ready() ? undistortion.getCameraMatrix() : cv::Mat{},
+          undistortion.ready() ? undistortion.getCameraMatrix(size) : cv::Mat{},
           cv::Mat{});
 
         // ピクセルバッファオブジェクトのマップを解除する
@@ -174,7 +174,7 @@ int GgApp::main(int argc, const char* const* argv)
           // 較正パラメータがある場合は歪み係数も渡して姿勢推定を行い座標軸を描く。
           // 較正パラメータがない場合はカメラ行列を渡さず、矩形枠と ID を描く。
           aruco.detectMarkers(sourceFrame, menu.getMarkerLength(),
-            undistortion.ready() ? undistortion.getCameraMatrix() : cv::Mat{},
+            undistortion.ready() ? undistortion.getCameraMatrix(sourceFrame.size()) : cv::Mat{},
             undistortion.ready() ? undistortion.getDistortion() : cv::Mat{});
 
           // マーカー描画済みの生画像を表示用テクスチャへアップロードする。

@@ -19,6 +19,7 @@ namespace
 #include "picojson.h"
 
 // 標準ライブラリ
+#include <cmath>
 #include <fstream>
 
 namespace
@@ -133,10 +134,12 @@ void Undistortion::apply(const cv::Mat& source, cv::Mat& destination)
   }
 
   // 補正座標表は画像サイズに依存するため、サイズが変わったときだけ再計算する。
+  // カメラ行列は入力画像のサイズに換算してから使う。
   if (mapSize != source.size())
   {
-    cv::initUndistortRectifyMap(cameraMatrix, distortion, cv::Mat{},
-      cameraMatrix, source.size(), CV_32FC1, mapX, mapY);
+    const cv::Mat camera{ getCameraMatrix(source.size()) };
+    cv::initUndistortRectifyMap(camera, distortion, cv::Mat{},
+      camera, source.size(), CV_32FC1, mapX, mapY);
     mapSize = source.size();
   }
 
@@ -146,19 +149,76 @@ void Undistortion::apply(const cv::Mat& source, cv::Mat& destination)
 }
 
 //
+// 二つの画像サイズのアスペクト比が同じか調べる
+//
+bool Undistortion::isSameAspect(const cv::Size& a, const cv::Size& b)
+{
+  if (a.width <= 0 || a.height <= 0 || b.width <= 0 || b.height <= 0) return false;
+  const double aspectA{ static_cast<double>(a.width) / a.height };
+  const double aspectB{ static_cast<double>(b.width) / b.height };
+  return std::abs(aspectA / aspectB - 1.0) <= aspectTolerance;
+}
+
+//
+// 入力画像のサイズが較正時の画像サイズと合っているか調べる
+//
+CalibrationSizeMatch Undistortion::matchSize(const cv::Size& size) const
+{
+  // どちらかのサイズが分からなければ判定できない。
+  if (imageSize.width <= 0 || imageSize.height <= 0 || size.width <= 0 || size.height <= 0)
+  {
+    return CalibrationSizeMatch::Unknown;
+  }
+
+  // 同じ解像度ならそのまま使える。
+  if (size == imageSize) return CalibrationSizeMatch::Exact;
+
+  // アスペクト比が同じなら、多くのカメラで同じ視野を拡大縮小したものなので換算して使える。
+  if (isSameAspect(size, imageSize)) return CalibrationSizeMatch::Scaled;
+
+  // アスペクト比が違うモードは視野の切り出し方が違うので、換算しても正しくない。
+  return CalibrationSizeMatch::AspectMismatch;
+}
+
+//
+// 入力画像のサイズに換算したカメラ行列を得る
+//
+cv::Mat Undistortion::getCameraMatrix(const cv::Size& size) const
+{
+  // 換算できないときや同じ解像度のときは較正値をそのまま使う。
+  const auto match{ matchSize(size) };
+  if (match == CalibrationSizeMatch::Unknown || match == CalibrationSizeMatch::Exact)
+  {
+    return cameraMatrix;
+  }
+
+  // 幅と高さの比で焦点距離を拡大縮小し、主点は画素の中心を基準にして換算する。
+  const double sx{ static_cast<double>(size.width) / imageSize.width };
+  const double sy{ static_cast<double>(size.height) / imageSize.height };
+  cv::Mat scaled{ cameraMatrix.clone() };
+  scaled.at<double>(0, 0) *= sx;
+  scaled.at<double>(0, 1) *= sx;
+  scaled.at<double>(0, 2) = (scaled.at<double>(0, 2) + 0.5) * sx - 0.5;
+  scaled.at<double>(1, 1) *= sy;
+  scaled.at<double>(1, 2) = (scaled.at<double>(1, 2) + 0.5) * sy - 0.5;
+  return scaled;
+}
+
+//
 // GLSL に渡すカメラ行列の主要成分を取り出す
 //
-std::array<float, 4> Undistortion::getCameraParameters() const
+std::array<float, 4> Undistortion::getCameraParameters(const cv::Size& size) const
 {
   // 未読込時はゼロ配列を返し、通常シェーダの uniform 設定を安全に行えるようにする。
   if (!ready()) return {};
 
-  // OpenCV のカメラ行列 K から焦点距離と主点だけを float へ変換する。
+  // 入力画像のサイズに換算したカメラ行列 K から焦点距離と主点だけを float へ変換する。
+  const cv::Mat camera{ getCameraMatrix(size) };
   return {
-    static_cast<float>(cameraMatrix.at<double>(0, 0)),
-    static_cast<float>(cameraMatrix.at<double>(1, 1)),
-    static_cast<float>(cameraMatrix.at<double>(0, 2)),
-    static_cast<float>(cameraMatrix.at<double>(1, 2))
+    static_cast<float>(camera.at<double>(0, 0)),
+    static_cast<float>(camera.at<double>(1, 1)),
+    static_cast<float>(camera.at<double>(0, 2)),
+    static_cast<float>(camera.at<double>(1, 2))
   };
 }
 

@@ -214,7 +214,24 @@ namespace mfcapture
     int getUndistortionMode() const;
     void setUndistortionMode(int mode);
 
+    ///
+    /// 入力のフレームの解像度と較正時の解像度の関係を得る
+    ///
+    /// @return 較正値を読み込んでいなければ CalibrationSizeMatch::Unknown
+    ///
+    CalibrationSizeMatch getCalibrationSizeMatch() const;
+
+    ///
+    /// 較正時の解像度に関する警告の文言を得る
+    ///
+    /// @return 警告の文字列 (UTF-8), 警告が無ければ空文字列
+    ///
+    std::string getCalibrationWarning() const;
+
     // --- 一括状態取得 ---
+    // [0] キャプチャ中, [1] マーカー検出, [2] 較正済, [3] 歪み補正方式, [4] マーカー長,
+    // [5] フレームレート, [6] フレームの幅, [7] フレームの高さ,
+    // [8] 較正時の解像度に関する警告 (0: なし, 1: 換算して補正, 2: アスペクト比が異なる)
     void getStatus(float* outStatus, int count) const;
 
     ///

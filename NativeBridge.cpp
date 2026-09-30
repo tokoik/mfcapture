@@ -18,9 +18,16 @@
 #include <chrono>
 
 #define LOG_TAG "mfcapture-jni"
+// 情報と警告はデバッグビルドだけに出力する (リリースビルドでは出力しない)
+// if (false) で囲むのは、ログにしか使わない変数が未使用の警告にならないようにするため
+#if defined(NDEBUG)
+#define LOGI(...) do { if (false) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__); } while (0)
+#define LOGW(...) do { if (false) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__); } while (0)
+#else
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
+#endif
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
 namespace
 {
@@ -261,6 +268,14 @@ namespace mfcapture
       {
         menu->selectBestResolution(calibSize.width, calibSize.height);
       }
+
+      // 較正時と解像度やアスペクト比が違えば警告する
+      // (使用者には MainActivity のダイアログで知らせる。LOGW はデバッグビルドだけに出力される)
+      if (menu)
+      {
+        menu->checkCalibrationSize();
+        if (menu->getWarningMessage()) LOGW("%s", menu->getWarningMessage());
+      }
     }
     else
     {
@@ -295,6 +310,22 @@ namespace mfcapture
     }
   }
 
+  CalibrationSizeMatch NativeEngine::getCalibrationSizeMatch() const
+  {
+    // 較正値を読み込んでいなければ判定しない
+    if (!undistortion || !undistortion->ready()) return CalibrationSizeMatch::Unknown;
+
+    // 実際に届いたフレームの解像度と較正時の解像度を比べる
+    return undistortion->matchSize(cv::Size{ frameWidth.load(), frameHeight.load() });
+  }
+
+  std::string NativeEngine::getCalibrationWarning() const
+  {
+    std::lock_guard<std::mutex> lock(engineMutex);
+    const char* const text{ Menu::getCalibrationWarningText(getCalibrationSizeMatch()) };
+    return text ? text : "";
+  }
+
   void NativeEngine::getStatus(float* outStatus, int count) const
   {
     std::lock_guard<std::mutex> lock(engineMutex);
@@ -309,6 +340,22 @@ namespace mfcapture
     {
       outStatus[6] = static_cast<float>(frameWidth.load());
       outStatus[7] = static_cast<float>(frameHeight.load());
+    }
+    if (count >= 9)
+    {
+      // 較正時の解像度に関する警告の段階
+      switch (getCalibrationSizeMatch())
+      {
+      case CalibrationSizeMatch::Scaled:
+        outStatus[8] = 1.0f;
+        break;
+      case CalibrationSizeMatch::AspectMismatch:
+        outStatus[8] = 2.0f;
+        break;
+      default:
+        outStatus[8] = 0.0f;
+        break;
+      }
     }
   }
 
@@ -458,7 +505,7 @@ namespace mfcapture
                 const cv::Mat& distCoeffs = (undistortionMode == UndistortionMode::OpenCV)
                   ? cv::Mat{} : undistortion->getDistortion();
                 aruco->detectMarkers(targetFrame, menu->getMarkerLength(),
-                  undistortion->getCameraMatrix(), distCoeffs);
+                  undistortion->getCameraMatrix(targetFrame.size()), distCoeffs);
               }
               else
               {
@@ -660,10 +707,17 @@ extern "C"
     if (!outStatus) return;
     jsize len = env->GetArrayLength(outStatus);
     if (len < 6) return;
-    const int count{ std::min(static_cast<int>(len), 8) };
-    jfloat buf[8]{};
+    const int count{ std::min(static_cast<int>(len), 9) };
+    jfloat buf[9]{};
     mfcapture::NativeEngine::getInstance().getStatus(buf, count);
     env->SetFloatArrayRegion(outStatus, 0, count, buf);
+  }
+
+  JNIEXPORT jstring JNICALL Java_net_wakayama_1u_tokoi_mfcapture_NativeBridge_nativeGetCalibrationWarning(
+    JNIEnv* env, jclass)
+  {
+    const std::string text{ mfcapture::NativeEngine::getInstance().getCalibrationWarning() };
+    return env->NewStringUTF(text.c_str());
   }
 
   JNIEXPORT jint JNICALL Java_net_wakayama_1u_tokoi_mfcapture_NativeBridge_nativeGetFrameWidth(
