@@ -65,8 +65,6 @@ class Undistortion
   /// 現在の補正マップを作成した画像サイズ
   cv::Size mapSize{ 0, 0 };
 
-
-
   /// 較正ファイルに記録された画像サイズ
   cv::Size imageSize{ 0, 0 };
 
