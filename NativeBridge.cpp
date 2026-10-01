@@ -460,8 +460,7 @@ namespace mfcapture
         continue;
       }
 
-      // FPS 計測 (1秒ごと)
-      ++frameCount;
+      // FPS 集計 (1秒ごとに実効処理フレームレートを更新)
       const auto now{ std::chrono::steady_clock::now() };
       const auto elapsed{ std::chrono::duration<float>(now - lastFpsTime).count() };
       if (elapsed >= 1.0f)
@@ -561,6 +560,9 @@ namespace mfcapture
 
               ANativeWindow_unlockAndPost(currentWin);
             }
+
+            // 新規フレームの取得・歪み補正・マーカー検出・描画が完了したフレーム数をカウントする
+            ++frameCount;
           }
         }
       }
