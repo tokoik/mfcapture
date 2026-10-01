@@ -151,3 +151,9 @@
   - `Config`: `Undistortion` と同様に、構文エラーのある JSON ファイルを読み込んだ際に `!json || !value.is<picojson::object>()` で安全に失敗とするよう検査を統一した。
   - Android 版: `LOGI` / `LOGW` をデバッグビルド限定とし、リリースビルドでのログ負荷を抑制した。
 - **検証**: Windows の Debug / Release、Android の Debug APK のビルドが成功し、`git diff --check` とソースコードに関する Doxygen 警告がないことを確認した。
+
+### 27. Android 版の FPS 計測処理の修正
+
+- **要望**: マーカーの読み取り性能調査を行うため、Android 版で正しい fps 表示が得られるようにする。
+- **対応**: `NativeBridge.cpp` の `renderLoop()` において、ポーリングループの先頭で毎ループ無条件にインクリメントされていた `frameCount` を、新規フレームの取得・歪み補正・マーカー検出・画面描画が完了したタイミングでのみ加算するよう変更した。これにより、ポーリングループの周回レート（数百 fps）ではなく、実際に処理・描画された実効フレームレート（カメラのキャプチャ FPS または処理スループット）が正確に表示されるようにした。
+- **検証**: Windows の Debug / Release、Android の Debug APK のビルドが成功し、`git diff --check` とソースコードに関する Doxygen 警告がないことを確認した。
