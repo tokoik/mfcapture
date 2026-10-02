@@ -1,4 +1,4 @@
-﻿# 作業指示および対応履歴
+# 作業指示および対応履歴
 
 ## 概要
 
@@ -156,4 +156,18 @@
 
 - **要望**: マーカーの読み取り性能調査を行うため、Android 版で正しい fps 表示が得られるようにする。
 - **対応**: `NativeBridge.cpp` の `renderLoop()` において、ポーリングループの先頭で毎ループ無条件にインクリメントされていた `frameCount` を、新規フレームの取得・歪み補正・マーカー検出・画面描画が完了したタイミングでのみ加算するよう変更した。これにより、ポーリングループの周回レート（数百 fps）ではなく、実際に処理・描画された実効フレームレート（カメラのキャプチャ FPS または処理スループット）が正確に表示されるようにした。
+- **検証**: Windows の Debug / Release、Android の Debug APK のビルドが成功し、`git diff --check` とソースコードに関する Doxygen 警告がないことを確認した。
+
+### 28. Android 版のカメラ権限・フォーマット変更・停止処理およびライフサイクルの堅牢化
+
+- **要望**: Android 版における以下の 4 点の不具合・潜在的リスクに対応する。
+  1. カメラ権限を拒否された際、Android が再要求を許さない恒久拒否状態になった場合にアプリ設定画面への誘導がなくカメラが利用不能になる問題。
+  2. 解像度変更時にカメラ再開（`start()`）に失敗しても成功扱いとなり、UI に成功と見えてキャプチャが停止したままになる問題。
+  3. カメラ停止処理（`onStop()`）で非同期画像取得コールバックの完了を待機せずリソースを解放するため、低速端末等で Use-After-Free が起きる潜在的競合。
+  4. 画面破棄時（Surface 破棄・バックグラウンド移行）にカメラハードウェアが停止せずバックグラウンドで動作し続け、再生成時に二重初期化が発生する問題。
+- **対応**:
+  - `MainActivity.kt`: `ActivityCompat.shouldShowRequestPermissionRationale` により通常拒否と恒久拒否を判定し、恒久拒否時はアプリ詳細設定画面への遷移導線（`Settings.ACTION_APPLICATION_DETAILS_SETTINGS`）を表示するようにした。また `LifecycleEventObserver` で `ON_RESUME` 時に権限状態を自動再評価し、設定変更後の復帰で自動的にカメラ画面へ遷移するようにした。解像度変更失敗時には Toast で通知し選択をロールバックするようにした。
+  - `CamAndroid`: `selectFormat()` で `start()` 失敗時にロールバックと `false` 返却を行うようにした。また `callbackMtx` を導入して `onImageAvailableCallback()` 全体を保護し、`onStop()` でリスナー解除直後にロックを取得して実行中コールバックの完全終了を待機するようにした。セッションクローズ待機時間を 1000 ms に延長しタイムアウト時の警告ログを追加した。
+  - `Menu.cpp`: `selectResolution()` において `capture.start()` 後の動作状態を確認し、再開に失敗した場合は以前の解像度情報にロールバックして `false` を返すようにした。
+  - `NativeBridge`: `NativeEngine` に `wasCapturingBeforeDestroy` を追加し、`onSurfaceDestroyed()` でカメラを停止（`capture->stop()`）してハードウェアを完全解放するようにした。画面再生成時は、画面破棄前にキャプチャ中だった場合のみ自動再開し、未オープン時のみ背面カメラ検索・初期化を行うようにした。
 - **検証**: Windows の Debug / Release、Android の Debug APK のビルドが成功し、`git diff --check` とソースコードに関する Doxygen 警告がないことを確認した。

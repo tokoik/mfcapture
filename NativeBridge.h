@@ -84,6 +84,9 @@ namespace mfcapture
     /// キャプチャフレームの高さ
     std::atomic<int> frameHeight{ 720 };
 
+    /// 画面破棄前にキャプチャ中だったか否か
+    bool wasCapturingBeforeDestroy{ false };
+
     ///
     /// レンダリングループ本体 (ANativeWindow 直接描画)
     ///
