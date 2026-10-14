@@ -13,6 +13,8 @@
 // OpenCV ArUco (OpenCV 4.7+)
 #include "opencv_link.h"
 #include <opencv2/objdetect.hpp>
+#include <opencv2/objdetect/aruco_detector.hpp>
+#include <opencv2/objdetect/aruco_dictionary.hpp>
 
 // 標準ライブラリ
 #include <map>
