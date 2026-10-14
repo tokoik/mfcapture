@@ -198,23 +198,93 @@ namespace mfcapture
     bool selectResolution(const std::string& resolution);
 
     // --- ArUco Marker 認識 ---
+
+    ///
+    /// マーカー検出が有効かどうかを判定する
+    ///
+    /// @return マーカー検出が有効なら true
+    ///
     bool isDetectMarker() const;
+
+    ///
+    /// マーカー検出の有効／無効を設定する
+    ///
+    /// @param enabled 有効にするなら true
+    ///
     void setDetectMarker(bool enabled);
 
+    ///
+    /// ArUco Marker 一辺の長さを取得する
+    ///
+    /// @return マーカー一辺の長さ
+    ///
     float getMarkerLength() const;
+
+    ///
+    /// ArUco Marker 一辺の長さを設定する
+    ///
+    /// @param length マーカー一辺の長さ
+    ///
     void setMarkerLength(float length);
 
+    ///
+    /// 現在のマーカー辞書名を取得する
+    ///
+    /// @return マーカー辞書名
+    ///
     std::string getDictionaryName() const;
+
+    ///
+    /// マーカー辞書を設定する
+    ///
+    /// @param name マーカー辞書名
+    ///
     void setDictionary(const std::string& name);
 
+    ///
+    /// 利用可能なマーカー辞書の総数を取得する
+    ///
+    /// @return マーカー辞書の数
+    ///
     int getDictionaryCount() const;
+
+    ///
+    /// インデックス指定でマーカー辞書名を取得する
+    ///
+    /// @param index 辞書インデックス (0 <= index < getDictionaryCount())
+    /// @return 辞書名（範囲外の場合は空文字列）
+    ///
     std::string getDictionaryNameByIndex(int index) const;
 
     // --- 較正パラメータとレンズ歪み補正 ---
+
+    ///
+    /// 較正ファイル（JSON）を読み込む
+    ///
+    /// @param filename 較正ファイルのパス
+    /// @return 読み込みに成功したら true
+    ///
     bool loadCalibration(const std::string& filename);
+
+    ///
+    /// 較正パラメータが利用可能かどうかを判定する
+    ///
+    /// @return 歪み補正が実行可能なら true
+    ///
     bool isCalibrationReady() const;
 
+    ///
+    /// 現在の歪み補正方式を取得する
+    ///
+    /// @return 歪み補正方式 (0: なし, 1: OpenCV)
+    ///
     int getUndistortionMode() const;
+
+    ///
+    /// 歪み補正方式を設定する
+    ///
+    /// @param mode 歪み補正方式 (0: なし, 1: OpenCV)
+    ///
     void setUndistortionMode(int mode);
 
     ///
@@ -232,9 +302,16 @@ namespace mfcapture
     std::string getCalibrationWarning() const;
 
     // --- 一括状態取得 ---
-    // [0] キャプチャ中, [1] マーカー検出, [2] 較正済, [3] 歪み補正方式, [4] マーカー長,
-    // [5] フレームレート, [6] フレームの幅, [7] フレームの高さ,
-    // [8] 較正時の解像度に関する警告 (0: なし, 1: 換算して補正, 2: アスペクト比が異なる)
+
+    ///
+    /// UI 表示用のステータス配列を一括取得する
+    ///
+    /// @param[out] outStatus 出力先バッファ
+    ///   [0] キャプチャ中, [1] マーカー検出, [2] 較正済, [3] 歪み補正方式, [4] マーカー長,
+    ///   [5] フレームレート, [6] フレームの幅, [7] フレームの高さ,
+    ///   [8] 較正時の解像度に関する警告 (0: なし, 1: 換算して補正, 2: アスペクト比が異なる)
+    /// @param count バッファの要素数 (6 以上)
+    ///
     void getStatus(float* outStatus, int count) const;
 
     ///

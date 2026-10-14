@@ -9,13 +9,12 @@
 
 #include "NativeBridge.h"
 
-#include <android/asset_manager.h>
-#include <android/log.h>
-#include <unistd.h>
 #include <fstream>
 #include <vector>
 #include <cmath>
 #include <chrono>
+#include <unistd.h>
+#include <sys/stat.h>
 
 #define LOG_TAG "mfcapture-jni"
 // 情報と警告はデバッグビルドだけに出力する (リリースビルドでは出力しない)
@@ -31,38 +30,24 @@
 
 namespace
 {
-  ///
-  /// アセットを内部ストレージへ展開する
-  ///
-  bool extractSingleAsset(AAssetManager* mgr, const char* filename, const std::string& targetDir)
+  //
+  // 単一アセットを内部ストレージへ展開する
+  //
+  bool extractSingleAsset(AAssetManager* assetMgr, const char* filename, const std::string& internalPath)
   {
-    if (!mgr || !filename) return false;
+    if (!assetMgr || !filename || filename[0] == '\0') return false;
 
-    AAsset* asset{ AAssetManager_open(mgr, filename, AASSET_MODE_BUFFER) };
-    if (!asset)
-    {
-      LOGW("Asset not found in APK: %s", filename);
-      return false;
-    }
+    AAsset* asset{ AAssetManager_open(assetMgr, filename, AASSET_MODE_BUFFER) };
+    if (!asset) return false;
 
+    const std::string destPath{ internalPath + "/" + filename };
     const off_t size{ AAsset_getLength(asset) };
-    const std::string destPath{ targetDir + "/" + filename };
 
-    bool needExtract{ true };
-    std::ifstream check(destPath, std::ios::binary | std::ios::ate);
-    if (check.is_open())
-    {
-      if (check.tellg() == size)
-      {
-        needExtract = false;
-      }
-      check.close();
-    }
-
-    if (needExtract)
+    struct stat st;
+    if (stat(destPath.c_str(), &st) != 0 || st.st_size != size)
     {
       std::ofstream out(destPath, std::ios::binary);
-      if (!out.is_open())
+      if (!out)
       {
         LOGE("Failed to open destination for write: %s", destPath.c_str());
         AAsset_close(asset);
@@ -196,7 +181,13 @@ namespace mfcapture
   {
     std::lock_guard<std::mutex> lock(engineMutex);
     wasCapturingBeforeDestroy = false;
-    return menu ? menu->startCapture() : false;
+    if (capture && capture->isOpened() && !(*capture))
+    {
+      capture->start();
+      return bool(*capture);
+    }
+    if (!menu) return false;
+    return menu->startCapture();
   }
 
   void NativeEngine::stopCapture()
@@ -206,14 +197,14 @@ namespace mfcapture
     if (capture)
     {
       capture->stop();
-      capture->close();
     }
   }
 
   bool NativeEngine::isCapturing() const
   {
     std::lock_guard<std::mutex> lock(engineMutex);
-    return capture ? bool(*capture) : false;
+    if (!capture) return false;
+    return bool(*capture);
   }
 
   bool NativeEngine::isDetectMarker() const
@@ -597,20 +588,28 @@ namespace mfcapture
       std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
-    LOGI("renderLoop finished");
+    {
+      std::lock_guard<std::mutex> lock(engineMutex);
+      if (capture)
+      {
+        capture->close();
+      }
+    }
+
+    LOGI("renderLoop exited cleanly");
   }
 }
 
 //
-// JNI 関数定義
+// JNI 関数エクスポート
 //
 extern "C"
 {
   JNIEXPORT void JNICALL Java_net_wakayama_1u_tokoi_mfcapture_NativeBridge_nativeInit(
     JNIEnv* env, jclass, jobject assetManager, jstring internalPath)
   {
-    AAssetManager* mgr = AAssetManager_fromJava(env, assetManager);
-    const char* path = env->GetStringUTFChars(internalPath, nullptr);
+    AAssetManager* mgr{ AAssetManager_fromJava(env, assetManager) };
+    const char* path{ env->GetStringUTFChars(internalPath, nullptr) };
     mfcapture::NativeEngine::getInstance().init(mgr, path);
     env->ReleaseStringUTFChars(internalPath, path);
   }
@@ -618,7 +617,7 @@ extern "C"
   JNIEXPORT void JNICALL Java_net_wakayama_1u_tokoi_mfcapture_NativeBridge_nativeSurfaceCreated(
     JNIEnv* env, jclass, jobject surface)
   {
-    ANativeWindow* window = ANativeWindow_fromSurface(env, surface);
+    ANativeWindow* window{ ANativeWindow_fromSurface(env, surface) };
     mfcapture::NativeEngine::getInstance().onSurfaceCreated(window);
   }
 
@@ -679,13 +678,14 @@ extern "C"
   JNIEXPORT jstring JNICALL Java_net_wakayama_1u_tokoi_mfcapture_NativeBridge_nativeGetDictionaryName(
     JNIEnv* env, jclass)
   {
-    return env->NewStringUTF(mfcapture::NativeEngine::getInstance().getDictionaryName().c_str());
+    const std::string name{ mfcapture::NativeEngine::getInstance().getDictionaryName() };
+    return env->NewStringUTF(name.c_str());
   }
 
   JNIEXPORT void JNICALL Java_net_wakayama_1u_tokoi_mfcapture_NativeBridge_nativeSetDictionary(
     JNIEnv* env, jclass, jstring name)
   {
-    const char* str = env->GetStringUTFChars(name, nullptr);
+    const char* str{ env->GetStringUTFChars(name, nullptr) };
     mfcapture::NativeEngine::getInstance().setDictionary(str);
     env->ReleaseStringUTFChars(name, str);
   }
@@ -699,15 +699,16 @@ extern "C"
   JNIEXPORT jstring JNICALL Java_net_wakayama_1u_tokoi_mfcapture_NativeBridge_nativeGetDictionaryNameByIndex(
     JNIEnv* env, jclass, jint index)
   {
-    return env->NewStringUTF(mfcapture::NativeEngine::getInstance().getDictionaryNameByIndex(index).c_str());
+    const std::string name{ mfcapture::NativeEngine::getInstance().getDictionaryNameByIndex(index) };
+    return env->NewStringUTF(name.c_str());
   }
 
   JNIEXPORT jboolean JNICALL Java_net_wakayama_1u_tokoi_mfcapture_NativeBridge_nativeLoadCalibration(
     JNIEnv* env, jclass, jstring filename)
   {
     if (!filename) return JNI_FALSE;
-    const char* str = env->GetStringUTFChars(filename, nullptr);
-    bool ok = mfcapture::NativeEngine::getInstance().loadCalibration(str);
+    const char* str{ env->GetStringUTFChars(filename, nullptr) };
+    const bool ok{ mfcapture::NativeEngine::getInstance().loadCalibration(str) };
     env->ReleaseStringUTFChars(filename, str);
     return ok ? JNI_TRUE : JNI_FALSE;
   }
@@ -734,7 +735,7 @@ extern "C"
     JNIEnv* env, jclass, jfloatArray outStatus)
   {
     if (!outStatus) return;
-    jsize len = env->GetArrayLength(outStatus);
+    const jsize len{ env->GetArrayLength(outStatus) };
     if (len < 6) return;
     const int count{ std::min(static_cast<int>(len), 9) };
     jfloat buf[9]{};

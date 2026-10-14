@@ -249,3 +249,19 @@
     - `adaptShaderSourceForGles()` において、従来フラグメントシェーダーのみに `precision mediump sampler2D;` を付与していたため、バーテックスシェーダー側で宣言された `uniform sampler2D image;`（既定の `lowp`）と精度修飾子の食い違いが発生していた。
     - バーテックスシェーダー・フラグメントシェーダー・コンピュートシェーダーの全ステージに対して一貫して `precision mediump sampler2D;`（および 3D/Cube/2DArray サンプラー）を付与するように修正した。
 - **検証**: Windows の Debug / Release ビルドが成功し、Doxygen 警告ゼロ、C++ ソースの BOM 付き UTF-8、`git diff --check` で差分の空白エラーがないことを確認した。
+
+### 35. Android 版 NativeBridge におけるライフサイクル管理・キャプチャ制御およびコメント・スタイルの統一
+
+- **要望**: `calib` と `mfcapture` で `NativeBridge` の実装に微妙な差異（`stopCapture()` における `stop()` / `close()` の重複呼び出し、`startCapture()` の再開フロー、アセット展開処理、コメントなど）が存在するため、設計方針（GEMINI.md）に従って整合させる。
+- **対応**:
+  - `mfcapture/NativeBridge.h` / `mfcapture/NativeBridge.cpp`:
+    - `stopCapture()` で `capture->stop()` の直後に `capture->close()` を呼んでいたのを削除し、`capture->stop()` のみに改修した（GEMINI.md 第 3 節「`close()` は内部で `stop()` を呼ぶため、呼び出し側で `stop()` と `close()` を続けて呼びません」を遵守）。
+    - `startCapture()` において、既にオープン済みの場合は `capture->start()` で素早く再開する判定を追加し、`calib` と同じ再開フローに統一した。
+    - `isCapturing()` の実装を `calib` と同等のガード表記に統一した。
+    - `extractSingleAsset()` を `calib` と同様に `<sys/stat.h>` の `struct stat` を用いる軽量なサイズ判定とコメントに統一した。
+    - `renderLoop()` 終了時に `capture->close()` を確実に呼ぶクリーンアップ処理を追加した。
+    - `NativeBridge.h` の公開関数（マーカー検出、較正・歪み補正、状態取得）に欠落していた Doxygen コメントを追加した。
+    - JNI 関数エクスポート部における変数宣言スタイル（`{}` 記法）を統一した。
+    - `android/gradle.properties` に残存していた環境依存のパス（macOS 向け `org.gradle.java.home`）を削除した。
+  - C++ ファイル（`NativeBridge.h`, `NativeBridge.cpp`）が UTF-8 BOM 付きであることを確認した。
+- **検証**: Windows の Release ビルド、Android の Debug APK ビルド（`assembleDebug`）が成功し、Doxygen 警告ゼロ、`git diff --check` で差分の空白エラーがないことを確認した。
