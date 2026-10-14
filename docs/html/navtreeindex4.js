@@ -1,5 +1,7 @@
 var NAVTREEINDEX4 =
 {
+"classgg_1_1GgShader.html#a44733c5464ecf1fb28c8ccd663589d6c":[5,0,0,15,6],
+"classgg_1_1GgShader.html#a4e1c6570fb96bb96f5d693b55d0e0dac":[4,0,0,15,1],
 "classgg_1_1GgShader.html#a4e1c6570fb96bb96f5d693b55d0e0dac":[5,0,0,15,1],
 "classgg_1_1GgShader.html#a7908ddf4209c6b17fdb1846c65f1e384":[4,0,0,15,0],
 "classgg_1_1GgShader.html#a7908ddf4209c6b17fdb1846c65f1e384":[5,0,0,15,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX4 =
 "classgg_1_1GgTrackball.html#aa747232a05539a110b77d93b09dfffca":[5,0,0,3,2],
 "classgg_1_1GgTrackball.html#aaaa41ddff91ff91173133d478356b836":[4,0,0,3,17],
 "classgg_1_1GgTrackball.html#aaaa41ddff91ff91173133d478356b836":[5,0,0,3,17],
-"classgg_1_1GgTrackball.html#aaf190b7c0fedbc0fae01856ec3eb1e27":[4,0,0,3,8],
-"classgg_1_1GgTrackball.html#aaf190b7c0fedbc0fae01856ec3eb1e27":[5,0,0,3,8],
-"classgg_1_1GgTrackball.html#ab6d959db5ef9b8405da2f5ded29766d0":[4,0,0,3,15]
+"classgg_1_1GgTrackball.html#aaf190b7c0fedbc0fae01856ec3eb1e27":[4,0,0,3,8]
 };

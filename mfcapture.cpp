@@ -42,17 +42,6 @@ int GgApp::main(int argc, const char* const* argv)
   // 構成にもとづいてウィンドウを作成する
   GgApp::Window window{ config.getTitle(), config.getWidth(), config.getHeight() };
 
-  // ウィンドウおよび OpenGL コンテキスト破棄前に静的 OpenGL リソースを安全に解放する
-  // (プロセス終了時の静的オブジェクト破棄段階ではコンテキストが無効化されておりクラッシュするため)
-  struct GlResourceGuard
-  {
-    ~GlResourceGuard()
-    {
-      Texture::resetMesh();
-      Preference::clearShaders();
-    }
-  } glResourceGuard;
-
   // 開いたウィンドウに対して初期化処理を実行する
   config.initialize();
 
@@ -218,6 +207,9 @@ int GgApp::main(int argc, const char* const* argv)
     // カラーバッファを入れ替えてイベントを取り出す
     window.swapBuffers();
   }
+
+  // 開いたウィンドウに対して終了処理を実行する (シェーダリソースの解放)
+  config.terminate();
 
   return 0;
 }
