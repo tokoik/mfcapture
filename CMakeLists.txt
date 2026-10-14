@@ -705,6 +705,12 @@ else()
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:opencv_world>
             $<TARGET_FILE_DIR:mfcapture>
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+            $<TARGET_FILE_NAME:opencv_world>
+            $<TARGET_FILE_DIR:mfcapture>/$<TARGET_SONAME_FILE_NAME:opencv_world>
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+            $<TARGET_SONAME_FILE_NAME:opencv_world>
+            $<TARGET_FILE_DIR:mfcapture>/$<TARGET_LINKER_FILE_NAME:opencv_world>
         COMMENT "Copying assets, shaders, and OpenCV library to build folder..."
     )
     set_target_properties(mfcapture PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE INSTALL_RPATH "$ORIGIN")
