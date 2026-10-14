@@ -1,5 +1,14 @@
 var NAVTREEINDEX5 =
 {
+"classgg_1_1GgTrackball.html#ab6d959db5ef9b8405da2f5ded29766d0":[5,0,0,3,15],
+"classgg_1_1GgTrackball.html#ab8c6d13462b0d387956f9a53dce51b6f":[4,0,0,3,12],
+"classgg_1_1GgTrackball.html#ab8c6d13462b0d387956f9a53dce51b6f":[5,0,0,3,12],
+"classgg_1_1GgTrackball.html#adbf3c13a6442309c79bd3185fa74a0a4":[4,0,0,3,18],
+"classgg_1_1GgTrackball.html#adbf3c13a6442309c79bd3185fa74a0a4":[5,0,0,3,18],
+"classgg_1_1GgTrackball.html#ae1cbb2773fc61437c86a8f4641e32f12":[4,0,0,3,1],
+"classgg_1_1GgTrackball.html#ae1cbb2773fc61437c86a8f4641e32f12":[5,0,0,3,1],
+"classgg_1_1GgTrackball.html#ae44a5319c8ef18de8270e2232abd7d1e":[4,0,0,3,11],
+"classgg_1_1GgTrackball.html#ae44a5319c8ef18de8270e2232abd7d1e":[5,0,0,3,11],
 "classgg_1_1GgTrackball.html#af0ff2b315542776b0b465f5e166c4c8a":[4,0,0,3,16],
 "classgg_1_1GgTrackball.html#af0ff2b315542776b0b465f5e166c4c8a":[5,0,0,3,16],
 "classgg_1_1GgTriangles.html":[4,0,0,13],
@@ -240,14 +249,5 @@ var NAVTREEINDEX5 =
 "md_README.html#autotoc_md64":[2,9,2],
 "md_README.html#autotoc_md65":[2,9,3],
 "md_README.html#autotoc_md66":[2,10],
-"md_README.html#autotoc_md67":[2,11],
-"md_README.html#autotoc_md68":[2,11,0],
-"md_README.html#autotoc_md69":[2,11,1],
-"md_README.html#autotoc_md70":[2,11,2],
-"md_presentation.html":[1],
-"md_presentation.html#autotoc_md10":[1,2,0],
-"md_presentation.html#autotoc_md11":[1,2,1],
-"md_presentation.html#autotoc_md13":[1,3],
-"md_presentation.html#autotoc_md15":[1,4],
-"md_presentation.html#autotoc_md17":[1,5]
+"md_README.html#autotoc_md67":[2,11]
 };

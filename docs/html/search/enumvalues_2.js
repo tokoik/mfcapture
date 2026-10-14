@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['none_0',['None',['../Undistortion_8h.html#a1c0b022fd4a20d577245609904271dd1a6adf97f83acf6453d4a6a4b1070f3754',1,'Undistortion.h']]]
+  ['lightbindingpoint_0',['LightBindingPoint',['../namespacegg.html#ae6e185ba7876df656b8d0b02819b5e49a64b69a47d95d955aed16b608baf1f68c',1,'gg']]]
 ];

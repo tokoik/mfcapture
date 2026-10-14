@@ -15,5 +15,6 @@ var searchData=
   ['isimage_12',['isImage',['../classCapture.html#aadd402065eb5c2ce6b36a3986531467a',1,'Capture']]],
   ['isopened_13',['isOpened',['../classCamImage.html#a5cacb670f89ffac43e0e69e1455164ce',1,'CamImage::isOpened()'],['../classCapture.html#ab757ed241aa335af62c615510e075015',1,'Capture::isOpened()']]],
   ['isrunning_14',['isRunning',['../classCamera.html#a6b44143721d2580161b28df7ddd652cc',1,'Camera']]],
-  ['isstillimage_15',['isStillImage',['../classCamera.html#a035d0e67dd4f0772fdca2ece216b300b',1,'Camera::isStillImage()'],['../classCamImage.html#a412ec5dd1ff3ee67a5528e0f0aa99223',1,'CamImage::isStillImage()']]]
+  ['issameaspect_15',['isSameAspect',['../classUndistortion.html#a411b116705068c70d5c0a956a6cb2b2c',1,'Undistortion']]],
+  ['isstillimage_16',['isStillImage',['../classCamera.html#a035d0e67dd4f0772fdca2ece216b300b',1,'Camera::isStillImage()'],['../classCamImage.html#a412ec5dd1ff3ee67a5528e0f0aa99223',1,'CamImage::isStillImage()']]]
 ];

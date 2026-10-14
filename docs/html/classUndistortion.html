@@ -101,17 +101,28 @@ $(function(){initNavTree('classUndistortion.html','','classUndistortion-members'
 <tr class="memitem:a5d6c64513df7bfa1b8263671821fe3be" id="r_a5d6c64513df7bfa1b8263671821fe3be"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5d6c64513df7bfa1b8263671821fe3be">load</a> (const std::string &amp;filename)</td></tr>
 <tr class="memitem:aafeab832dd2dbc18a585795eec66a713" id="r_aafeab832dd2dbc18a585795eec66a713"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aafeab832dd2dbc18a585795eec66a713">ready</a> () const</td></tr>
 <tr class="memitem:a785dfb55b481c6175f0e32edf0fc08b9" id="r_a785dfb55b481c6175f0e32edf0fc08b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a785dfb55b481c6175f0e32edf0fc08b9">apply</a> (const cv::Mat &amp;source, cv::Mat &amp;destination)</td></tr>
-<tr class="memitem:a37b2802fba9d6228e2549197fb8c4e5a" id="r_a37b2802fba9d6228e2549197fb8c4e5a"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37b2802fba9d6228e2549197fb8c4e5a">getCameraParameters</a> () const</td></tr>
+<tr class="memitem:a2dc4e87ed03c6741a9c94937a24e6322" id="r_a2dc4e87ed03c6741a9c94937a24e6322"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Undistortion_8h.html#a1971eaa5ffcbb87b704df8e591aa8a56">CalibrationSizeMatch</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2dc4e87ed03c6741a9c94937a24e6322">matchSize</a> (const cv::Size &amp;size) const</td></tr>
+<tr class="memitem:aba9ec1b06edcd9755862e9802b39f9e9" id="r_aba9ec1b06edcd9755862e9802b39f9e9"><td class="memItemLeft" align="right" valign="top">cv::Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba9ec1b06edcd9755862e9802b39f9e9">getCameraMatrix</a> (const cv::Size &amp;size) const</td></tr>
+<tr class="memitem:a661ab18c18868cf88405759646a2b2a3" id="r_a661ab18c18868cf88405759646a2b2a3"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a661ab18c18868cf88405759646a2b2a3">getCameraParameters</a> (const cv::Size &amp;size) const</td></tr>
 <tr class="memitem:ab776ab64d315da8c52afdd0429bcc221" id="r_ab776ab64d315da8c52afdd0429bcc221"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 5 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab776ab64d315da8c52afdd0429bcc221">getDistortionParameters</a> () const</td></tr>
 <tr class="memitem:af03c1f30016a64cd4c45b05a657c9c9a" id="r_af03c1f30016a64cd4c45b05a657c9c9a"><td class="memItemLeft" align="right" valign="top">const cv::Mat &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af03c1f30016a64cd4c45b05a657c9c9a">getCameraMatrix</a> () const</td></tr>
 <tr class="memitem:a317ee625284da8a324758ada518a8963" id="r_a317ee625284da8a324758ada518a8963"><td class="memItemLeft" align="right" valign="top">const cv::Mat &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a317ee625284da8a324758ada518a8963">getDistortion</a> () const</td></tr>
 <tr class="memitem:ab2481e160070380289b3a34a08b112ac" id="r_ab2481e160070380289b3a34a08b112ac"><td class="memItemLeft" align="right" valign="top">const cv::Size &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab2481e160070380289b3a34a08b112ac">getImageSize</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静的公開メンバ関数</h2></td></tr>
+<tr class="memitem:a411b116705068c70d5c0a956a6cb2b2c" id="r_a411b116705068c70d5c0a956a6cb2b2c"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a411b116705068c70d5c0a956a6cb2b2c">isSameAspect</a> (const cv::Size &amp;a, const cv::Size &amp;b)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静的公開変数類</h2></td></tr>
+<tr class="memitem:ad46033ac87c0e9d0204f9fc5174e3b02" id="r_ad46033ac87c0e9d0204f9fc5174e3b02"><td class="memItemLeft" align="right" valign="top">static constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad46033ac87c0e9d0204f9fc5174e3b02">aspectTolerance</a> { 0.01 }</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">詳解</h2>
 <div class="textblock"><p>calib が出力した内部パラメータを読み込み、レンズ歪みを補正するクラス</p>
-<p>較正ファイルの "camera matrix" と "distortion" を保持する。 OpenCV 方式では補正マップを作って cv::remap() に渡し、OpenGL 方式では 同じ値を GLSL の uniform へ渡せるよう float 配列へ変換する。 </p>
+<p>較正ファイルの "camera matrix" と "distortion" を保持する。 OpenCV 方式では補正マップを作って cv::remap() に渡し、OpenGL 方式では 同じ値を GLSL の uniform へ渡せるよう float 配列へ変換する。</p>
+<p>カメラ行列は較正時の画像の画素単位なので、較正時と解像度が違う入力には 解像度の比で換算して使う。歪み係数は正規化したカメラ座標で定義されているので、 解像度によらずそのまま使える。 </p>
 
-<p class="definition"> <a class="el" href="Undistortion_8h_source.html">Undistortion.h</a> の <a class="el" href="Undistortion_8h_source.html#l00036">36</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Undistortion_8h_source.html">Undistortion.h</a> の <a class="el" href="Undistortion_8h_source.html#l00051">51</a> 行目に定義があります。</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">関数詳解</h2>
 <a id="a785dfb55b481c6175f0e32edf0fc08b9" name="a785dfb55b481c6175f0e32edf0fc08b9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a785dfb55b481c6175f0e32edf0fc08b9">&#9670;&#160;</a></span>apply()</h2>
@@ -141,15 +152,17 @@ $(function(){initNavTree('classUndistortion.html','','classUndistortion-members'
 </dl>
 <p>入力サイズが変わったときだけ補正マップを作り直し、通常フレームでは 作成済みのマップを cv::remap() で再利用する。 </p>
 
-<p class="definition"> <a class="el" href="Undistortion_8cpp_source.html">Undistortion.cpp</a> の <a class="el" href="Undistortion_8cpp_source.html#l00126">126</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Undistortion_8cpp_source.html">Undistortion.cpp</a> の <a class="el" href="Undistortion_8cpp_source.html#l00127">127</a> 行目に定義があります。</p>
 <div class="dynheader">
 呼び出し関係図:</div>
 <div class="dyncontent">
 <div class="center"><img src="classUndistortion_a785dfb55b481c6175f0e32edf0fc08b9_cgraph.png" border="0" usemap="#aclassUndistortion_a785dfb55b481c6175f0e32edf0fc08b9_cgraph" loading="lazy" alt=""/></div>
 <map name="aclassUndistortion_a785dfb55b481c6175f0e32edf0fc08b9_cgraph" id="aclassUndistortion_a785dfb55b481c6175f0e32edf0fc08b9_cgraph">
-<area shape="rect" title=" " alt="" coords="5,5,136,32"/>
-<area shape="rect" href="classUndistortion.html#aafeab832dd2dbc18a585795eec66a713" title=" " alt="" coords="184,5,315,32"/>
-<area shape="poly" title=" " alt="" coords="136,16,171,18,165,19,136,21"/>
+<area shape="rect" title=" " alt="" coords="5,31,136,57"/>
+<area shape="rect" href="classUndistortion.html#af03c1f30016a64cd4c45b05a657c9c9a" title=" " alt="" coords="184,5,383,32"/>
+<area shape="poly" title=" " alt="" coords="136,34,171,32,166,33,137,39"/>
+<area shape="rect" href="classUndistortion.html#aafeab832dd2dbc18a585795eec66a713" title=" " alt="" coords="218,56,349,83"/>
+<area shape="poly" title=" " alt="" coords="136,49,205,59,200,60,136,54"/>
 </map>
 </div>
 <div class="dynheader">
@@ -168,7 +181,7 @@ $(function(){initNavTree('classUndistortion.html','','classUndistortion-members'
 </div>
 </div>
 <a id="af03c1f30016a64cd4c45b05a657c9c9a" name="af03c1f30016a64cd4c45b05a657c9c9a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af03c1f30016a64cd4c45b05a657c9c9a">&#9670;&#160;</a></span>getCameraMatrix()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af03c1f30016a64cd4c45b05a657c9c9a">&#9670;&#160;</a></span>getCameraMatrix() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -189,15 +202,72 @@ $(function(){initNavTree('classUndistortion.html','','classUndistortion-members'
   </tr>
 </table>
 </div><div class="memdoc">
-<p>カメラ行列を取り出す</p>
-<dl class="section return"><dt>戻り値</dt><dd>カメラ行列への参照 </dd></dl>
+<p>較正時の画像サイズのカメラ行列を取り出す</p>
+<dl class="section return"><dt>戻り値</dt><dd>カメラ行列への参照</dd></dl>
+<dl class="section note"><dt>覚え書き</dt><dd>入力画像に使うときは、入力画像のサイズに換算する getCameraMatrix(size) を使う。 </dd></dl>
 
-<p class="definition"> <a class="el" href="Undistortion_8h_source.html">Undistortion.h</a> の <a class="el" href="Undistortion_8h_source.html#l00104">104</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Undistortion_8h_source.html">Undistortion.h</a> の <a class="el" href="Undistortion_8h_source.html#l00159">159</a> 行目に定義があります。</p>
 <div class="dynheader">
 被呼び出し関係図:</div>
 <div class="dyncontent">
 <div class="center"><img src="classUndistortion_af03c1f30016a64cd4c45b05a657c9c9a_icgraph.png" border="0" usemap="#aclassUndistortion_af03c1f30016a64cd4c45b05a657c9c9a_icgraph" loading="lazy" alt=""/></div>
 <map name="aclassUndistortion_af03c1f30016a64cd4c45b05a657c9c9a_icgraph" id="aclassUndistortion_af03c1f30016a64cd4c45b05a657c9c9a_icgraph">
+<area shape="rect" title=" " alt="" coords="526,31,726,57"/>
+<area shape="rect" href="classUndistortion.html#a785dfb55b481c6175f0e32edf0fc08b9" title=" " alt="" coords="298,5,428,32"/>
+<area shape="poly" title=" " alt="" coords="508,33,429,28,429,22,514,33"/>
+<area shape="rect" href="classUndistortion.html#a661ab18c18868cf88405759646a2b2a3" title=" " alt="" coords="248,56,478,83"/>
+<area shape="poly" title=" " alt="" coords="514,55,479,61,479,56,508,55"/>
+<area shape="rect" href="classGgApp.html#ad2e50a5e84d4fd6162e03039ac00c7ae" title=" " alt="" coords="103,5,200,32"/>
+<area shape="poly" title=" " alt="" coords="280,19,201,21,200,16,285,18"/>
+<area shape="rect" href="main_8cpp.html#a110745d0e996bc19a8c8e8cacbadd525" title=" " alt="" coords="5,5,55,32"/>
+<area shape="poly" title=" " alt="" coords="85,20,56,21,54,16,89,17"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="aba9ec1b06edcd9755862e9802b39f9e9" name="aba9ec1b06edcd9755862e9802b39f9e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba9ec1b06edcd9755862e9802b39f9e9">&#9670;&#160;</a></span>getCameraMatrix() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">cv::Mat Undistortion::getCameraMatrix </td>
+          <td>(</td>
+          <td class="paramtype">const cv::Size &amp;</td>          <td class="paramname"><span class="paramname"><em>size</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>入力画像のサイズに換算したカメラ行列を得る</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">size</td><td>入力画像のサイズ </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>戻り値</dt><dd>換算したカメラ行列 (較正時の画像サイズが不明なら較正値そのもの)</dd></dl>
+<p>焦点距離は幅と高さの比で拡大縮小し、主点は画素の中心を基準にして cx' = (cx + 0.5) × s - 0.5 で換算する。 アスペクト比が違う場合も同じ式で換算するが、正しい補正にはならない。 </p>
+
+<p class="definition"> <a class="el" href="Undistortion_8cpp_source.html">Undistortion.cpp</a> の <a class="el" href="Undistortion_8cpp_source.html#l00186">186</a> 行目に定義があります。</p>
+<div class="dynheader">
+呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classUndistortion_aba9ec1b06edcd9755862e9802b39f9e9_cgraph.png" border="0" usemap="#aclassUndistortion_aba9ec1b06edcd9755862e9802b39f9e9_cgraph" loading="lazy" alt=""/></div>
+<map name="aclassUndistortion_aba9ec1b06edcd9755862e9802b39f9e9_cgraph" id="aclassUndistortion_aba9ec1b06edcd9755862e9802b39f9e9_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,205,32"/>
+<area shape="rect" href="classUndistortion.html#a2dc4e87ed03c6741a9c94937a24e6322" title=" " alt="" coords="253,5,414,32"/>
+<area shape="poly" title=" " alt="" coords="205,16,240,19,234,19,205,21"/>
+<area shape="rect" href="classUndistortion.html#a411b116705068c70d5c0a956a6cb2b2c" title=" " alt="" coords="462,5,646,32"/>
+<area shape="poly" title=" " alt="" coords="415,16,449,19,444,19,415,21"/>
+</map>
+</div>
+<div class="dynheader">
+被呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classUndistortion_aba9ec1b06edcd9755862e9802b39f9e9_icgraph.png" border="0" usemap="#aclassUndistortion_aba9ec1b06edcd9755862e9802b39f9e9_icgraph" loading="lazy" alt=""/></div>
+<map name="aclassUndistortion_aba9ec1b06edcd9755862e9802b39f9e9_icgraph" id="aclassUndistortion_aba9ec1b06edcd9755862e9802b39f9e9_icgraph">
 <area shape="rect" title=" " alt="" coords="248,5,447,32"/>
 <area shape="rect" href="classGgApp.html#ad2e50a5e84d4fd6162e03039ac00c7ae" title=" " alt="" coords="103,5,200,32"/>
 <area shape="poly" title=" " alt="" coords="230,19,201,21,200,16,235,19"/>
@@ -208,8 +278,8 @@ $(function(){initNavTree('classUndistortion.html','','classUndistortion-members'
 
 </div>
 </div>
-<a id="a37b2802fba9d6228e2549197fb8c4e5a" name="a37b2802fba9d6228e2549197fb8c4e5a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37b2802fba9d6228e2549197fb8c4e5a">&#9670;&#160;</a></span>getCameraParameters()</h2>
+<a id="a661ab18c18868cf88405759646a2b2a3" name="a661ab18c18868cf88405759646a2b2a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a661ab18c18868cf88405759646a2b2a3">&#9670;&#160;</a></span>getCameraParameters()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -217,23 +287,31 @@ $(function(){initNavTree('classUndistortion.html','','classUndistortion-members'
         <tr>
           <td class="memname">std::array&lt; float, 4 &gt; Undistortion::getCameraParameters </td>
           <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td class="paramtype">const cv::Size &amp;</td>          <td class="paramname"><span class="paramname"><em>size</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>GLSL に渡すカメラ行列の主要成分を得る</p>
-<dl class="section return"><dt>戻り値</dt><dd>(fx, fy, cx, cy) の順に格納した配列 </dd></dl>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">size</td><td>入力画像のサイズ </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>戻り値</dt><dd>入力画像のサイズに換算した (fx, fy, cx, cy) の順に格納した配列 </dd></dl>
 
-<p class="definition"> <a class="el" href="Undistortion_8cpp_source.html">Undistortion.cpp</a> の <a class="el" href="Undistortion_8cpp_source.html#l00151">151</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Undistortion_8cpp_source.html">Undistortion.cpp</a> の <a class="el" href="Undistortion_8cpp_source.html#l00210">210</a> 行目に定義があります。</p>
 <div class="dynheader">
 呼び出し関係図:</div>
 <div class="dyncontent">
-<div class="center"><img src="classUndistortion_a37b2802fba9d6228e2549197fb8c4e5a_cgraph.png" border="0" usemap="#aclassUndistortion_a37b2802fba9d6228e2549197fb8c4e5a_cgraph" loading="lazy" alt=""/></div>
-<map name="aclassUndistortion_a37b2802fba9d6228e2549197fb8c4e5a_cgraph" id="aclassUndistortion_a37b2802fba9d6228e2549197fb8c4e5a_cgraph">
-<area shape="rect" title=" " alt="" coords="5,5,236,32"/>
-<area shape="rect" href="classUndistortion.html#aafeab832dd2dbc18a585795eec66a713" title=" " alt="" coords="284,5,415,32"/>
-<area shape="poly" title=" " alt="" coords="236,16,271,19,265,19,236,21"/>
+<div class="center"><img src="classUndistortion_a661ab18c18868cf88405759646a2b2a3_cgraph.png" border="0" usemap="#aclassUndistortion_a661ab18c18868cf88405759646a2b2a3_cgraph" loading="lazy" alt=""/></div>
+<map name="aclassUndistortion_a661ab18c18868cf88405759646a2b2a3_cgraph" id="aclassUndistortion_a661ab18c18868cf88405759646a2b2a3_cgraph">
+<area shape="rect" title=" " alt="" coords="5,31,236,57"/>
+<area shape="rect" href="classUndistortion.html#af03c1f30016a64cd4c45b05a657c9c9a" title=" " alt="" coords="284,5,483,32"/>
+<area shape="poly" title=" " alt="" coords="236,30,271,29,266,30,237,35"/>
+<area shape="rect" href="classUndistortion.html#aafeab832dd2dbc18a585795eec66a713" title=" " alt="" coords="318,56,449,83"/>
+<area shape="poly" title=" " alt="" coords="236,52,305,61,300,62,236,58"/>
 </map>
 </div>
 
@@ -264,7 +342,7 @@ $(function(){initNavTree('classUndistortion.html','','classUndistortion-members'
 <p>歪み係数を取り出す</p>
 <dl class="section return"><dt>戻り値</dt><dd>歪み係数への参照 </dd></dl>
 
-<p class="definition"> <a class="el" href="Undistortion_8h_source.html">Undistortion.h</a> の <a class="el" href="Undistortion_8h_source.html#l00114">114</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Undistortion_8h_source.html">Undistortion.h</a> の <a class="el" href="Undistortion_8h_source.html#l00169">169</a> 行目に定義があります。</p>
 <div class="dynheader">
 被呼び出し関係図:</div>
 <div class="dyncontent">
@@ -297,7 +375,7 @@ $(function(){initNavTree('classUndistortion.html','','classUndistortion-members'
 <p>GLSL に渡す歪み係数を得る</p>
 <dl class="section return"><dt>戻り値</dt><dd>(k1, k2, p1, p2, k3) の順に格納した配列 </dd></dl>
 
-<p class="definition"> <a class="el" href="Undistortion_8cpp_source.html">Undistortion.cpp</a> の <a class="el" href="Undistortion_8cpp_source.html#l00168">168</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Undistortion_8cpp_source.html">Undistortion.cpp</a> の <a class="el" href="Undistortion_8cpp_source.html#l00228">228</a> 行目に定義があります。</p>
 <div class="dynheader">
 呼び出し関係図:</div>
 <div class="dyncontent">
@@ -336,7 +414,63 @@ $(function(){initNavTree('classUndistortion.html','','classUndistortion-members'
 <p>較正ファイルに記録された画像サイズを取り出す</p>
 <dl class="section return"><dt>戻り値</dt><dd>較正時の画像サイズ </dd></dl>
 
-<p class="definition"> <a class="el" href="Undistortion_8h_source.html">Undistortion.h</a> の <a class="el" href="Undistortion_8h_source.html#l00124">124</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Undistortion_8h_source.html">Undistortion.h</a> の <a class="el" href="Undistortion_8h_source.html#l00179">179</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a411b116705068c70d5c0a956a6cb2b2c" name="a411b116705068c70d5c0a956a6cb2b2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a411b116705068c70d5c0a956a6cb2b2c">&#9670;&#160;</a></span>isSameAspect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Undistortion::isSameAspect </td>
+          <td>(</td>
+          <td class="paramtype">const cv::Size &amp;</td>          <td class="paramname"><span class="paramname"><em>a</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const cv::Size &amp;</td>          <td class="paramname"><span class="paramname"><em>b</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>二つの画像サイズのアスペクト比が同じか調べる</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>一方の画像サイズ </td></tr>
+    <tr><td class="paramname">b</td><td>もう一方の画像サイズ </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>戻り値</dt><dd>アスペクト比の相対誤差が aspectTolerance 以下なら true </dd></dl>
+
+<p class="definition"> <a class="el" href="Undistortion_8cpp_source.html">Undistortion.cpp</a> の <a class="el" href="Undistortion_8cpp_source.html#l00154">154</a> 行目に定義があります。</p>
+<div class="dynheader">
+被呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classUndistortion_a411b116705068c70d5c0a956a6cb2b2c_icgraph.png" border="0" usemap="#aclassUndistortion_a411b116705068c70d5c0a956a6cb2b2c_icgraph" loading="lazy" alt=""/></div>
+<map name="aclassUndistortion_a411b116705068c70d5c0a956a6cb2b2c_icgraph" id="aclassUndistortion_a411b116705068c70d5c0a956a6cb2b2c_icgraph">
+<area shape="rect" title=" " alt="" coords="705,5,889,32"/>
+<area shape="rect" href="classUndistortion.html#a2dc4e87ed03c6741a9c94937a24e6322" title=" " alt="" coords="495,5,657,32"/>
+<area shape="poly" title=" " alt="" coords="686,19,657,21,657,16,692,19"/>
+<area shape="rect" href="classUndistortion.html#aba9ec1b06edcd9755862e9802b39f9e9" title=" " alt="" coords="248,5,447,32"/>
+<area shape="poly" title=" " alt="" coords="477,19,448,21,448,16,483,19"/>
+<area shape="rect" href="classGgApp.html#ad2e50a5e84d4fd6162e03039ac00c7ae" title=" " alt="" coords="103,5,200,32"/>
+<area shape="poly" title=" " alt="" coords="230,19,201,21,200,16,235,19"/>
+<area shape="rect" href="main_8cpp.html#a110745d0e996bc19a8c8e8cacbadd525" title=" " alt="" coords="5,5,55,32"/>
+<area shape="poly" title=" " alt="" coords="85,20,55,21,55,16,90,18"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -363,7 +497,7 @@ $(function(){initNavTree('classUndistortion.html','','classUndistortion-members'
 </dl>
 <dl class="section return"><dt>戻り値</dt><dd>カメラ行列と 5 個の歪み係数を読み込めたら true </dd></dl>
 
-<p class="definition"> <a class="el" href="Undistortion_8cpp_source.html">Undistortion.cpp</a> の <a class="el" href="Undistortion_8cpp_source.html#l00068">68</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Undistortion_8cpp_source.html">Undistortion.cpp</a> の <a class="el" href="Undistortion_8cpp_source.html#l00069">69</a> 行目に定義があります。</p>
 <div class="dynheader">
 呼び出し関係図:</div>
 <div class="dyncontent">
@@ -372,6 +506,57 @@ $(function(){initNavTree('classUndistortion.html','','classUndistortion-members'
 <area shape="rect" title=" " alt="" coords="5,5,129,32"/>
 <area shape="rect" href="gg_8h.html#ac735c9fb18adb1f2127c90adcea87cd8" title=" " alt="" coords="177,5,273,32"/>
 <area shape="poly" title=" " alt="" coords="129,16,164,18,159,19,129,21"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a2dc4e87ed03c6741a9c94937a24e6322" name="a2dc4e87ed03c6741a9c94937a24e6322"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dc4e87ed03c6741a9c94937a24e6322">&#9670;&#160;</a></span>matchSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Undistortion_8h.html#a1971eaa5ffcbb87b704df8e591aa8a56">CalibrationSizeMatch</a> Undistortion::matchSize </td>
+          <td>(</td>
+          <td class="paramtype">const cv::Size &amp;</td>          <td class="paramname"><span class="paramname"><em>size</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>入力画像のサイズが較正時の画像サイズと合っているか調べる</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">size</td><td>入力画像のサイズ </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>戻り値</dt><dd>較正時の画像サイズとの関係 </dd></dl>
+
+<p class="definition"> <a class="el" href="Undistortion_8cpp_source.html">Undistortion.cpp</a> の <a class="el" href="Undistortion_8cpp_source.html#l00165">165</a> 行目に定義があります。</p>
+<div class="dynheader">
+呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classUndistortion_a2dc4e87ed03c6741a9c94937a24e6322_cgraph.png" border="0" usemap="#aclassUndistortion_a2dc4e87ed03c6741a9c94937a24e6322_cgraph" loading="lazy" alt=""/></div>
+<map name="aclassUndistortion_a2dc4e87ed03c6741a9c94937a24e6322_cgraph" id="aclassUndistortion_a2dc4e87ed03c6741a9c94937a24e6322_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,167,32"/>
+<area shape="rect" href="classUndistortion.html#a411b116705068c70d5c0a956a6cb2b2c" title=" " alt="" coords="215,5,399,32"/>
+<area shape="poly" title=" " alt="" coords="167,16,202,19,196,19,167,21"/>
+</map>
+</div>
+<div class="dynheader">
+被呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classUndistortion_a2dc4e87ed03c6741a9c94937a24e6322_icgraph.png" border="0" usemap="#aclassUndistortion_a2dc4e87ed03c6741a9c94937a24e6322_icgraph" loading="lazy" alt=""/></div>
+<map name="aclassUndistortion_a2dc4e87ed03c6741a9c94937a24e6322_icgraph" id="aclassUndistortion_a2dc4e87ed03c6741a9c94937a24e6322_icgraph">
+<area shape="rect" title=" " alt="" coords="495,5,657,32"/>
+<area shape="rect" href="classUndistortion.html#aba9ec1b06edcd9755862e9802b39f9e9" title=" " alt="" coords="248,5,447,32"/>
+<area shape="poly" title=" " alt="" coords="477,19,448,21,448,16,483,19"/>
+<area shape="rect" href="classGgApp.html#ad2e50a5e84d4fd6162e03039ac00c7ae" title=" " alt="" coords="103,5,200,32"/>
+<area shape="poly" title=" " alt="" coords="230,19,201,21,200,16,235,19"/>
+<area shape="rect" href="main_8cpp.html#a110745d0e996bc19a8c8e8cacbadd525" title=" " alt="" coords="5,5,55,32"/>
+<area shape="poly" title=" " alt="" coords="85,20,55,21,55,16,90,18"/>
 </map>
 </div>
 
@@ -394,7 +579,7 @@ $(function(){initNavTree('classUndistortion.html','','classUndistortion-members'
 <p>補正に必要なパラメータが読み込まれているか調べる</p>
 <dl class="section return"><dt>戻り値</dt><dd>カメラ行列と歪み係数が揃っていれば true </dd></dl>
 
-<p class="definition"> <a class="el" href="Undistortion_8cpp_source.html">Undistortion.cpp</a> の <a class="el" href="Undistortion_8cpp_source.html#l00118">118</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Undistortion_8cpp_source.html">Undistortion.cpp</a> の <a class="el" href="Undistortion_8cpp_source.html#l00119">119</a> 行目に定義があります。</p>
 <div class="dynheader">
 被呼び出し関係図:</div>
 <div class="dyncontent">
@@ -405,7 +590,7 @@ $(function(){initNavTree('classUndistortion.html','','classUndistortion-members'
 <area shape="poly" title=" " alt="" coords="541,75,477,53,418,35,418,30,479,48,546,75"/>
 <area shape="rect" href="classGgApp.html#ad2e50a5e84d4fd6162e03039ac00c7ae" title=" " alt="" coords="103,31,200,57"/>
 <area shape="poly" title=" " alt="" coords="509,88,201,52,201,47,512,83"/>
-<area shape="rect" href="classUndistortion.html#a37b2802fba9d6228e2549197fb8c4e5a" title=" " alt="" coords="248,107,478,133"/>
+<area shape="rect" href="classUndistortion.html#a661ab18c18868cf88405759646a2b2a3" title=" " alt="" coords="248,107,478,133"/>
 <area shape="poly" title=" " alt="" coords="508,104,479,110,478,105,514,103"/>
 <area shape="rect" href="classUndistortion.html#ab776ab64d315da8c52afdd0429bcc221" title=" " alt="" coords="276,157,450,200"/>
 <area shape="poly" title=" " alt="" coords="552,114,479,148,445,159,444,154,477,143,547,116"/>
@@ -414,6 +599,33 @@ $(function(){initNavTree('classUndistortion.html','','classUndistortion-members'
 <area shape="poly" title=" " alt="" coords="85,46,56,46,54,42,89,42"/>
 </map>
 </div>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">メンバ詳解</h2>
+<a id="ad46033ac87c0e9d0204f9fc5174e3b02" name="ad46033ac87c0e9d0204f9fc5174e3b02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad46033ac87c0e9d0204f9fc5174e3b02">&#9670;&#160;</a></span>aspectTolerance</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Undistortion::aspectTolerance { 0.01 }</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>アスペクト比が同じとみなす相対誤差の上限</p>
+<dl class="section note"><dt>覚え書き</dt><dd>1280 x 720 と 854 x 480 のように、画素数の丸めで生じる差を許容する。 </dd></dl>
+
+<p class="definition"> <a class="el" href="Undistortion_8h_source.html">Undistortion.h</a> の <a class="el" href="Undistortion_8h_source.html#l00078">78</a> 行目に定義があります。</p>
 
 </div>
 </div>

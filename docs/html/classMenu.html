@@ -112,10 +112,16 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 <tr class="memitem:afe1ed650c6b2d0d9764782c8d4fe929e" id="r_afe1ed650c6b2d0d9764782c8d4fe929e"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afe1ed650c6b2d0d9764782c8d4fe929e">getSettings</a> () const</td></tr>
 <tr class="memitem:a2b8b7eccbe05c2ba0873b474617fefdf" id="r_a2b8b7eccbe05c2ba0873b474617fefdf"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2b8b7eccbe05c2ba0873b474617fefdf">getSettings</a> ()</td></tr>
 <tr class="memitem:a6763d1f2af5a47c38ae5337a7637ad7e" id="r_a6763d1f2af5a47c38ae5337a7637ad7e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6763d1f2af5a47c38ae5337a7637ad7e">initializeInputIntrinsics</a> (const std::array&lt; int, 2 &gt; &amp;size)</td></tr>
+<tr class="memitem:a1bdcb6c24bfef40a63ac2d88fe309ba5" id="r_a1bdcb6c24bfef40a63ac2d88fe309ba5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1bdcb6c24bfef40a63ac2d88fe309ba5">checkCalibrationSize</a> ()</td></tr>
+<tr class="memitem:ad25a4bdc3b2cb92aa41b92d0ab166982" id="r_ad25a4bdc3b2cb92aa41b92d0ab166982"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad25a4bdc3b2cb92aa41b92d0ab166982">getWarningMessage</a> () const</td></tr>
 <tr class="memitem:a1bd433ba6365bdd8dc5290a845cd194d" id="r_a1bd433ba6365bdd8dc5290a845cd194d"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1bd433ba6365bdd8dc5290a845cd194d">getUndistortionMode</a> () const</td></tr>
 <tr class="memitem:a4f36a627c2bbe5c84d9722779dab5ed9" id="r_a4f36a627c2bbe5c84d9722779dab5ed9"><td class="memItemLeft" align="right" valign="top">std::array&lt; GLsizei, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4f36a627c2bbe5c84d9722779dab5ed9">setupUndistortion</a> (GLfloat aspect) const</td></tr>
 <tr class="memitem:a144b100568382513c749f88bd7b92495" id="r_a144b100568382513c749f88bd7b92495"><td class="memItemLeft" align="right" valign="top">std::array&lt; GLsizei, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a144b100568382513c749f88bd7b92495">setup</a> (GLfloat aspect) const</td></tr>
 <tr class="memitem:a2cd7ab9901a8f42a3ae977d0774398a6" id="r_a2cd7ab9901a8f42a3ae977d0774398a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2cd7ab9901a8f42a3ae977d0774398a6">draw</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静的公開メンバ関数</h2></td></tr>
+<tr class="memitem:a930942349754b52d4c48c75f095a97c2" id="r_a930942349754b52d4c48c75f095a97c2"><td class="memItemLeft" align="right" valign="top">static const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a930942349754b52d4c48c75f095a97c2">getCalibrationWarningText</a> (<a class="el" href="Undistortion_8h.html#a1971eaa5ffcbb87b704df8e591aa8a56">CalibrationSizeMatch</a> match)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 公開変数類</h2></td></tr>
@@ -168,7 +174,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
   </dd>
 </dl>
 
-<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l00486">486</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l00489">489</a> 行目に定義があります。</p>
 <div class="dynheader">
 呼び出し関係図:</div>
 <div class="dyncontent">
@@ -266,11 +272,56 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 </div><div class="memdoc">
 <p>デストラクタ </p>
 
-<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l00569">569</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l00572">572</a> 行目に定義があります。</p>
 
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">関数詳解</h2>
+<a id="a1bdcb6c24bfef40a63ac2d88fe309ba5" name="a1bdcb6c24bfef40a63ac2d88fe309ba5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bdcb6c24bfef40a63ac2d88fe309ba5">&#9670;&#160;</a></span>checkCalibrationSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Menu::checkCalibrationSize </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>入力画像の解像度が較正時の解像度と合っているか調べて警告を設定する</p>
+<p>較正ファイルを読み込んだときと、入力画像の解像度が変わったときに呼ぶ。 較正時とアスペクト比が同じで解像度が違えばカメラ行列を換算して補正することを、 アスペクト比が違えば正しく補正できないことを警告する。 </p>
+
+<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l00604">604</a> 行目に定義があります。</p>
+<div class="dynheader">
+呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classMenu_a1bdcb6c24bfef40a63ac2d88fe309ba5_cgraph.png" border="0" usemap="#aclassMenu_a1bdcb6c24bfef40a63ac2d88fe309ba5_cgraph" loading="lazy" alt=""/></div>
+<map name="aclassMenu_a1bdcb6c24bfef40a63ac2d88fe309ba5_cgraph" id="aclassMenu_a1bdcb6c24bfef40a63ac2d88fe309ba5_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,190,32"/>
+<area shape="rect" href="classMenu.html#a930942349754b52d4c48c75f095a97c2" title=" " alt="" coords="238,5,451,32"/>
+<area shape="poly" title=" " alt="" coords="190,16,225,19,219,19,190,21"/>
+</map>
+</div>
+<div class="dynheader">
+被呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classMenu_a1bdcb6c24bfef40a63ac2d88fe309ba5_icgraph.png" border="0" usemap="#aclassMenu_a1bdcb6c24bfef40a63ac2d88fe309ba5_icgraph" loading="lazy" alt=""/></div>
+<map name="aclassMenu_a1bdcb6c24bfef40a63ac2d88fe309ba5_icgraph" id="aclassMenu_a1bdcb6c24bfef40a63ac2d88fe309ba5_icgraph">
+<area shape="rect" title=" " alt="" coords="486,5,671,32"/>
+<area shape="rect" href="classMenu.html#a6763d1f2af5a47c38ae5337a7637ad7e" title=" " alt="" coords="248,5,438,32"/>
+<area shape="poly" title=" " alt="" coords="468,19,439,21,439,16,473,19"/>
+<area shape="rect" href="classGgApp.html#ad2e50a5e84d4fd6162e03039ac00c7ae" title=" " alt="" coords="103,5,200,32"/>
+<area shape="poly" title=" " alt="" coords="230,19,200,21,200,16,235,19"/>
+<area shape="rect" href="main_8cpp.html#a110745d0e996bc19a8c8e8cacbadd525" title=" " alt="" coords="5,5,55,32"/>
+<area shape="poly" title=" " alt="" coords="85,20,55,21,55,16,90,18"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="a2cd7ab9901a8f42a3ae977d0774398a6" name="a2cd7ab9901a8f42a3ae977d0774398a6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2cd7ab9901a8f42a3ae977d0774398a6">&#9670;&#160;</a></span>draw()</h2>
 
@@ -287,7 +338,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 </div><div class="memdoc">
 <p>メニューを描画する </p>
 
-<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l01267">1267</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l01335">1335</a> 行目に定義があります。</p>
 <div class="dynheader">
 被呼び出し関係図:</div>
 <div class="dyncontent">
@@ -296,6 +347,58 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 <area shape="rect" title=" " alt="" coords="248,5,337,32"/>
 <area shape="rect" href="classGgApp.html#ad2e50a5e84d4fd6162e03039ac00c7ae" title=" " alt="" coords="103,5,200,32"/>
 <area shape="poly" title=" " alt="" coords="230,19,201,21,201,16,235,19"/>
+<area shape="rect" href="main_8cpp.html#a110745d0e996bc19a8c8e8cacbadd525" title=" " alt="" coords="5,5,55,32"/>
+<area shape="poly" title=" " alt="" coords="85,20,55,21,55,16,90,18"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a930942349754b52d4c48c75f095a97c2" name="a930942349754b52d4c48c75f095a97c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a930942349754b52d4c48c75f095a97c2">&#9670;&#160;</a></span>getCalibrationWarningText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * Menu::getCalibrationWarningText </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="Undistortion_8h.html#a1971eaa5ffcbb87b704df8e591aa8a56">CalibrationSizeMatch</a></td>          <td class="paramname"><span class="paramname"><em>match</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>較正時の解像度との関係に応じた警告の文言を得る</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">match</td><td>入力画像のサイズと較正時の画像サイズの関係 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>戻り値</dt><dd>警告の文字列 (UTF-8), 警告が無ければ nullptr</dd></dl>
+<dl class="section note"><dt>覚え書き</dt><dd>デスクトップ版の警告ウィンドウと Android 版のダイアログで同じ文言を使う。 </dd></dl>
+
+<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l00618">618</a> 行目に定義があります。</p>
+<div class="dynheader">
+被呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classMenu_a930942349754b52d4c48c75f095a97c2_icgraph.png" border="0" usemap="#aclassMenu_a930942349754b52d4c48c75f095a97c2_icgraph" loading="lazy" alt=""/></div>
+<map name="aclassMenu_a930942349754b52d4c48c75f095a97c2_icgraph" id="aclassMenu_a930942349754b52d4c48c75f095a97c2_icgraph">
+<area shape="rect" title=" " alt="" coords="719,5,932,32"/>
+<area shape="rect" href="classMenu.html#a1bdcb6c24bfef40a63ac2d88fe309ba5" title=" " alt="" coords="486,5,671,32"/>
+<area shape="poly" title=" " alt="" coords="700,19,671,21,671,16,706,19"/>
+<area shape="rect" href="classMenu.html#a6763d1f2af5a47c38ae5337a7637ad7e" title=" " alt="" coords="248,5,438,32"/>
+<area shape="poly" title=" " alt="" coords="468,19,439,21,439,16,473,19"/>
+<area shape="rect" href="classGgApp.html#ad2e50a5e84d4fd6162e03039ac00c7ae" title=" " alt="" coords="103,5,200,32"/>
+<area shape="poly" title=" " alt="" coords="230,19,200,21,200,16,235,19"/>
 <area shape="rect" href="main_8cpp.html#a110745d0e996bc19a8c8e8cacbadd525" title=" " alt="" coords="5,5,55,32"/>
 <area shape="poly" title=" " alt="" coords="85,20,55,21,55,16,90,18"/>
 </map>
@@ -328,7 +431,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 <p>選択されているキャプチャデバイスの番号を得る</p>
 <dl class="section return"><dt>戻り値</dt><dd>デバイス番号 </dd></dl>
 
-<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00337">337</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00340">340</a> 行目に定義があります。</p>
 
 </div>
 </div>
@@ -357,7 +460,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 <p>ArUco Marker の一辺の長さを得る</p>
 <dl class="section return"><dt>戻り値</dt><dd>ArUco Marker の一辺の長さ (単位 cm) </dd></dl>
 
-<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00376">376</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00379">379</a> 行目に定義があります。</p>
 <div class="dynheader">
 被呼び出し関係図:</div>
 <div class="dyncontent">
@@ -398,7 +501,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 <p>メニューバーの高さを得る</p>
 <dl class="section return"><dt>戻り値</dt><dd>メニューバーの高さ </dd></dl>
 
-<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00355">355</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00358">358</a> 行目に定義があります。</p>
 <div class="dynheader">
 被呼び出し関係図:</div>
 <div class="dyncontent">
@@ -439,7 +542,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 <p>キャプチャデバイスの姿勢を得る</p>
 <dl class="section return"><dt>戻り値</dt><dd>図形の姿勢 </dd></dl>
 
-<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00316">316</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00319">319</a> 行目に定義があります。</p>
 
 </div>
 </div>
@@ -468,7 +571,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 <p>設定データを得る</p>
 <dl class="section return"><dt>戻り値</dt><dd>設定データへの参照 </dd></dl>
 
-<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00396">396</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00399">399</a> 行目に定義があります。</p>
 
 </div>
 </div>
@@ -497,7 +600,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 <p>設定データを得る</p>
 <dl class="section return"><dt>戻り値</dt><dd>設定データへの参照 </dd></dl>
 
-<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00386">386</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00389">389</a> 行目に定義があります。</p>
 <div class="dynheader">
 被呼び出し関係図:</div>
 <div class="dyncontent">
@@ -540,7 +643,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 <p>UI で選択されている歪み補正方法を得る</p>
 <dl class="section return"><dt>戻り値</dt><dd>現在の歪み補正方法 </dd></dl>
 
-<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00466">466</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00499">499</a> 行目に定義があります。</p>
 <div class="dynheader">
 被呼び出し関係図:</div>
 <div class="dyncontent">
@@ -553,6 +656,35 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 <area shape="poly" title=" " alt="" coords="85,20,55,21,55,16,90,18"/>
 </map>
 </div>
+
+</div>
+</div>
+<a id="ad25a4bdc3b2cb92aa41b92d0ab166982" name="ad25a4bdc3b2cb92aa41b92d0ab166982"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad25a4bdc3b2cb92aa41b92d0ab166982">&#9670;&#160;</a></span>getWarningMessage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * Menu::getWarningMessage </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>較正時の解像度に関する警告を得る</p>
+<dl class="section return"><dt>戻り値</dt><dd>警告の文字列, 警告が無ければ nullptr </dd></dl>
+
+<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00439">439</a> 行目に定義があります。</p>
 
 </div>
 </div>
@@ -579,7 +711,19 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 </dl>
 <p>実解像度を反映し、現在の焦点距離から画像全体が見やすい初期画角を 計算する。中心位置は投影方式の設定値を維持する。 </p>
 
-<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l00583">583</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l00586">586</a> 行目に定義があります。</p>
+<div class="dynheader">
+呼び出し関係図:</div>
+<div class="dyncontent">
+<div class="center"><img src="classMenu_a6763d1f2af5a47c38ae5337a7637ad7e_cgraph.png" border="0" usemap="#aclassMenu_a6763d1f2af5a47c38ae5337a7637ad7e_cgraph" loading="lazy" alt=""/></div>
+<map name="aclassMenu_a6763d1f2af5a47c38ae5337a7637ad7e_cgraph" id="aclassMenu_a6763d1f2af5a47c38ae5337a7637ad7e_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,196,32"/>
+<area shape="rect" href="classMenu.html#a1bdcb6c24bfef40a63ac2d88fe309ba5" title=" " alt="" coords="244,5,428,32"/>
+<area shape="poly" title=" " alt="" coords="196,16,230,19,225,19,196,21"/>
+<area shape="rect" href="classMenu.html#a930942349754b52d4c48c75f095a97c2" title=" " alt="" coords="476,5,689,32"/>
+<area shape="poly" title=" " alt="" coords="428,16,463,19,458,19,428,21"/>
+</map>
+</div>
 <div class="dynheader">
 被呼び出し関係図:</div>
 <div class="dyncontent">
@@ -620,7 +764,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 <p>処理を継続するかどうか調べる</p>
 <dl class="section return"><dt>戻り値</dt><dd>処理を継続するなら true </dd></dl>
 
-<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00305">305</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00308">308</a> 行目に定義があります。</p>
 
 </div>
 </div>
@@ -701,7 +845,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
   </dd>
 </dl>
 
-<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00327">327</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00330">330</a> 行目に定義があります。</p>
 
 </div>
 </div>
@@ -729,7 +873,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 <dl class="section return"><dt>戻り値</dt><dd>描画すべきメッシュの横と縦の格子点数</dd></dl>
 <dl class="section note"><dt>覚え書き</dt><dd>格子点数は画角 aspect と展開用メッシュのサンプル点数 samples から求める。 </dd></dl>
 
-<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l00731">731</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l00771">771</a> 行目に定義があります。</p>
 <div class="dynheader">
 被呼び出し関係図:</div>
 <div class="dyncontent">
@@ -768,7 +912,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 </dl>
 <dl class="section return"><dt>戻り値</dt><dd>描画すべきメッシュの横と縦の格子点数 </dd></dl>
 
-<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l00716">716</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l00756">756</a> 行目に定義があります。</p>
 <div class="dynheader">
 被呼び出し関係図:</div>
 <div class="dyncontent">
@@ -801,7 +945,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 <p>選択中の入力設定を適用してキャプチャを開始する</p>
 <dl class="section return"><dt>戻り値</dt><dd>デバイスを開いてキャプチャを開始できたら true </dd></dl>
 
-<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l00598">598</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8cpp_source.html">Menu.cpp</a> の <a class="el" href="Menu_8cpp_source.html#l00638">638</a> 行目に定義があります。</p>
 
 </div>
 </div>
@@ -820,7 +964,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 
 <p>ArUco Marker を検出するなら true </p>
 
-<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00268">268</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00271">271</a> 行目に定義があります。</p>
 
 </div>
 </div>
@@ -838,7 +982,7 @@ $(function(){initNavTree('classMenu.html','','classMenu-members'); });
 
 <p>レイテンシを優先するなら true </p>
 
-<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00265">265</a> 行目に定義があります。</p>
+<p class="definition"> <a class="el" href="Menu_8h_source.html">Menu.h</a> の <a class="el" href="Menu_8h_source.html#l00268">268</a> 行目に定義があります。</p>
 
 </div>
 </div>

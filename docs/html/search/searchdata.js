@@ -7,8 +7,8 @@ var indexSectionsWithContent =
   4: "_abcdefgilmnoprstuw~",
   5: "acdefghimnprstw",
   6: "p",
-  7: "bu",
-  8: "lmno",
+  7: "bcu",
+  8: "aelmnosu",
   9: "cghsu",
   10: "$123456789abcdefglmoprstuvw「となにのまアカキクゲスソチドピプレ主低全処前勉基実引後接放方概構歪版理第補講較逆開関"
 };

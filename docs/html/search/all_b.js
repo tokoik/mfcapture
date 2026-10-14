@@ -8,5 +8,7 @@ var searchData=
   ['aruco_5',['Aruco',['../md_README.html#autotoc_md56',1,'&lt;span class=&quot;tt&quot;&gt;Aruco&lt;/span&gt;'],['../classAruco.html',1,'Aruco'],['../classAruco.html#ab64e1629f894850bdffb42992be4b58b',1,'Aruco::Aruco(const std::string &amp;dictionaryName=&quot;DICT_4X4_50&quot;)'],['../classAruco.html#ad7d29efb1901089a388be58a7ced9b1c',1,'Aruco::Aruco(const Aruco &amp;aruco)=delete']]],
   ['aruco_20marker_20の検出_6',['ArUco Marker の検出',['../md_README.html#autotoc_md51',1,'']]],
   ['aruco_2ecpp_7',['Aruco.cpp',['../Aruco_8cpp.html',1,'']]],
-  ['aruco_2eh_8',['Aruco.h',['../Aruco_8h.html',1,'']]]
+  ['aruco_2eh_8',['Aruco.h',['../Aruco_8h.html',1,'']]],
+  ['aspectmismatch_9',['AspectMismatch',['../Undistortion_8h.html#a1971eaa5ffcbb87b704df8e591aa8a56a0931a26a3643ccdb5caecf7bf1d1d6fe',1,'Undistortion.h']]],
+  ['aspecttolerance_10',['aspectTolerance',['../classUndistortion.html#ad46033ac87c0e9d0204f9fc5174e3b02',1,'Undistortion']]]
 ];

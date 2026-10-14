@@ -1,0 +1,11 @@
+<map id="Undistortion::isSameAspect" name="Undistortion::isSameAspect">
+<area shape="rect" id="Node000001" title=" " alt="" coords="705,5,889,32"/>
+<area shape="rect" id="Node000002" href="$classUndistortion.html#a2dc4e87ed03c6741a9c94937a24e6322" title=" " alt="" coords="495,5,657,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="686,19,657,21,657,16,692,19"/>
+<area shape="rect" id="Node000003" href="$classUndistortion.html#aba9ec1b06edcd9755862e9802b39f9e9" title=" " alt="" coords="248,5,447,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="477,19,448,21,448,16,483,19"/>
+<area shape="rect" id="Node000004" href="$classGgApp.html#ad2e50a5e84d4fd6162e03039ac00c7ae" title=" " alt="" coords="103,5,200,32"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="230,19,201,21,200,16,235,19"/>
+<area shape="rect" id="Node000005" href="$main_8cpp.html#a110745d0e996bc19a8c8e8cacbadd525" title=" " alt="" coords="5,5,55,32"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="85,20,55,21,55,16,90,18"/>
+</map>
