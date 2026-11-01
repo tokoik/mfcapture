@@ -217,7 +217,7 @@ $(function(){initNavTree('Texture_8cpp_source.html','',''); });
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>  <span class="comment">// テクスチャのメモリを確保してデータを転送する</span></div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>  glBindTexture(GL_TEXTURE_2D, textureName);</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>  glTexImage2D(GL_TEXTURE_2D, 0, <a class="code hl_function" href="classBuffer.html#a9f5458d3d3efc617685614764cbac539">channelsToFormat</a>(channels), width, height, 0,</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <a class="code hl_function" href="classBuffer.html#a9f5458d3d3efc617685614764cbac539">channelsToFormat</a>(channels), GL_UNSIGNED_BYTE, <span class="keyword">nullptr</span>);</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);</div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);</div>

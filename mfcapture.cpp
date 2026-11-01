@@ -80,19 +80,6 @@ int GgApp::main(int argc, const char* const* argv)
   // ウィンドウが開いている間繰り返す
   while (window && menu)
   {
-    // 描画フレームレートの実測と診断出力 (2秒ごと)
-    static auto lastRenderFpsReport{ std::chrono::steady_clock::now() };
-    static int renderFrameCount{ 0 };
-    ++renderFrameCount;
-    const auto currentFrameTime{ std::chrono::steady_clock::now() };
-    const auto renderElapsed{ std::chrono::duration<double>(currentFrameTime - lastRenderFpsReport).count() };
-    if (renderElapsed >= 2.0)
-    {
-      std::cout << "mfcapture: Render FPS = " << renderFrameCount / renderElapsed << std::endl;
-      renderFrameCount = 0;
-      lastRenderFpsReport = currentFrameTime;
-    }
-
     // メニューを表示して設定を更新する
     menu.draw();
 

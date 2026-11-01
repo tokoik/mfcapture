@@ -808,7 +808,7 @@ void Menu::drawMainMenuBar()
       // 終了
       quit = ImGui::MenuItem(u8"終了");
 
-      // File メニュー修了
+      // ファイルメニュー終了
       ImGui::EndMenu();
     }
 
@@ -848,9 +848,9 @@ void Menu::drawInputPanel()
 
     const float posY{ 2.0f + menubarHeight };
 #if defined(_WIN32)
-    const float targetH{ 576.0f * uiScale };
+    const float targetH{ 629.0f * uiScale };
 #else
-    const float targetH{ 606.0f * uiScale };
+    const float targetH{ 659.0f * uiScale };
 #endif
     const float maxH{ (displayH > posY + 10.0f) ? (displayH - posY - 4.0f) : targetH };
     const float winW{ (displayW > 10.0f) ? std::min(262.0f * uiScale, displayW - 4.0f) : 262.0f * uiScale };
@@ -888,6 +888,7 @@ void Menu::drawInputPanel()
       else
         errorMessage = u8"先に較正ファイルを読み込んでください";
     }
+
     ImGui::Separator();
 
     // 投影方式の選択
@@ -1199,6 +1200,21 @@ void Menu::drawInputPanel()
       ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.0f, 1.0f), "%s", u8"停止中");
     }
 #endif
+
+    ImGui::Separator();
+
+    // フレームレートの表示
+    ImGui::Text(u8"描画フレームレート: %6.2f fps", ImGui::GetIO().Framerate);
+    if (capture)
+    {
+      ImGui::Text(u8"取得フレームレート: %6.2f fps", capture.getMeasuredFps());
+    }
+    else
+    {
+      ImGui::Text(u8"取得フレームレート:    --- fps");
+    }
+
+    // 入力パネル終了
     ImGui::End();
   }
 }
@@ -1217,7 +1233,7 @@ void Menu::drawArucoPanel()
     const float displayH{ ImGui::GetIO().DisplaySize.y };
 
     const float panelW{ 222.0f * uiScale };
-    float posX{ 270.0f * uiScale };
+    float posX{ 265.0f * uiScale };
     float posY{ 2.0f + menubarHeight };
     if (posX + panelW > displayW && displayW > 0.0f)
     {
@@ -1265,6 +1281,7 @@ void Menu::drawArucoPanel()
     // 姿勢推定および座標軸表示に使用する ArUco Marker の一辺の長さ (cm)
     ImGui::InputFloat(u8"マーカ長", &settings.markerLength, 0.0f, 0.0f, "%.2f cm");
 
+    // ArUco パネル終了
     ImGui::End();
   }
 }
@@ -1297,6 +1314,8 @@ void Menu::drawErrorDialog()
       // エラーメッセージを消去する
       errorMessage = nullptr;
     }
+
+    // エラーダイアログ終了
     ImGui::End();
   }
 
@@ -1325,6 +1344,8 @@ void Menu::drawErrorDialog()
       // 警告を消去する (補正は換算した較正値で続ける)
       warningMessage = nullptr;
     }
+
+    // 警告ダイアログ終了
     ImGui::End();
   }
 }
