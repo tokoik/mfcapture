@@ -14,7 +14,7 @@
 
 - **OS**: Windows 11 / 10 (64bit / x64)
 - **IDE**: Visual Studio 2022 以降
-- **言語仕様**: C++17 (`/std:c++17`)
+- **言語仕様**: C++20 (`/std:c++20`)
 - **シェル環境**: PowerShell
 - **事前インストールツール**: `git`, `cmake` (3.13以降), `python` (PATHが通っていること)
 

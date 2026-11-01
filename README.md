@@ -138,7 +138,7 @@ ArUco Marker の辞書の管理、マーカー検出、姿勢推定と座標軸�
 
 ## 開発環境とビルド
 
-- C++17
+- C++20
 - CMake 3.13 以降
 - Visual Studio 2022 以降（Windows、x64）
 - Clang / Xcode Command Line Tools（macOS、arm64 / x64）
