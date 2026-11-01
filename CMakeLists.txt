@@ -339,20 +339,20 @@ if(ANDROID)
 elseif(WIN32)
     # Windows platform settings
     add_compile_definitions(_CRT_SECURE_NO_WARNINGS UNICODE _UNICODE)
-    
+
     # Platform sources
     file(GLOB SHADER_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/*.vert"
         "${CMAKE_CURRENT_SOURCE_DIR}/*.frag"
     )
-    
+
     set(ASSET_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/mfcapture_config.json"
         "${CMAKE_CURRENT_SOURCE_DIR}/Mplus1-Regular.ttf"
         "${CMAKE_CURRENT_SOURCE_DIR}/initial.jpg"
         "${CMAKE_CURRENT_SOURCE_DIR}/gg.ico"
     )
-    
+
     set(PLATFORM_SOURCES
         libs/ImGui/nfd_win.cpp
         CamMf.cpp
@@ -360,26 +360,26 @@ elseif(WIN32)
         ${SHADER_SOURCES}
         ${ASSET_FILES}
     )
-    
+
     # Setup OpenCV paths (pre-built)
     set(OPENCV_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv")
     set(OPENCV_INCLUDE_DIR "${OPENCV_DIR}/build/include")
     set(OPENCV_LIB_DIR "${OPENCV_DIR}/build/x64/vc16/lib")
     set(OPENCV_BIN_DIR "${OPENCV_DIR}/build/x64/vc16/bin")
-    
+
     include_directories(${OPENCV_INCLUDE_DIR})
     link_directories(${OPENCV_LIB_DIR})
-    
+
     # Setup GLFW paths (pre-built)
     set(GLFW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/glfw-3.4.bin.WIN64")
     set(GLFW_INCLUDE_DIR "${GLFW_DIR}/include")
     set(GLFW_LIB_DIR "${GLFW_DIR}/lib-vc2022")
-    
+
     include_directories(${GLFW_INCLUDE_DIR})
     link_directories(${GLFW_LIB_DIR})
-    
+
     add_executable(mfcapture ${SOURCES} ${PLATFORM_SOURCES})
-    
+
     # Link libraries
     target_link_libraries(mfcapture PRIVATE
         debug "${OPENCV_LIB_DIR}/opencv_world4130d.lib"
@@ -400,13 +400,13 @@ elseif(WIN32)
         mfuuid
         mfreadwrite
     )
-    
+
     # Copy Assets and DLLs to Build Directory
-    file(GLOB SHADER_FILES 
+    file(GLOB SHADER_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/*.vert"
         "${CMAKE_CURRENT_SOURCE_DIR}/*.frag"
     )
-    
+
     add_custom_command(TARGET mfcapture POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${SHADER_FILES}
@@ -417,13 +417,13 @@ elseif(WIN32)
             $<TARGET_FILE_DIR:mfcapture>
         COMMENT "Copying assets and OpenCV DLL to build folder..."
     )
-    
+
     # Configure Visual Studio user environment settings for debugging
     set_target_properties(mfcapture PROPERTIES
         VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:mfcapture>"
         VS_DEBUGGER_ENVIRONMENT "PATH=$<TARGET_FILE_DIR:mfcapture>;%PATH%"
     )
-    
+
     # Set mfcapture as the Visual Studio startup project
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT mfcapture)
 
@@ -434,23 +434,23 @@ elseif(APPLE)
         CamAvf.mm
         CamAvf.h
     )
-    
+
     # Configure GLFW pre-compiled binary path for macOS
     set(GLFW_MACOS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/glfw-3.4.bin.MACOS")
     set(GLFW_MACOS_INCLUDE_DIR "${GLFW_MACOS_DIR}/include")
     include_directories(${GLFW_MACOS_INCLUDE_DIR})
-    
+
     if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
         set(GLFW_MACOS_LIB "${GLFW_MACOS_DIR}/lib-arm64/libglfw3.a")
     else()
         set(GLFW_MACOS_LIB "${GLFW_MACOS_DIR}/lib-x86_64/libglfw3.a")
     endif()
-    
+
     # Fallback to universal if specific arch doesn't exist
     if(NOT EXISTS "${GLFW_MACOS_LIB}")
         set(GLFW_MACOS_LIB "${GLFW_MACOS_DIR}/lib-universal/libglfw3.a")
     endif()
-    
+
     # Build OpenCV from source (optimized modules to compile quickly)
     set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
     set(BUILD_opencv_world ON CACHE BOOL "" FORCE)
@@ -503,7 +503,7 @@ elseif(APPLE)
     set(BUILD_WEBP ON CACHE BOOL "" FORCE)
     set(OPENCV_SKIP_VISIBILITY_HIDDEN ON CACHE BOOL "" FORCE)
     add_subdirectory(libs/opencv-4.13.0 EXCLUDE_FROM_ALL)
-    
+
     # Target Resources (to be bundled in App Bundle)
     file(GLOB SHADER_RESOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/*.vert"
@@ -517,16 +517,16 @@ elseif(APPLE)
         gg.ico
         ${SHADER_RESOURCES}
     )
-    
+
     # Set resources property so they are included in Xcode's compile phases
     set_source_files_properties(${APP_RESOURCES} PROPERTIES
         MACOSX_BUNDLE_LIMIT_TO_OUTPUT TRUE
         HEADER_FILE_ONLY TRUE
     )
-    
+
     # Create the macOS App Bundle
     add_executable(mfcapture MACOSX_BUNDLE ${SOURCES} ${PLATFORM_SOURCES} ${APP_RESOURCES})
-    
+
     # Include OpenCV headers
     file(GLOB OPENCV_MODULE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv-4.13.0/modules/*/include")
     target_include_directories(mfcapture PRIVATE
@@ -535,7 +535,7 @@ elseif(APPLE)
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/opencv-4.13.0/include
         ${OPENCV_MODULE_INCLUDE_DIRS}
     )
-    
+
     # Set target frameworks and link libraries
     target_link_libraries(mfcapture PRIVATE
         opencv_world
@@ -550,7 +550,7 @@ elseif(APPLE)
         "-framework AppKit"
         "-framework UniformTypeIdentifiers"
     )
-    
+
     # Configure macOS App Bundle properties
     set_target_properties(mfcapture PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist"
@@ -559,7 +559,7 @@ elseif(APPLE)
         BUILD_WITH_INSTALL_RPATH TRUE
         INSTALL_RPATH "@executable_path/../Frameworks"
     )
-    
+
     # Copy shared libraries (dylibs) to Frameworks inside the bundle and create symlinks
     add_custom_command(TARGET mfcapture POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:mfcapture>/../Frameworks
@@ -574,7 +574,7 @@ else()
     set(PLATFORM_SOURCES
         libs/ImGui/nfd_gtk.cpp
     )
-    
+
     # GLES 3.1 option (default ON for ARM architectures like Raspberry Pi)
     if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm|aarch64")
         set(USE_GLES_DEFAULT ON)
